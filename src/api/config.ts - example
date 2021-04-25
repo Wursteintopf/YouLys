@@ -1,0 +1,15 @@
+import * as path from 'path'
+
+const databaseConfig = {
+  host: 'dbHost',
+  port: 3306,
+  user: 'dbUser',
+  password: 'dbPassword',
+  database: 'db',
+}
+
+const config = {
+  databaseConfig: databaseConfig,
+}
+
+export default config
