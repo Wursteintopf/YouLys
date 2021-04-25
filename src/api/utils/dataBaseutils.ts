@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import config from '~api/config'
+import config from '../config'
 
 function initializeConnection () {
   function addDisconnectHandler (connection) {

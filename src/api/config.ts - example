@@ -8,8 +8,11 @@ const databaseConfig = {
   database: 'db',
 }
 
+const apiKey = 'PUT_YOUR_API_KEY_HERE'
+
 const config = {
   databaseConfig: databaseConfig,
+  apiKey: apiKey
 }
 
 export default config
