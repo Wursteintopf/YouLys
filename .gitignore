@@ -9,4 +9,4 @@ node_modules
 *.csv
 *.psd
 *.pem
-src/api/config.ts
+src/api/Config.ts

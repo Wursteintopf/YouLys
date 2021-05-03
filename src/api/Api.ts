@@ -2,7 +2,10 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
-import channelRouter from './channels/channelRouter'
+import channelRouter from './Router/ChannelRouter'
+import {setUpProject} from './Helper/SetupHelper'
+
+setUpProject()
 
 const app = express()
 

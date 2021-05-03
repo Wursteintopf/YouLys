@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "parcel src/index.html",
     "build": "parcel build src/index.html --out-dir build --public-url ./",
-    "api": "ts-node src/api/api.ts",
+    "api": "ts-node src/api/Api.ts",
     "update:packages": "node update.js && npm update --save-dev && npm update --save"
   },
   "browserslist": [
