@@ -6,9 +6,8 @@ export const setUpChannelTable = (): Promise<boolean> => {
     connection.query(
       'CREATE TABLE IF NOT EXISTS channel(' +
         'channel_id VARCHAR(255) NOT NULL,' +
-        'username VARCHAR(255),' +
-        'profile_picture VARCHAR(255),' +
         'tracked BOOLEAN,' +
+        'created_at TIMESTAMP,' +
         'PRIMARY KEY (channel_id)' +
       ')',
 
@@ -26,11 +25,20 @@ export const setUpChannelStatisticsTable = (): Promise<boolean> => {
       'CREATE TABLE IF NOT EXISTS channel_statistic(' +
         'channel_statistic_id INT NOT NULL AUTO_INCREMENT,' +
         'channel_id VARCHAR(255),' +
+        'username VARCHAR(255),' +
+        'profile_picture VARCHAR(255),' +
+        'description VARCHAR(5000),' +
         'subscriber_count INT,' +
+        'subscriber_count_hidden boolean,' +
         'view_count INT,' +
+        'video_count INT,' +
+        'made_for_kids boolean,' +
+        'trailer_video VARCHAR(255),' +
+        'keywords VARCHAR(1024),' +
         'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
         'PRIMARY KEY (channel_statistic_id),' +
-        'FOREIGN KEY (channel_id) REFERENCES channel(channel_id)' +
+        'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
+        'FOREIGN KEY (trailer_video) REFERENCES video(video_id)' +
       ')',
 
       err => {
