@@ -14,7 +14,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-app.use('/channels', channelRouter)
+app.use('/channel', channelRouter)
 
 app.listen(3001, () => {
   console.log('Listening on port 3001.')

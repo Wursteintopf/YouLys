@@ -1,12 +1,12 @@
 import {Channel} from '../Model/Channel'
 import {connection} from '../Helper/DatabaseHelper'
+import {ChannelStatistic} from "../Model/ChannelStatistic";
 
 export const setUpChannelTable = (): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'CREATE TABLE IF NOT EXISTS channel(' +
         'channel_id VARCHAR(255) NOT NULL,' +
-        'tracked BOOLEAN,' +
         'created_at TIMESTAMP,' +
         'PRIMARY KEY (channel_id)' +
       ')',
@@ -37,8 +37,7 @@ export const setUpChannelStatisticsTable = (): Promise<boolean> => {
         'keywords VARCHAR(1024),' +
         'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
         'PRIMARY KEY (channel_statistic_id),' +
-        'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
-        'FOREIGN KEY (trailer_video) REFERENCES video(video_id)' +
+        'FOREIGN KEY (channel_id) REFERENCES channel(channel_id)' +
       ')',
 
       err => {
@@ -65,8 +64,22 @@ export const getChannelList = (): Promise<Channel[]> => {
 export const createChannel = (channel: Channel): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
-      'INSERT INTO channel(channel_id, username, profile_picture, tracked) VALUES (?, ?, ?, ?)',
-      [channel.channel_id, channel.username, channel.profilePicture, channel.tracked],
+      'INSERT INTO channel(channel_id, tracked, created_at) VALUES (?, ?, ?)',
+      [channel.channel_id, channel.tracked, channel.created_at],
+
+      err => {
+        if (err) reject(err)
+        resolve(true)
+      }
+    )
+  })
+}
+
+export const createChannelStatistic = (channelStatistic: ChannelStatistic): Promise<boolean> => {
+  return new Promise<boolean>((resolve, reject) => {
+    connection.query(
+      'INSERT INTO channel_statistic(channel_id, username, profile_picture, description, subscriber_count, subscriber_count_hidden, view_count, video_count, made_for_kids, trailer_video, keywords) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [channelStatistic.channel_id, channelStatistic.username, channelStatistic.profile_picture, channelStatistic.description, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.made_for_kids, channelStatistic.trailer_video, channelStatistic.keywords],
 
       err => {
         if (err) reject(err)
@@ -101,8 +114,8 @@ export const getChannelById = (channel_id: string): Promise<Channel> => {
 export const updateChannel = (channel: Channel): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
-      'UPDATE channel SET username = ?, profile_picture = ?, tracked = ? WHERE channel_id = ?',
-      [channel.username, channel.profilePicture, channel.tracked, channel.channel_id],
+      'UPDATE channel SET tracked = ?, created_at = ? WHERE channel_id = ?',
+      [channel.tracked, channel.created_at, channel.channel_id],
 
       err => {
         if (err) reject(err)
@@ -112,11 +125,11 @@ export const updateChannel = (channel: Channel): Promise<boolean> => {
   })
 }
 
-export const deleteChannel = (id: string): Promise<boolean> => {
-  return new  Promise<boolean>(((resolve, reject) => {
+export const deleteChannel = (channel: Channel): Promise<boolean> => {
+  return new Promise<boolean>(((resolve, reject) => {
     connection.query(
-      'DELETE FROM channel WHERE id = ?',
-      [id],
+      'DELETE FROM channel WHERE channel_id = ?',
+      [channel.channel_id],
 
       err => {
         if (err) reject(err)
@@ -124,4 +137,12 @@ export const deleteChannel = (id: string): Promise<boolean> => {
       }
     )
   }))
+}
+
+export const deleteChannelById = (channel_id: string): Promise<boolean> => {
+  return new Promise<boolean>((resolve, reject) => {
+    deleteChannel(new Channel(channel_id))
+      .then(result => resolve(result))
+      .catch(err => reject(err))
+  })
 }

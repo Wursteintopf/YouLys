@@ -8,6 +8,6 @@ async function setUpTables () {
   await setUpVideoStatisticTable()
 }
 
-export const setUpProject = () => {
-  setUpTables()
+export const setUpProject = async () => {
+  setUpTables().then(() => console.log('Configured Database Tables'))
 }
