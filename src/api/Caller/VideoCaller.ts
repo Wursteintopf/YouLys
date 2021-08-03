@@ -27,11 +27,14 @@ export const callFiftyNewestVideosOfChannel = async (channel: Channel | string) 
 
   const notAddedVideos = newVideos.filter(video => !videoIds.includes(video.resourceId.videoId))
 
-  notAddedVideos.forEach(video => {
-    createVideo(new Video(video.resourceId.videoId, video.channelId, video.publishedAt, 0))
-  })
+  if (notAddedVideos && notAddedVideos.length > 0) {
+    notAddedVideos.forEach(video => {
+      createVideo(new Video(video.resourceId.videoId, video.channelId, video.publishedAt, 0))
+    })
+  }
 }
 
+// TODO: Update duration of video, if necessary
 export const callVideoStatistics = async (video: Video | string) => {
   const videoId = video instanceof Video ? video.video_id : video
 
