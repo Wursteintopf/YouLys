@@ -46,8 +46,6 @@ export const callVideoStatistics = async (video: Video | string) => {
 
   const videoData = json.items[0]
 
-  console.log(videoData.snippet.tags)
-
   await createVideoStatistic(new VideoStatistic(
     videoData.id,
     videoData.statistics.viewCount,

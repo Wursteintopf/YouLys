@@ -4,14 +4,6 @@ import {getFiftyNewestVideosByChannel} from "./Database/VideoQueries";
 import {setUpProject} from "./Helper/SetupHelper";
 import {callChannelStatistics} from "./Caller/ChannelCaller";
 
-/**
- * TODO für den Runner:
- *  1. Über alle Kanäle loopen
- *  2. Für jeden checken ob es neue Videos gibt
- *  3. Für jeden Kanalstatistiken laden
- *  4. Für jeden Videostatistiken für 50 neuste Videos laden (await check ob neue Videos)
- */
-
 const run = async () => {
   const channels = await getChannelList()
   channels.forEach(channel => {

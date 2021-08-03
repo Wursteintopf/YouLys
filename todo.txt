@@ -1,0 +1,6 @@
+TODOS:
+
+• Stop tracking and exlude inactive channels
+• Add logging to check amount of API Calls for better optimization
+• Add dynamic tracking, track new videos more frequent as old ones
+• Probably add more channels
