@@ -20,7 +20,7 @@ export const callFiftyNewestVideosOfChannel = async (channel: Channel | string) 
   const result = await fetch(searchUrl)
   const json = await result.json()
 
-  const newVideos = json.items.map(item => item.snippet)
+  const newVideos = json.items ? json.items.map(item => item.snippet) : []
 
   const videos = await getVideoListByChannel(channelId)
   const videoIds = videos.map(video => video.video_id)
