@@ -3,9 +3,11 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import channelRouter from './Router/ChannelRouter'
-import { setUpProject } from './Helper/SetupHelper'
+import { ChannelRepository } from './Domain/Repository/ChannelRepository'
+import { VideoRepository } from './Domain/Repository/VideoRepository'
 
-setUpProject()
+export const channelRepository = new ChannelRepository()
+export const videoRepository = new VideoRepository()
 
 const app = express()
 

@@ -1,17 +1,20 @@
-import { callFiftyNewestVideosOfChannel, callVideoStatistics } from './Caller/VideoCaller'
-import { getChannelList } from './Database/ChannelQueries'
-import { getFiftyNewestVideosByChannel } from './Database/VideoQueries'
-import { setUpProject } from './Helper/SetupHelper'
-import { callChannelStatistics } from './Caller/ChannelCaller'
+import { callFiftyNewestVideosOfChannel, callVideoStatistics } from './YoutubeApiCaller/VideoCaller'
+import { callChannelStatistics } from './YoutubeApiCaller/ChannelCaller'
+import { ChannelRepository } from './Domain/Repository/ChannelRepository'
+import { VideoRepository } from './Domain/Repository/VideoRepository'
 
 const run = async () => {
-  const channels = await getChannelList()
-  channels.forEach(channel => {
-    callChannelStatistics(channel.channel_id)
+  const channelRepository = new ChannelRepository()
+  const videoRepository = new VideoRepository()
 
-    callFiftyNewestVideosOfChannel(channel.channel_id)
+  const channels = await channelRepository.getAll()
+
+  channels.forEach(channel => {
+    callChannelStatistics(channelRepository, channel.channel_id)
+
+    callFiftyNewestVideosOfChannel(videoRepository, channel.channel_id)
       .then(() => {
-        getFiftyNewestVideosByChannel(channel.channel_id)
+        videoRepository.getFiftyNewestByChannel(channel.channel_id)
           .then((videos) => {
             videos.forEach(video => {
               callVideoStatistics(video.video_id)
@@ -21,5 +24,4 @@ const run = async () => {
   })
 }
 
-setUpProject()
-  .then(() => run())
+run()

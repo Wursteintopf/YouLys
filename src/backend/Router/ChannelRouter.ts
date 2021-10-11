@@ -1,12 +1,12 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { getChannelList } from '../Database/ChannelQueries'
+import { channelRepository } from '../Api'
 
 const channelRouter = express.Router()
 channelRouter.use(bodyParser.json())
 
 channelRouter.get('/getChannels', (req, res) => {
-  getChannelList().then(channels => {
+  channelRepository.getAll().then(channels => {
     res.send(channels)
   })
 })

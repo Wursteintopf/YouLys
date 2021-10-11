@@ -1,14 +1,15 @@
-import { Channel } from '../Model/Channel'
+import { Channel } from '../Domain/Model/Channel'
 import config from '../Config'
 import fetch from 'node-fetch'
-import { createVideo, createVideoStatistic, getVideoListByChannel } from '../Database/VideoQueries'
-import { Video } from '../Model/Video'
-import { VideoStatistic } from '../Model/VideoStatistic'
+import { Video } from '../Domain/Model/Video'
+import { VideoStatistic } from '../Domain/Model/VideoStatistic'
+import { VideoRepository } from '../Domain/Repository/VideoRepository'
+import { videoRepository } from '../Api'
 
 const API_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
 const MAX_RESULTS = 50
 
-export const callFiftyNewestVideosOfChannel = async (channel: Channel | string) => {
+export const callFiftyNewestVideosOfChannel = async (videoRepository: VideoRepository, channel: Channel | string) => {
   const channelId = channel instanceof Channel ? channel.channel_id : channel
 
   const part = 'part=snippet'
@@ -22,14 +23,20 @@ export const callFiftyNewestVideosOfChannel = async (channel: Channel | string) 
 
   const newVideos = json.items ? json.items.map(item => item.snippet) : []
 
-  const videos = await getVideoListByChannel(channelId)
+  const videos = await videoRepository.getFiftyNewestByChannel(channelId)
   const videoIds = videos.map(video => video.video_id)
 
   const notAddedVideos = newVideos.filter(video => !videoIds.includes(video.resourceId.videoId))
 
   if (notAddedVideos && notAddedVideos.length > 0) {
     notAddedVideos.forEach(video => {
-      createVideo(new Video(video.resourceId.videoId, video.channelId, video.publishedAt, 0))
+      const newVideo = new Video({
+        video_id: video.resourceId.video_id,
+        channel_id: video.channelId,
+        upload_time: video.publishedAt,
+        duration: 0,
+      })
+      videoRepository.save(newVideo)
     })
   }
 }
@@ -49,16 +56,18 @@ export const callVideoStatistics = async (video: Video | string) => {
 
   const videoData = json.items[0]
 
-  await createVideoStatistic(new VideoStatistic(
-    videoData.id,
-    videoData.statistics.viewCount,
-    videoData.snippet.title,
-    videoData.snippet.thumbnails.maxres ? videoData.snippet.thumbnails.maxres.url : videoData.snippet.thumbnails.high.url,
-    videoData.snippet.description,
-    videoData.snippet.tags ? videoData.snippet.tags.join() : '',
-    videoData.statistics.likeCount,
-    videoData.statistics.dislikeCount,
-    videoData.statistics.favoriteCount,
-    videoData.statistics.commentCount,
-  ))
+  const statistic = new VideoStatistic({
+    video_id: videoData.id,
+    views: videoData.statistics.viewCount,
+    title: videoData.snippet.title,
+    thumbnail: videoData.snippet.thumbnails.maxres ? videoData.snippet.thumbnails.maxres.url : videoData.snippet.thumbnails.high.url,
+    description: videoData.snippet.description,
+    tags: videoData.snippet.tags ? videoData.snippet.tags.join() : '',
+    likes: videoData.statistics.likeCount,
+    dislikes: videoData.statistics.dislikeCount,
+    favouriteCount: videoData.statistics.favoriteCount,
+    commentCount: videoData.statistics.commentCount,
+  })
+
+  await videoRepository.saveStatistic(statistic)
 }

@@ -4,10 +4,12 @@ import { Provider } from 'react-redux'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import createSagaMiddleware from 'redux-saga'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { rootReducer } from '~store/root.reducer'
 import { applyMiddleware, createStore } from 'redux'
-import rootSaga from './frontend/store/root.sagas'
-import Home from '~app/screens/Home'
+import rootSaga from './store/root.sagas'
+import { rootReducer } from './store/root.reducer'
+import Start from './react/screens/Start'
+import { globalStyles } from './styles/GlobalStyling'
+import { Global } from '@emotion/react'
 
 const App = () => {
   const sagaMiddleware = createSagaMiddleware()
@@ -22,7 +24,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <Route exact path='/' component={Home} />
+        <Global styles={globalStyles} />
+
+        <Route exact path='/' component={Start} />
       </Router>
     </Provider>
   )
