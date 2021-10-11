@@ -7,14 +7,14 @@ import { callChannelStatistics } from './Caller/ChannelCaller'
 const run = async () => {
   const channels = await getChannelList()
   channels.forEach(channel => {
-    callChannelStatistics(channel.channelId)
+    callChannelStatistics(channel.channel_id)
 
-    callFiftyNewestVideosOfChannel(channel.channelId)
+    callFiftyNewestVideosOfChannel(channel.channel_id)
       .then(() => {
-        getFiftyNewestVideosByChannel(channel.channelId)
+        getFiftyNewestVideosByChannel(channel.channel_id)
           .then((videos) => {
             videos.forEach(video => {
-              callVideoStatistics(video.videoId)
+              callVideoStatistics(video.video_id)
             })
           })
       })

@@ -7,7 +7,7 @@ import fetch from 'node-fetch'
 const API_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
 
 export const callChannelStatistics = async (channel: Channel | string) => {
-  const channelId = channel instanceof Channel ? channel.channelId : channel
+  const channelId = channel instanceof Channel ? channel.channel_id : channel
 
   const part = 'part=snippet,statistics,status,brandingSettings'
   const id = `id=${channelId}`

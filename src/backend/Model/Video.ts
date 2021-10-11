@@ -1,7 +1,7 @@
 export class Video {
-  videoId: string
-  channelId?: string
-  uploadTime?: Date
+  video_id: string
+  channel_id?: string
+  upload_time?: Date
   duration?: number
 
   constructor (
@@ -10,9 +10,9 @@ export class Video {
     uploadTime?: Date,
     duration?: number,
   ) {
-    this.videoId = videoId
-    this.channelId = channelId
-    this.uploadTime = uploadTime
+    this.video_id = videoId
+    this.channel_id = channelId
+    this.upload_time = uploadTime
     this.duration = duration
   }
 }

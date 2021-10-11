@@ -1,6 +1,6 @@
 export class VideoStatistic {
-  videoStatisticId?: number
-  videoId: string
+  video_statistic_id?: number
+  video_id: string
   views?: number
   title?: string
   thumbnail?: string
@@ -24,8 +24,8 @@ export class VideoStatistic {
     commentCount?: number,
     videoStatisticId?: number,
   ) {
-    this.videoStatisticId = videoStatisticId
-    this.videoId = videoId
+    this.video_statistic_id = videoStatisticId
+    this.video_id = videoId
     this.views = views
     this.title = title
     this.thumbnail = thumbnail

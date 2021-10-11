@@ -1,8 +1,8 @@
-import {connection} from '../Helper/DatabaseHelper'
-import {Channel} from '../Model/Channel'
-import {Video} from '../Model/Video'
-import {ChannelStatistic} from "../Model/ChannelStatistic";
-import {VideoStatistic} from "../Model/VideoStatistic";
+import { connection } from '../Helper/DatabaseHelper'
+import { Channel } from '../Model/Channel'
+import { Video } from '../Model/Video'
+import { ChannelStatistic } from '../Model/ChannelStatistic'
+import { VideoStatistic } from '../Model/VideoStatistic'
 
 export const setUpVideoTable = (): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
@@ -19,7 +19,7 @@ export const setUpVideoTable = (): Promise<boolean> => {
       err => {
         if (err) reject(err)
         resolve(true)
-      }
+      },
     )
   })
 }
@@ -47,7 +47,7 @@ export const setUpVideoStatisticTable = (): Promise<boolean> => {
       err => {
         if (err) reject(err)
         resolve(true)
-      }
+      },
     )
   })
 }
@@ -60,13 +60,13 @@ export const getVideoList = (): Promise<Video[]> => {
       (err, rows) => {
         if (err) reject(err)
         resolve(rows)
-      }
+      },
     )
   })
 }
 
 export const getVideoListByChannel = (channel: Channel | string): Promise<Video[]> => {
-  const channelId = channel instanceof Channel ? channel.channelId : channel
+  const channelId = channel instanceof Channel ? channel.channel_id : channel
 
   return new Promise<Video[]>((resolve, reject) => {
     connection.query(
@@ -76,13 +76,13 @@ export const getVideoListByChannel = (channel: Channel | string): Promise<Video[
       (err, rows) => {
         if (err) reject(err)
         resolve(rows)
-      }
+      },
     )
   })
 }
 
 export const getFiftyNewestVideosByChannel = (channel: Channel | string): Promise<Video[]> => {
-  const channelId = channel instanceof Channel ? channel.channelId : channel
+  const channelId = channel instanceof Channel ? channel.channel_id : channel
 
   return new Promise<Video[]>((resolve, reject) => {
     connection.query(
@@ -92,7 +92,7 @@ export const getFiftyNewestVideosByChannel = (channel: Channel | string): Promis
       (err, rows) => {
         if (err) reject(err)
         resolve(rows)
-      }
+      },
     )
   })
 }
@@ -101,12 +101,12 @@ export const createVideo = (video: Video): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO video(video_id, channel_id, upload_time, duration) VALUES (?, ?, ?, ?)',
-      [video.videoId, video.channelId, video.uploadTime, video.duration],
+      [video.video_id, video.channel_id, video.upload_time, video.duration],
 
       err => {
         if (err) reject(err)
         resolve(true)
-      }
+      },
     )
   })
 }
@@ -115,12 +115,12 @@ export const createVideoStatistic = (videoStatistic: VideoStatistic): Promise<bo
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO video_statistic(video_id, views, title, thumbnail, description, tags, likes, dislikes, favouriteCount, commentCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [videoStatistic.videoId, videoStatistic.views, videoStatistic.title, videoStatistic.thumbnail, videoStatistic.description, videoStatistic.tags, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
+      [videoStatistic.video_id, videoStatistic.views, videoStatistic.title, videoStatistic.thumbnail, videoStatistic.description, videoStatistic.tags, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
 
       err => {
         if (err) reject(err)
         resolve(true)
-      }
+      },
     )
   })
 }

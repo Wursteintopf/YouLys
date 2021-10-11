@@ -2,9 +2,9 @@ import { ChannelStatistic } from './ChannelStatistic'
 import { Video } from './Video'
 
 export class Channel {
-  channelId: string
+  channel_id: string
   tracked?: boolean
-  createdAt?: Date
+  created_at?: Date
   statistics?: ChannelStatistic[]
   videos?: Video[]
 
@@ -15,9 +15,9 @@ export class Channel {
     statistics?: ChannelStatistic[],
     videos?: Video[],
   ) {
-    this.channelId = channelId
+    this.channel_id = channelId
     this.tracked = tracked
-    this.createdAt = createdAt
+    this.created_at = createdAt
     this.statistics = statistics
     this.videos = videos
   }

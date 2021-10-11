@@ -65,7 +65,7 @@ export const createChannel = (channel: Channel): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO channel(channel_id, created_at) VALUES (?, ?)',
-      [channel.channelId, channel.createdAt],
+      [channel.channel_id, channel.created_at],
 
       err => {
         if (err) reject(err)
@@ -79,7 +79,7 @@ export const createChannelStatistic = (channelStatistic: ChannelStatistic): Prom
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO channel_statistic(channel_id, username, profile_picture, description, subscriber_count, subscriber_count_hidden, view_count, video_count, made_for_kids, trailer_video, keywords) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [channelStatistic.channelId, channelStatistic.username, channelStatistic.profilePicture, channelStatistic.description, channelStatistic.subscriberCount, channelStatistic.subscriberCountHidden, channelStatistic.viewCount, channelStatistic.videoCount, channelStatistic.madeForKids, channelStatistic.trailerVideo, channelStatistic.keywords],
+      [channelStatistic.channel_id, channelStatistic.username, channelStatistic.profile_picture, channelStatistic.description, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.made_for_kids, channelStatistic.trailer_video, channelStatistic.keywords],
 
       err => {
         if (err) reject(err)
@@ -93,7 +93,7 @@ export const getChannel = (channel: Channel): Promise<Channel> => {
   return new Promise<Channel>((resolve, reject) => {
     connection.query(
       'SELECT * FROM channel WHERE channel_id = ?',
-      [channel.channelId],
+      [channel.channel_id],
 
       (err, rows) => {
         if (err) reject(err)
@@ -115,7 +115,7 @@ export const updateChannel = (channel: Channel): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'UPDATE channel SET created_at = ? WHERE channel_id = ?',
-      [channel.createdAt, channel.channelId],
+      [channel.created_at, channel.channel_id],
 
       err => {
         if (err) reject(err)
@@ -129,7 +129,7 @@ export const deleteChannel = (channel: Channel): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'DELETE FROM channel WHERE channel_id = ?',
-      [channel.channelId],
+      [channel.channel_id],
 
       err => {
         if (err) reject(err)
