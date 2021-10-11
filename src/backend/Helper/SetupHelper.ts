@@ -1,5 +1,5 @@
-import {setUpChannelStatisticsTable, setUpChannelTable} from '../Database/ChannelQueries'
-import {setUpVideoStatisticTable, setUpVideoTable} from '../Database/VideoQueries'
+import { setUpChannelStatisticsTable, setUpChannelTable } from '../Database/ChannelQueries'
+import { setUpVideoStatisticTable, setUpVideoTable } from '../Database/VideoQueries'
 
 async function setUpTables () {
   await setUpChannelTable()

@@ -1,6 +1,6 @@
 export class VideoStatistic {
-  video_statistic_id?: number
-  video_id: string
+  videoStatisticId?: number
+  videoId: string
   views?: number
   title?: string
   thumbnail?: string
@@ -11,8 +11,8 @@ export class VideoStatistic {
   favouriteCount?: number
   commentCount?: number
 
-  constructor(
-    video_id: string,
+  constructor (
+    videoId: string,
     views?: number,
     title?: string,
     thumbnail?: string,
@@ -22,10 +22,10 @@ export class VideoStatistic {
     dislikes?: number,
     favouriteCount?: number,
     commentCount?: number,
-    video_statistic_id?: number
+    videoStatisticId?: number,
   ) {
-    this.video_statistic_id = video_statistic_id
-    this.video_id = video_id
+    this.videoStatisticId = videoStatisticId
+    this.videoId = videoId
     this.views = views
     this.title = title
     this.thumbnail = thumbnail

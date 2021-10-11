@@ -1,13 +1,13 @@
-import {Channel} from "../Model/Channel";
-import config from "../Config";
-import {createChannelStatistic} from "../Database/ChannelQueries";
-import {ChannelStatistic} from "../Model/ChannelStatistic";
+import { Channel } from '../Model/Channel'
+import config from '../Config'
+import { createChannelStatistic } from '../Database/ChannelQueries'
+import { ChannelStatistic } from '../Model/ChannelStatistic'
 import fetch from 'node-fetch'
 
 const API_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
 
 export const callChannelStatistics = async (channel: Channel | string) => {
-  const channelId = channel instanceof Channel ? channel.channel_id : channel
+  const channelId = channel instanceof Channel ? channel.channelId : channel
 
   const part = 'part=snippet,statistics,status,brandingSettings'
   const id = `id=${channelId}`
@@ -31,6 +31,6 @@ export const callChannelStatistics = async (channel: Channel | string) => {
     channelData.statistics.videoCount,
     channelData.status.madeForKids,
     channelData.brandingSettings.channel.unsubscribedTrailer,
-    channelData.brandingSettings.channel.keywords
+    channelData.brandingSettings.channel.keywords,
   ))
 }

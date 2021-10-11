@@ -39,6 +39,7 @@ export const setUpVideoStatisticTable = (): Promise<boolean> => {
         'dislikes INT,' +
         'favouriteCount INT,' +
         'commentCount INT,' +
+        'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
         'PRIMARY KEY (video_statistic_id),' +
         'FOREIGN KEY (video_id) REFERENCES video(video_id)' +
       ')',
@@ -65,7 +66,7 @@ export const getVideoList = (): Promise<Video[]> => {
 }
 
 export const getVideoListByChannel = (channel: Channel | string): Promise<Video[]> => {
-  const channelId = channel instanceof Channel ? channel.channel_id : channel
+  const channelId = channel instanceof Channel ? channel.channelId : channel
 
   return new Promise<Video[]>((resolve, reject) => {
     connection.query(
@@ -81,7 +82,7 @@ export const getVideoListByChannel = (channel: Channel | string): Promise<Video[
 }
 
 export const getFiftyNewestVideosByChannel = (channel: Channel | string): Promise<Video[]> => {
-  const channelId = channel instanceof Channel ? channel.channel_id : channel
+  const channelId = channel instanceof Channel ? channel.channelId : channel
 
   return new Promise<Video[]>((resolve, reject) => {
     connection.query(
@@ -100,7 +101,7 @@ export const createVideo = (video: Video): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO video(video_id, channel_id, upload_time, duration) VALUES (?, ?, ?, ?)',
-      [video.video_id, video.channel_id, video.upload_time, video.duration],
+      [video.videoId, video.channelId, video.uploadTime, video.duration],
 
       err => {
         if (err) reject(err)
@@ -114,7 +115,7 @@ export const createVideoStatistic = (videoStatistic: VideoStatistic): Promise<bo
   return new Promise<boolean>((resolve, reject) => {
     connection.query(
       'INSERT INTO video_statistic(video_id, views, title, thumbnail, description, tags, likes, dislikes, favouriteCount, commentCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [videoStatistic.video_id, videoStatistic.views, videoStatistic.title, videoStatistic.thumbnail, videoStatistic.description, videoStatistic.tags, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
+      [videoStatistic.videoId, videoStatistic.views, videoStatistic.title, videoStatistic.thumbnail, videoStatistic.description, videoStatistic.tags, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
 
       err => {
         if (err) reject(err)
