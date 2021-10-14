@@ -32,6 +32,7 @@ module.exports = {
   ],
   rules: {
     'no-use-before-define': [0],
+    '@typescript-eslint/ban-ts-comment': 'off',
     camelcase: 'off',
     '@typescript-eslint/no-use-before-define': [1],
     'no-unused-vars': 'off',

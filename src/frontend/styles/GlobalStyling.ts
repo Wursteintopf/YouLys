@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
+import themeVariables from './themeVariables'
 
 export const globalStyles = css`
   * {
@@ -15,8 +16,9 @@ export const globalStyles = css`
   body {
     height: 100%;
     box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    font-size: ${themeVariables.fontSizeRegular};
+    background-color: ${themeVariables.colorLightGrey};
     margin: 0;
     padding: 0;
   }
@@ -30,4 +32,15 @@ export const globalStyles = css`
       outline: 0;
     }
   }
+`
+
+export const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+`
+
+export const ContentContainer = styled.div`
+  margin: 0 auto;
+  width: ${themeVariables.pageWidth}px;
 `

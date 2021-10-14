@@ -3,21 +3,28 @@ const mainColors = {
   colorOrange: '#FDBC4E',
   colorDarkGrey: '#444444',
   colorLightGrey: '#F1F1F1',
-  colorWhite: '#e29578',
+  colorWhite: '#FFFFFF',
+
+  colorBlack: '#000000',
 }
 
 const fontSizes = {
   fontSizeRegular: 16,
   fontSizeHeadings: 31,
+
+  fontWeightRegular: 400,
+  fontWeightBold: 600,
 }
 
 const spacings = {
-  spacingS: 5,
+  spacingS: 10,
   spacingM: 20,
   spacingL: 40,
   spacingXL: 80,
 
   headerHeight: 70,
+  heroTeaserHeight: 500,
+  pageWidth: 1200,
 }
 
 const breakPoints = {
