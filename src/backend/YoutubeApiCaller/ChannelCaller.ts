@@ -34,5 +34,7 @@ export const callChannelStatistics = async (channelRepository: ChannelRepository
     keywords: channelData.brandingSettings.channel.keywords,
   })
 
+  // TODO: Created at in der Channels Tabelle updaten
+
   await channelRepository.saveStatistic(statistic)
 }

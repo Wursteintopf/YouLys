@@ -9,7 +9,6 @@ import moment from 'moment'
 import StaticDatePicker from '@mui/lab/StaticDatePicker'
 import { LocalizationProvider } from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterMoment'
-import { Headline } from '../Headline/Headline'
 
 const TimePicker: React.FC = () => {
   const range = useSelector(getRange)
@@ -28,16 +27,36 @@ const TimePicker: React.FC = () => {
     return document.getElementById('time-picker') as Element
   }
 
+  const setRangeAndFromTo = (event) => {
+    dispatch(setRange(event.target.value))
+
+    switch (event.target.value) {
+      case TimeRange.LAST_7_DAYS:
+        dispatch(setFrom(moment().subtract(7, 'days').toDate()))
+        dispatch(setTo(new Date()))
+        break
+      case TimeRange.LAST_28_DAYS:
+        dispatch(setFrom(moment().subtract(28, 'days').toDate()))
+        dispatch(setTo(new Date()))
+        break
+      case TimeRange.LAST_90_DAYS:
+        dispatch(setFrom(moment().subtract(90, 'days').toDate()))
+        dispatch(setTo(new Date()))
+        break
+      case TimeRange.LAST_365_DAYS:
+        dispatch(setFrom(moment().subtract(365, 'days').toDate()))
+        dispatch(setTo(new Date()))
+        break
+    }
+  }
+
   return (
     <>
       <TimePickerStyled
         id='time-picker'
         value={range}
         size='small'
-        onChange={event => {
-          // @ts-ignore
-          dispatch(setRange(event.target.value))
-        }}
+        onChange={setRangeAndFromTo}
         // @ts-ignore
         renderValue={selected => selected === TimeRange.CUSTOM ? (moment(from).format('DD.MM.YYYY') + ' - ' + moment(to).format('DD.MM.YYYY')) : selected}
       >
@@ -45,8 +64,6 @@ const TimePicker: React.FC = () => {
         <MenuItem value={TimeRange.LAST_28_DAYS}>letzte 28 Tage</MenuItem>
         <MenuItem value={TimeRange.LAST_90_DAYS}>letzte 90 Tage</MenuItem>
         <MenuItem value={TimeRange.LAST_365_DAYS}>letzte 365 Tage</MenuItem>
-        <Divider />
-        <MenuItem value={TimeRange.ALWAYS}>Seit Beobachtung</MenuItem>
         <Divider />
         <MenuItem
           value={TimeRange.CUSTOM}

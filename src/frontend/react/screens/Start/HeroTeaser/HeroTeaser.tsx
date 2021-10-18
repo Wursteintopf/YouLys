@@ -10,6 +10,7 @@ import { Title } from '../../../components/Title/Title'
 import Button from '../../../components/Button/Button'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useHistory } from 'react-router'
+import themeVariables from '../../../../styles/themeVariables'
 
 const HeroTeaser: React.FC = () => {
   const history = useHistory()

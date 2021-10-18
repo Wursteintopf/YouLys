@@ -13,7 +13,7 @@ const ContentBox: React.FC<ContentBoxProps> = props => {
   return (
     <ContentBoxStyled>
       <Headline>{props.title}</Headline>
-      <Card style={{ marginTop: themeVariables.spacingS }}>
+      <Card style={{ marginTop: themeVariables.spacingS, color: themeVariables.colorDarkGrey, overflow: 'visible' }}>
         <CardContent>
           {props.children}
         </CardContent>

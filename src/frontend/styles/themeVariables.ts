@@ -9,6 +9,7 @@ const mainColors = {
 }
 
 const fontSizes = {
+  fontSizeSmall: 12,
   fontSizeRegular: 16,
   fontSizeHeadings: 31,
 

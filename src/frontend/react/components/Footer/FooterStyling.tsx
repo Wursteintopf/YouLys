@@ -2,10 +2,15 @@ import styled from '@emotion/styled'
 import themeVariables from '../../../styles/themeVariables'
 
 export const FooterStyled = styled.div`
-  height: ${themeVariables.headerHeight}px;
-  background-color: ${themeVariables.colorBlue};
   color: ${themeVariables.colorWhite};
   margin-top: auto;
+  padding-top: ${themeVariables.spacingL}px;
+  overflow: hidden;
+`
+
+export const FooterWrapper = styled.div`
+  height: ${themeVariables.headerHeight}px;
+  background-color: ${themeVariables.colorBlue};
 `
 
 export const FooterContainer = styled.div`

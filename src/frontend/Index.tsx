@@ -50,21 +50,19 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <Global styles={globalStyles} />
 
-          <ContentWrapper>
-            <Header />
+          <Header />
 
-            <Route exact path='/' component={Start} />
-            <Route path='/success' component={Erfolgsfaktoren} />
-            <Route path='/channels' component={Kanalliste} />
-            <Route path='/channeldetails' component={Kanaldetailseite} />
-            <Route path='/videos' component={Videoliste} />
-            <Route path='/videodetails' component={Videodetailseite} />
-            <Route path='/impressum' component={Impressum} />
-            <Route path='/datenschutz' component={Datenschutz} />
-            <Route path='/explanation' component={Erklärung} />
+          <Route exact path='/' component={Start} />
+          <Route path='/success' component={Erfolgsfaktoren} />
+          <Route path='/channels' component={Kanalliste} />
+          <Route path='/channeldetails' component={Kanaldetailseite} />
+          <Route path='/videos' component={Videoliste} />
+          <Route path='/videodetails' component={Videodetailseite} />
+          <Route path='/impressum' component={Impressum} />
+          <Route path='/datenschutz' component={Datenschutz} />
+          <Route path='/explanation' component={Erklärung} />
 
-            <Footer />
-          </ContentWrapper>
+          <Footer />
         </ThemeProvider>
       </Router>
     </Provider>

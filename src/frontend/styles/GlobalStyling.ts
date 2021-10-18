@@ -6,6 +6,14 @@ export const globalStyles = css`
   * {
     box-sizing: border-box;
   }
+  
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-height: min-content;
+    overflow: hidden;
+  }
 
   html {
     height: 100%;

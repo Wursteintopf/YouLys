@@ -17,3 +17,8 @@ export const getTo = createSelector(
   selectUi,
   state => state.to,
 )
+
+export const getFetching = createSelector(
+  selectUi,
+  state => state.fetching,
+)

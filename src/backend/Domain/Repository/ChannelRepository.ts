@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { connection } from '../../Helper/DatabaseHelper'
 import { Channel } from '../Model/Channel'
 import { ChannelStatistic } from '../Model/ChannelStatistic'
@@ -43,6 +44,14 @@ export class ChannelRepository {
     )
   }
 
+  protected convertQueryRowsToChannelModel = (rows): Channel[] => {
+    const channels: Channel[] = []
+    rows.forEach(row => {
+      channels.push(new Channel(row))
+    })
+    return channels
+  }
+
   constructor () {
     this.setUpChannelTable()
     this.setUpChannelStatisticsTable()
@@ -71,6 +80,30 @@ export class ChannelRepository {
     })
   }
 
+  getByIdWithStatsInRange = (channel_id: string, from: Date, to: Date): Promise<Channel> => {
+    return new Promise<Channel>((resolve, reject) => {
+      connection.query(
+        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND (timestamp BETWEEN ? AND ?)',
+        [channel_id, moment(from).format('YYYY-MM-DD HH:mm:ss'), moment(to).format('YYYY-MM-DD HH:mm:ss')],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows.length > 0) {
+            const channel = new Channel(rows[0])
+            rows.forEach(row => {
+              const statistic = new ChannelStatistic(row)
+              if (channel.statistics) channel.statistics = [...channel.statistics, statistic]
+              else channel.statistics = [statistic]
+            })
+            resolve(channel)
+          } else {
+            reject(new Error('There is no Channel with this ID'))
+          }
+        },
+      )
+    })
+  }
+
   public getAll = (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
@@ -78,11 +111,27 @@ export class ChannelRepository {
 
         (err, rows) => {
           if (err) reject(err)
+          resolve(this.convertQueryRowsToChannelModel(rows))
+        },
+      )
+    })
+  }
+
+  public getAllWithNewestStats = async (): Promise<Channel[]> => {
+    return new Promise<Channel[]>((resolve, reject) => {
+      connection.query(
+        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE timestamp = (SELECT timestamp FROM channel_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY channel_statistic.subscriber_count DESC',
+
+        async (err, rows) => {
+          if (err) reject(err)
           const channels: Channel[] = []
-          rows.forEach(row => {
+          await Promise.all(rows.map(row => {
+            const statistic = new ChannelStatistic(row)
             const channel = new Channel(row)
+            channel.statistics = [statistic]
             channels.push(channel)
-          })
+            return true
+          }))
           resolve(channels)
         },
       )
