@@ -5,6 +5,9 @@ import morgan from 'morgan'
 import channelRouter from './Router/ChannelRouter'
 import { ChannelRepository } from './Domain/Repository/ChannelRepository'
 import { VideoRepository } from './Domain/Repository/VideoRepository'
+import https from 'https'
+import fs from 'fs'
+import config from './Config'
 
 export const channelRepository = new ChannelRepository()
 export const videoRepository = new VideoRepository()
@@ -18,6 +21,13 @@ app.use(morgan('dev'))
 
 app.use('/channel', channelRouter)
 
-app.listen(3001, () => {
-  console.log('Listening on port 3001.')
-})
+if (config.httpsConfig.https) {
+  https.createServer({
+    key: fs.readFileSync(config.httpsConfig.keyPath),
+    cert: fs.readFileSync(config.httpsConfig.certPath),
+  }, app).listen(config.httpsConfig.port)
+} else {
+  app.listen(3001, () => {
+    console.log('Listening on port 3001.')
+  })
+}

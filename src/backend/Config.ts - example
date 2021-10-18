@@ -8,9 +8,17 @@ const databaseConfig = {
 
 const apiKey = 'PUT_YOUR_API_KEY_HERE'
 
+const httpsConfig = {
+  https: false,
+  keyPath: '',
+  certPath: '',
+  port: '',
+}
+
 const config = {
   databaseConfig: databaseConfig,
-  apiKey: apiKey
+  apiKey: apiKey,
+  httpsConfig: httpsConfig,
 }
 
 export default config
