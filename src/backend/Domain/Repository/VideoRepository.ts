@@ -126,6 +126,25 @@ export class VideoRepository {
     })
   }
 
+  public getByChannelInRangeWithNewestStats = (channelId: string, from: Date, to: Date): Promise<Video[]> => {
+    return new Promise<Video[]>((resolve, reject) => {
+      connection.query(
+        'SELECT video.channel_id, video.duration, video.upload_time, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY upload_time DESC',
+        [channelId, from, to],
+
+        (err, rows) => {
+          if (err) reject(err)
+          resolve(Promise.all(rows.map(row => {
+            const video = new Video(row)
+            const statistic = new VideoStatistic(row)
+            video.statistics = [statistic]
+            return video
+          })))
+        },
+      )
+    })
+  }
+
   /**
    * Methods to save/create/update Videos / Videostatistics
    */

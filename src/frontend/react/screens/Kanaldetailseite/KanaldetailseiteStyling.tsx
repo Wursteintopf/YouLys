@@ -16,6 +16,15 @@ export const ChannelDetailsProfilePicture = styled.div`
   }
 `
 
+export const ChannelDetailsName = styled.div`
+  
+`
+
+export const ChannelDetailsLink = styled.a`
+  font-size: ${themeVariables.fontSizeSmall}px;
+  color: ${themeVariables.colorBlue};
+`
+
 export const ChannelDetailOverview = styled.div`
   display: flex;
   align-items: center;

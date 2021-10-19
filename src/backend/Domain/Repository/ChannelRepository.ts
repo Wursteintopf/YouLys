@@ -86,15 +86,16 @@ export class ChannelRepository {
         'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND (timestamp BETWEEN ? AND ?)',
         [channel_id, moment(from).format('YYYY-MM-DD HH:mm:ss'), moment(to).format('YYYY-MM-DD HH:mm:ss')],
 
-        (err, rows) => {
+        async (err, rows) => {
           if (err) reject(err)
           if (rows.length > 0) {
             const channel = new Channel(rows[0])
-            rows.forEach(row => {
+            await Promise.all(rows.map(row => {
               const statistic = new ChannelStatistic(row)
               if (channel.statistics) channel.statistics = [...channel.statistics, statistic]
               else channel.statistics = [statistic]
-            })
+              return true
+            }))
             resolve(channel)
           } else {
             reject(new Error('There is no Channel with this ID'))
@@ -117,22 +118,19 @@ export class ChannelRepository {
     })
   }
 
-  public getAllWithNewestStats = async (): Promise<Channel[]> => {
+  public getAllWithNewestStats = (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
         'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE timestamp = (SELECT timestamp FROM channel_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY channel_statistic.subscriber_count DESC',
 
         async (err, rows) => {
           if (err) reject(err)
-          const channels: Channel[] = []
-          await Promise.all(rows.map(row => {
+          resolve(Promise.all(rows.map(row => {
             const statistic = new ChannelStatistic(row)
             const channel = new Channel(row)
             channel.statistics = [statistic]
-            channels.push(channel)
-            return true
-          }))
-          resolve(channels)
+            return channel
+          })))
         },
       )
     })

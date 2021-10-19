@@ -9,7 +9,11 @@ import { getFetching, getFrom, getRange, getTo } from '../../../store/ui/ui.sele
 import { getCurrentChannel } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
-import { ChannelDetailOverview, ChannelDetailsProfilePicture, ChannelHeader } from './KanaldetailseiteStyling'
+import {
+  ChannelDetailOverview, ChannelDetailsLink, ChannelDetailsName,
+  ChannelDetailsProfilePicture,
+  ChannelHeader,
+} from './KanaldetailseiteStyling'
 import {
   ChannelListClicks,
   ChannelListSmallText,
@@ -21,6 +25,7 @@ import ToolTip from '../../components/ToolTip/ToolTip'
 import LineChart from '../../components/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
+import VideoList from '../../components/VideoList/VideoList'
 
 const Kanaldetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -40,14 +45,15 @@ const Kanaldetailseite: React.FC = () => {
   return (
     <>
       <SubHeader>
-        <Headline>
-          <ChannelHeader>
-            <ChannelDetailsProfilePicture>
-              <img src={channel.statistics[0].profile_picture} />
-            </ChannelDetailsProfilePicture>
-            {channel.statistics[0].username}
-          </ChannelHeader>
-        </Headline>
+        <ChannelHeader>
+          <ChannelDetailsProfilePicture>
+            <img src={channel.statistics[0].profile_picture} />
+          </ChannelDetailsProfilePicture>
+          <ChannelDetailsName>
+            <Headline>{channel.statistics[0].username}</Headline>
+            <ChannelDetailsLink href={'https://www.youtube.com/channel/' + channel.channel_id}>Zum Youtube Kanal</ChannelDetailsLink>
+          </ChannelDetailsName>
+        </ChannelHeader>
       </SubHeader>
 
       <ContentContainer>
@@ -82,6 +88,12 @@ const Kanaldetailseite: React.FC = () => {
           </ContentBox>
         </ContentBoxWrapper>
 
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Neue Videos'>
+            {(channel.videos && channel.videos.length > 0) ? <VideoList all={false} videos={channel.videos.slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+          </ContentBox>
+        </ContentBoxWrapper>
+
         <ContentBoxWrapper amountOfChildren={2}>
           <ContentBox title='Aufrufe'>
             {
@@ -89,7 +101,7 @@ const Kanaldetailseite: React.FC = () => {
                 ? <Progress />
                 : <LineChart
                     values={channel.statistics.map(stat => stat.view_count ? stat.view_count : 0)}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).toDate())}
+                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
           </ContentBox>
@@ -99,7 +111,7 @@ const Kanaldetailseite: React.FC = () => {
                 ? <Progress />
                 : <LineChart
                     values={channel.statistics.map(stat => stat.subscriber_count ? stat.subscriber_count : 0)}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).toDate())}
+                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
           </ContentBox>
@@ -111,13 +123,13 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                  values={channel.statistics.map((stat, index) => {
-                    if (index === 0 || !stat.view_count || !channel.statistics || !channel.statistics[index - 1].view_count) return 0
-                    // @ts-ignore
-                    else return stat.view_count - channel.statistics[index - 1].view_count
-                  })}
-                  timeValues={channel.statistics.map(s => moment(s.timestamp).toDate())}
-                />
+                    values={channel.statistics.map((stat, index) => {
+                      if (index === 0 || !stat.view_count || !channel.statistics || !channel.statistics[index - 1].view_count) return 0
+                      // @ts-ignore
+                      else return stat.view_count - channel.statistics[index - 1].view_count
+                    })}
+                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                  />
             }
           </ContentBox>
           <ContentBox title='Neue Abonennten'>
@@ -125,13 +137,13 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                  values={channel.statistics.map((stat, index) => {
-                    if (index === 0 || !stat.subscriber_count || !channel.statistics || !channel.statistics[index - 1].subscriber_count) return 0
-                    // @ts-ignore
-                    else return stat.subscriber_count - channel.statistics[index - 1].subscriber_count
-                  })}
-                  timeValues={channel.statistics.map(s => moment(s.timestamp).toDate())}
-                />
+                    values={channel.statistics.map((stat, index) => {
+                      if (index === 0 || !stat.subscriber_count || !channel.statistics || !channel.statistics[index - 1].subscriber_count) return 0
+                      // @ts-ignore
+                      else return stat.subscriber_count - channel.statistics[index - 1].subscriber_count
+                    })}
+                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                  />
             }
           </ContentBox>
         </ContentBoxWrapper>

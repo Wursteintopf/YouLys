@@ -7,6 +7,7 @@ import themeVariables from '../../../styles/themeVariables'
 import { useSelector } from 'react-redux'
 import { getFrom, getTo } from '../../../store/ui/ui.selector'
 import numberFormatter from '../../../util/numberFormatter'
+import moment from 'moment'
 
 interface LineChartProps {
   values: number[]
@@ -20,13 +21,11 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const height = 300
   const width = 548
 
-  const spacingLeft = 55
+  const spacingLeft = 65
   const spacingBottom = 20
 
-  console.log(props.values)
-
   const y = useMemo(() => {
-    return scaleLinear().domain([min(props.values), max(props.values)]).range([height - spacingBottom, 10])
+    return scaleLinear().domain([min(props.values), max(props.values)]).range([height - spacingBottom - 30, 30])
   }, [props])
 
   const x = useMemo(() => {
@@ -92,7 +91,15 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       {
         yTicks.map((tick) => {
           return (
-            <text key={tick} transform={`translate(45,${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey} fontSize={themeVariables.fontSizeSmall}>{numberFormatter(tick)}</text>
+            <text key={tick} transform={`translate(55,${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey} fontSize={themeVariables.fontSizeSmall}>{numberFormatter(tick, 1)}</text>
+          )
+        })
+      }
+
+      {
+        xTicks.map((tick) => {
+          return (
+            <text key={tick.toString()} transform={`translate(${x(tick)},${height - spacingBottom + 20})`} textAnchor='middle' fill={themeVariables.colorDarkGrey} fontSize={themeVariables.fontSizeSmall}>{moment(tick).format('DD.MM')}</text>
           )
         })
       }

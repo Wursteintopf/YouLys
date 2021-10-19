@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { channelRepository } from '../Api'
+import { channelRepository, videoRepository } from '../Api'
 import { StatusCodes } from '../../shared/Enums/StatusCodes'
 import { TimeRange } from '../../shared/Enums/TimeRange'
 import moment from 'moment'
@@ -46,12 +46,25 @@ channelRouter.post('/getChannelWithStatsInRange', (req, res) => {
       status: StatusCodes.INSUFFICIENT_DATA_PROVIDED,
     })
   } else {
-    channelRepository.getByIdWithStatsInRange(req.body.channelId, moment(req.body.from).subtract(2, 'days').toDate(), new Date(req.body.to))
-      .then(channels => {
-        res.send({
-          status: StatusCodes.SUCCESS,
-          result: channels,
-        })
+    const from = moment(req.body.from).subtract(1, 'days').toDate()
+    const to = moment(req.body.to).add(1, 'days').toDate()
+
+    channelRepository.getByIdWithStatsInRange(req.body.channelId, from, to)
+      .then(channel => {
+        videoRepository.getByChannelInRangeWithNewestStats(channel.channel_id, from, to)
+          .then(videos => {
+            channel.videos = videos
+            res.send({
+              status: StatusCodes.SUCCESS,
+              result: channel,
+            })
+          })
+          .catch(err => {
+            console.log(err)
+            res.send({
+              status: StatusCodes.UNKNOWN_SERVER_ERROR,
+            })
+          })
       })
       .catch(err => {
         console.log(err)

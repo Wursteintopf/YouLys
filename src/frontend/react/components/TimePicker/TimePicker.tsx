@@ -32,20 +32,20 @@ const TimePicker: React.FC = () => {
 
     switch (event.target.value) {
       case TimeRange.LAST_7_DAYS:
-        dispatch(setFrom(moment().subtract(7, 'days').toDate()))
-        dispatch(setTo(new Date()))
+        dispatch(setFrom(moment().subtract(7, 'days').startOf('day').toDate()))
+        dispatch(setTo(moment().startOf('day').toDate()))
         break
       case TimeRange.LAST_28_DAYS:
-        dispatch(setFrom(moment().subtract(28, 'days').toDate()))
-        dispatch(setTo(new Date()))
+        dispatch(setFrom(moment().subtract(28, 'days').startOf('day').toDate()))
+        dispatch(setTo(moment().startOf('day').toDate()))
         break
       case TimeRange.LAST_90_DAYS:
-        dispatch(setFrom(moment().subtract(90, 'days').toDate()))
-        dispatch(setTo(new Date()))
+        dispatch(setFrom(moment().subtract(90, 'days').startOf('day').toDate()))
+        dispatch(setTo(moment().startOf('day').toDate()))
         break
       case TimeRange.LAST_365_DAYS:
-        dispatch(setFrom(moment().subtract(365, 'days').toDate()))
-        dispatch(setTo(new Date()))
+        dispatch(setFrom(moment().subtract(365, 'days').startOf('day').toDate()))
+        dispatch(setTo(moment().startOf('day').toDate()))
         break
     }
   }
