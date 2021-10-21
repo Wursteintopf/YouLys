@@ -10,4 +10,5 @@ export interface VideoStatisticInterface {
   dislikes?: number
   favouriteCount?: number
   commentCount?: number
+  timestamp?: Date
 }

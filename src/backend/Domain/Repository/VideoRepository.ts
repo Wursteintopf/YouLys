@@ -145,6 +145,31 @@ export class VideoRepository {
     })
   }
 
+  public getByIdWithStatsInRange = (videoId: string, from: Date, to: Date): Promise<Video> => {
+    return new Promise<Video>((resolve, reject) => {
+      connection.query(
+        'SELECT video.channel_id, video.duration, video.upload_time, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE video.video_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
+        [videoId, from, to],
+
+        async (err, rows) => {
+          if (err) reject(err)
+          if (rows.length >= 1) {
+            const video = new Video(rows[0])
+            await Promise.all(rows.map(row => {
+              const statistic = new VideoStatistic(row)
+              if (video.statistics) video.statistics = [...video.statistics, statistic]
+              else video.statistics = [statistic]
+              return true
+            }))
+            resolve(video)
+          } else {
+            reject(new Error('No video with this id found'))
+          }
+        }
+      )
+    })
+  }
+
   /**
    * Methods to save/create/update Videos / Videostatistics
    */

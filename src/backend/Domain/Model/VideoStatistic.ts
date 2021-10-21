@@ -12,6 +12,7 @@ export class VideoStatistic implements VideoStatisticInterface {
   dislikes?: number
   favouriteCount?: number
   commentCount?: number
+  timestamp?: Date
 
   constructor (props: VideoStatisticInterface) {
     this.video_statistic_id = props.video_statistic_id
@@ -25,5 +26,6 @@ export class VideoStatistic implements VideoStatisticInterface {
     this.dislikes = props.dislikes
     this.favouriteCount = props.favouriteCount
     this.commentCount = props.commentCount
+    this.timestamp = props.timestamp
   }
 }
