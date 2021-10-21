@@ -4,7 +4,6 @@ import fetch from 'node-fetch'
 import { Video } from '../Domain/Model/Video'
 import { VideoStatistic } from '../Domain/Model/VideoStatistic'
 import { VideoRepository } from '../Domain/Repository/VideoRepository'
-import { videoRepository } from '../Api'
 
 const API_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
 const MAX_RESULTS = 50
@@ -31,7 +30,7 @@ export const callFiftyNewestVideosOfChannel = async (videoRepository: VideoRepos
   if (notAddedVideos && notAddedVideos.length > 0) {
     notAddedVideos.forEach(video => {
       const newVideo = new Video({
-        video_id: video.resourceId.video_id,
+        video_id: video.resourceId.videoId,
         channel_id: video.channelId,
         upload_time: video.publishedAt,
         duration: 0,
@@ -42,7 +41,7 @@ export const callFiftyNewestVideosOfChannel = async (videoRepository: VideoRepos
 }
 
 // TODO: Update duration of video, if necessary
-export const callVideoStatistics = async (video: Video | string) => {
+export const callVideoStatistics = async (videoRepository: VideoRepository, video: Video | string) => {
   const videoId = video instanceof Video ? video.video_id : video
 
   const part = 'part=snippet,statistics,status'

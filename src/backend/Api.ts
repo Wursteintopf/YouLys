@@ -8,7 +8,7 @@ import { VideoRepository } from './Domain/Repository/VideoRepository'
 import https from 'https'
 import fs from 'fs'
 import config from './Config'
-import videoRouter from "./Router/VideoRouter";
+import videoRouter from './Router/VideoRouter'
 
 export const channelRepository = new ChannelRepository()
 export const videoRepository = new VideoRepository()

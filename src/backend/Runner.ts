@@ -9,19 +9,25 @@ const run = async () => {
 
   const channels = await channelRepository.getAll()
 
-  channels.forEach(channel => {
-    callChannelStatistics(channelRepository, channel.channel_id)
+  await Promise.all(channels.map(async channel => {
+    await callChannelStatistics(channelRepository, channel.channel_id)
 
-    callFiftyNewestVideosOfChannel(videoRepository, channel.channel_id)
-      .then(() => {
-        videoRepository.getFiftyNewestByChannel(channel.channel_id)
-          .then((videos) => {
-            videos.forEach(video => {
-              callVideoStatistics(video.video_id)
-            })
-          })
-      })
-  })
+    await callFiftyNewestVideosOfChannel(videoRepository, channel.channel_id)
+    const videos = await videoRepository.getFiftyNewestByChannel(channel.channel_id)
+
+    await Promise.all(videos.map(async video => {
+      await callVideoStatistics(videoRepository, video.video_id)
+      return true
+    }))
+  }))
 }
 
 run()
+  .then(() => {
+    console.log('Successfully called Data')
+    process.exit(1)
+  })
+  .catch(err => {
+    console.log(err)
+    process.exit(0)
+  })

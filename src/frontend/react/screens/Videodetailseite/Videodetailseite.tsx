@@ -82,9 +82,9 @@ const Videodetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                  values={video.statistics.map(stat => stat.views ? stat.views : 0)}
-                  timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
-                />
+                    values={video.statistics.map(stat => stat.views ? stat.views : 0)}
+                    timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                  />
             }
           </ContentBox>
           <ContentBox title='Neue Aufrufe'>
