@@ -165,7 +165,7 @@ export class VideoRepository {
           } else {
             reject(new Error('No video with this id found'))
           }
-        }
+        },
       )
     })
   }

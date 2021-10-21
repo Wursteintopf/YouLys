@@ -16,6 +16,13 @@ export const ChannelDetailsProfilePicture = styled.div`
   }
 `
 
+export const VideoDetailsProfilePicture = styled.div`
+  margin-right: ${themeVariables.spacingM}px;
+  img {
+    height: 50px;
+  }
+`
+
 export const ChannelDetailsName = styled.div`
   
 `

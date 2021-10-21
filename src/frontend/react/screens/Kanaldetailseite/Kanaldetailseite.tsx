@@ -100,7 +100,7 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.map(stat => stat.view_count ? stat.view_count : 0)}
+                    values={channel.statistics.reverse().map(stat => stat.view_count ? stat.view_count : 0)}
                     timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
@@ -110,7 +110,7 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.map(stat => stat.subscriber_count ? stat.subscriber_count : 0)}
+                    values={channel.statistics.reverse().map(stat => stat.subscriber_count ? stat.subscriber_count : 0)}
                     timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
@@ -123,7 +123,7 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.map((stat, index) => {
+                    values={channel.statistics.reverse().map((stat, index) => {
                       if (index === 0 || !stat.view_count || !channel.statistics || !channel.statistics[index - 1].view_count) return 0
                       // @ts-ignore
                       else return stat.view_count - channel.statistics[index - 1].view_count

@@ -18,15 +18,25 @@ import {
 } from '../Kanalliste/KanallisteStyling'
 import numberFormatter from '../../../util/numberFormatter'
 import ToolTip from '../../components/ToolTip/ToolTip'
-import { ChannelDetailOverview } from '../Kanaldetailseite/KanaldetailseiteStyling'
+import {
+  ChannelDetailOverview,
+  ChannelDetailsLink,
+  ChannelDetailsName, ChannelDetailsProfilePicture, ChannelHeader, VideoDetailsProfilePicture,
+} from '../Kanaldetailseite/KanaldetailseiteStyling'
 import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { AllVideosButton } from '../../components/VideoList/VideoListStyling'
+import { useHistory } from 'react-router'
+import { Button } from '@mui/material'
+import themeVariables from '../../../styles/themeVariables'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
   const to = useSelector(getTo)
   const fetching = useSelector(getFetching)
   const video = useSelector(getCurrentVideo)
+  const history = useHistory()
 
   const dispatch = useDispatch()
 
@@ -40,9 +50,15 @@ const Videodetailseite: React.FC = () => {
   return (
     <>
       <SubHeader>
-        <Headline>
-          {video.statistics[0].title}
-        </Headline>
+        <ChannelHeader>
+          <VideoDetailsProfilePicture>
+            <img src={video.statistics[0].thumbnail} />
+          </VideoDetailsProfilePicture>
+          <ChannelDetailsName>
+            <Headline>{video.statistics[0].title}</Headline>
+            <ChannelDetailsLink href={'https://www.youtube.com/watch?v=' + video.video_id}>Zum YouTube Video</ChannelDetailsLink>
+          </ChannelDetailsName>
+        </ChannelHeader>
       </SubHeader>
 
       <ContentContainer>
@@ -82,13 +98,24 @@ const Videodetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={video.statistics.map(stat => stat.views ? stat.views : 0)}
+                    values={video.statistics.reverse().map(stat => stat.views ? stat.views : 0)}
                     timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
           </ContentBox>
           <ContentBox title='Neue Aufrufe'>
-            Lorem
+            {
+              fetching
+                ? <Progress />
+                : <LineChart
+                    values={video.statistics.map((stat, index) => {
+                      if (!stat.views || index === 0 || !video.statistics || !video.statistics[index - 1].views) return 0
+                      // @ts-ignore
+                      else return stat.views - video.statistics[index - 1].views
+                    })}
+                    timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                  />
+            }
           </ContentBox>
         </ContentBoxWrapper>
       </ContentContainer>

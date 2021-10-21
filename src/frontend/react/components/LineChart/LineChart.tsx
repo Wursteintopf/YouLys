@@ -41,12 +41,15 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const segments = bezierSpline.getSegments(combined)
 
   const area = (context) => {
+    console.log(props.values)
+
     segments.forEach((segment, index) => {
       if (index === 0) context.moveTo(segment[0][0], segment[0][1])
       context.bezierCurveTo(segment[1][0], segment[1][1], segment[2][0], segment[2][1], segment[3][0], segment[3][1])
     })
-    context.lineTo(width, height - spacingBottom)
+    context.lineTo(segments[segments.length - 1][3][0], height - spacingBottom)
     context.lineTo(segments[0][0][0], height - spacingBottom)
+    context.lineTo(segments[0][0][0], segments[0][0][1])
     return context
   }
 
@@ -84,7 +87,11 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   return (
     <svg width={width} height={height}>
       <path d={grid(path())} stroke={themeVariables.colorLightGrey} fill='none' />
-      <path d={area(path())} stroke={themeVariables.colorBlue} fill={themeVariables.colorBlue} fillOpacity={0.1} />
+      {
+        props.values.length > 3
+          ? <path d={area(path())} stroke={themeVariables.colorBlue} fill={themeVariables.colorBlue} fillOpacity={0.1} />
+          : <text transform={`translate(${(width - spacingLeft) / 2 + spacingLeft},${(height - spacingBottom) / 2})`} textAnchor='middle' fill={themeVariables.colorDarkGrey}>Noch nicht genügend Daten erfasst.</text>
+      }
       <rect x={0} y={height - spacingBottom} width={width} height={spacingBottom} fill='white' />
       <rect x={0} y={0} width={spacingLeft} height={height} fill='white' />
       <path d={axes(path())} stroke={themeVariables.colorDarkGrey} fill='none' />

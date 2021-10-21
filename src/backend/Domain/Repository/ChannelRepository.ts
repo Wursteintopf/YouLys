@@ -83,7 +83,7 @@ export class ChannelRepository {
   getByIdWithStatsInRange = (channel_id: string, from: Date, to: Date): Promise<Channel> => {
     return new Promise<Channel>((resolve, reject) => {
       connection.query(
-        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND (timestamp BETWEEN ? AND ?)',
+        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
         [channel_id, moment(from).format('YYYY-MM-DD HH:mm:ss'), moment(to).format('YYYY-MM-DD HH:mm:ss')],
 
         async (err, rows) => {
@@ -96,6 +96,27 @@ export class ChannelRepository {
               else channel.statistics = [statistic]
               return true
             }))
+            resolve(channel)
+          } else {
+            reject(new Error('There is no Channel with this ID'))
+          }
+        },
+      )
+    })
+  }
+
+  getByIdWithNewestStats = (channel_id: string): Promise<Channel> => {
+    return new Promise<Channel>((resolve, reject) => {
+      connection.query(
+        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND DATE(timestamp) = (SELECT DATE(timestamp) FROM channel_statistic ORDER BY timestamp DESC LIMIT 1)',
+        [channel_id],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows.length > 0) {
+            const channel = new Channel(rows[0])
+            const stat = new ChannelStatistic(rows[0])
+            channel.statistics = [stat]
             resolve(channel)
           } else {
             reject(new Error('There is no Channel with this ID'))
@@ -121,7 +142,7 @@ export class ChannelRepository {
   public getAllWithNewestStats = (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
-        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE timestamp = (SELECT timestamp FROM channel_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY channel_statistic.subscriber_count DESC',
+        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE DATE(timestamp) = (SELECT DATE(timestamp) FROM channel_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY channel_statistic.subscriber_count DESC',
 
         async (err, rows) => {
           if (err) reject(err)

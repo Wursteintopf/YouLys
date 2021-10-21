@@ -5,6 +5,7 @@ import { StatusCodes } from '../../../shared/Enums/StatusCodes'
 import { setFetching } from '../ui/ui.actions'
 import { getFrom, getRange, getTo } from '../ui/ui.selector'
 import { fetchCurrentVideo, setCurrentVideo } from './video.actions'
+import { setCurrentChannel } from '../channel/channel.actions'
 
 const channelBaseUrl = baseUrl + '/video'
 
@@ -20,7 +21,8 @@ function * fetchCurrentVideoSaga (action) {
   const data = yield response.data
 
   if (data.status === StatusCodes.SUCCESS) {
-    yield put(setCurrentVideo(data.result))
+    yield put(setCurrentVideo(data.result.video))
+    yield put(setCurrentChannel(data.result.channel))
     yield put(setFetching(false))
   }
 }
