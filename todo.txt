@@ -4,3 +4,4 @@ TODOS:
 • Add logging to check amount of API Calls for better optimization
 • Add dynamic tracking, track new videos more frequent as old ones
 • Probably add more channels
+• Dynamic Changes in video- and channel statistic -> if Data didnt change, there is no need to save it multiple times
