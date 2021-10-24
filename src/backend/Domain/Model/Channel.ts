@@ -41,7 +41,6 @@ export class Channel implements ChannelInterface {
 
         (err, rows) => {
           if (err) reject(err)
-          console.log(rows)
           if (rows && rows.length > 0) {
             const stat = new ChannelStatistic(rows[0])
             stat.channel_meta = new ChannelMeta(rows[0])
