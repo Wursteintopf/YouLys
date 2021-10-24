@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import { channelRepository, videoRepository } from '../Api'
-import { StatusCodes } from '../../shared/Enums/StatusCodes'
+import { ApiStatusCodes } from '../../shared/Enums/StatusCodes'
 import { TimeRange } from '../../shared/Enums/TimeRange'
 import moment from 'moment'
 
@@ -12,14 +12,14 @@ channelRouter.get('/getChannels', (req, res) => {
   channelRepository.getAll()
     .then(channels => {
       res.send({
-        status: StatusCodes.SUCCESS,
+        status: ApiStatusCodes.SUCCESS,
         result: channels,
       })
     })
     .catch(err => {
       console.log(err)
       res.send({
-        status: StatusCodes.UNKNOWN_SERVER_ERROR,
+        status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
       })
     })
 })
@@ -28,14 +28,14 @@ channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
   channelRepository.getAllWithNewestStats()
     .then(channels => {
       res.send({
-        status: StatusCodes.SUCCESS,
+        status: ApiStatusCodes.SUCCESS,
         result: channels,
       })
     })
     .catch(err => {
       console.log(err)
       res.send({
-        status: StatusCodes.UNKNOWN_SERVER_ERROR,
+        status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
       })
     })
 })
@@ -43,7 +43,7 @@ channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
 channelRouter.post('/getChannelWithStatsInRange', (req, res) => {
   if (!req.body.channelId || !req.body.from || !req.body.to) {
     res.send({
-      status: StatusCodes.INSUFFICIENT_DATA_PROVIDED,
+      status: ApiStatusCodes.INSUFFICIENT_DATA_PROVIDED,
     })
   } else {
     const from = moment(req.body.from).subtract(1, 'days').toDate()
@@ -55,21 +55,21 @@ channelRouter.post('/getChannelWithStatsInRange', (req, res) => {
           .then(videos => {
             channel.videos = videos
             res.send({
-              status: StatusCodes.SUCCESS,
+              status: ApiStatusCodes.SUCCESS,
               result: channel,
             })
           })
           .catch(err => {
             console.log(err)
             res.send({
-              status: StatusCodes.UNKNOWN_SERVER_ERROR,
+              status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
             })
           })
       })
       .catch(err => {
         console.log(err)
         res.send({
-          status: StatusCodes.UNKNOWN_SERVER_ERROR,
+          status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
         })
       })
   }

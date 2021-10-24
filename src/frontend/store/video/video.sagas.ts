@@ -1,7 +1,7 @@
 import { put, takeEvery, select } from '@redux-saga/core/effects'
 import { baseUrl } from '../../../shared/paths'
 import axios from 'axios'
-import { StatusCodes } from '../../../shared/Enums/StatusCodes'
+import { ApiStatusCodes } from '../../../shared/Enums/StatusCodes'
 import { setFetching } from '../ui/ui.actions'
 import { getFrom, getRange, getTo } from '../ui/ui.selector'
 import { fetchCurrentVideo, setCurrentVideo } from './video.actions'
@@ -20,7 +20,7 @@ function * fetchCurrentVideoSaga (action) {
   const response = yield axios.post(channelBaseUrl + '/getVideoWithStatsInRange', requestData)
   const data = yield response.data
 
-  if (data.status === StatusCodes.SUCCESS) {
+  if (data.status === ApiStatusCodes.SUCCESS) {
     yield put(setCurrentVideo(data.result.video))
     yield put(setCurrentChannel(data.result.channel))
     yield put(setFetching(false))

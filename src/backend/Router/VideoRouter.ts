@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { StatusCodes } from '../../shared/Enums/StatusCodes'
+import { ApiStatusCodes } from '../../shared/Enums/StatusCodes'
 import moment from 'moment'
 import { channelRepository, videoRepository } from '../Api'
 
@@ -10,7 +10,7 @@ videoRouter.use(bodyParser.json())
 videoRouter.post('/getVideoWithStatsInRange', (req, res) => {
   if (!req.body.videoId || !req.body.from || !req.body.to) {
     res.send({
-      status: StatusCodes.INSUFFICIENT_DATA_PROVIDED,
+      status: ApiStatusCodes.INSUFFICIENT_DATA_PROVIDED,
     })
   } else {
     const from = moment(req.body.from).subtract(1, 'days').toDate()
@@ -22,7 +22,7 @@ videoRouter.post('/getVideoWithStatsInRange', (req, res) => {
           channelRepository.getByIdWithNewestStats(video.channel_id)
             .then(channel => {
               res.send({
-                status: StatusCodes.SUCCESS,
+                status: ApiStatusCodes.SUCCESS,
                 result: {
                   video: video,
                   channel: channel,
@@ -31,14 +31,14 @@ videoRouter.post('/getVideoWithStatsInRange', (req, res) => {
             })
         } else {
           res.send({
-            status: StatusCodes.NOT_FOUND,
+            status: ApiStatusCodes.NOT_FOUND,
           })
         }
       })
       .catch(err => {
         console.log(err)
         res.send({
-          status: StatusCodes.UNKNOWN_SERVER_ERROR,
+          status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
         })
       })
   }

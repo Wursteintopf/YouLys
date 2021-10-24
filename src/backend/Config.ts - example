@@ -6,7 +6,10 @@ const databaseConfig = {
   database: 'db',
 }
 
-const apiKey = 'PUT_YOUR_API_KEY_HERE'
+const api = {
+  key: 'PUT_YOUR_API_KEY_HERE',
+  baseUrl: 'https://www.googleapis.com/youtube/v3/',
+}
 
 const httpsConfig = {
   https: false,
@@ -17,7 +20,7 @@ const httpsConfig = {
 
 const config = {
   databaseConfig: databaseConfig,
-  apiKey: apiKey,
+  api: api,
   httpsConfig: httpsConfig,
 }
 

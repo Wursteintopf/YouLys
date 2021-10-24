@@ -1,16 +1,37 @@
-import moment from 'moment'
 import { connection } from '../../Helper/DatabaseHelper'
 import { Channel } from '../Model/Channel'
 import { ChannelStatistic } from '../Model/ChannelStatistic'
+import { ChannelMeta } from '../Model/ChannelMeta'
+import moment from 'moment'
 
 export class ChannelRepository {
+  private static instance: ChannelRepository
+
   protected setUpChannelTable = () => {
     connection.query(
       'CREATE TABLE IF NOT EXISTS channel(' +
-      'channel_id VARCHAR(255) NOT NULL,' +
+      'channel_id VARCHAR(30) NOT NULL,' +
       'created_at TIMESTAMP,' +
       'PRIMARY KEY (channel_id)' +
-      ')',
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
+
+      err => {
+        if (err) console.log(err)
+      },
+    )
+  }
+
+  protected setUpChannelMetaTable = () => {
+    connection.query(
+      'CREATE TABLE IF NOT EXISTS channel_meta(' +
+      'channel_meta_id INT NOT NULL AUTO_INCREMENT,' +
+      'username VARCHAR(255),' +
+      'profile_picture varchar(255),' +
+      'description VARCHAR(5000),' +
+      'keywords VARCHAR(1024),' +
+      'PRIMARY KEY (channel_meta_id),' +
+      'INDEX (username)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
       err => {
         if (err) console.log(err)
@@ -22,21 +43,19 @@ export class ChannelRepository {
     connection.query(
       'CREATE TABLE IF NOT EXISTS channel_statistic(' +
       'channel_statistic_id INT NOT NULL AUTO_INCREMENT,' +
-      'channel_id VARCHAR(255),' +
-      'username VARCHAR(255),' +
-      'profile_picture VARCHAR(255),' +
-      'description VARCHAR(5000),' +
+      'channel_id VARCHAR(30),' +
+      'channel_meta_id INT,' +
       'subscriber_count INT,' +
-      'subscriber_count_hidden boolean,' +
+      'subscriber_count_hidden BOOLEAN,' +
       'view_count INT,' +
       'video_count INT,' +
-      'made_for_kids boolean,' +
-      'trailer_video VARCHAR(255),' +
-      'keywords VARCHAR(1024),' +
+      'trailer_video_id VARCHAR(255),' +
       'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
       'PRIMARY KEY (channel_statistic_id),' +
-      'FOREIGN KEY (channel_id) REFERENCES channel(channel_id)' +
-      ')',
+      'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
+      'FOREIGN KEY (channel_meta_id) REFERENCES channel_meta(channel_meta_id) ON DELETE CASCADE,' +
+      'INDEX (timestamp)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
       err => {
         if (err) console.log(err)
@@ -44,24 +63,21 @@ export class ChannelRepository {
     )
   }
 
-  protected convertQueryRowsToChannelModel = (rows): Channel[] => {
-    const channels: Channel[] = []
-    rows.forEach(row => {
-      channels.push(new Channel(row))
-    })
-    return channels
+  private constructor () {
+    this.setUpChannelTable()
+    this.setUpChannelMetaTable()
+    this.setUpChannelStatisticsTable()
   }
 
-  constructor () {
-    this.setUpChannelTable()
-    this.setUpChannelStatisticsTable()
+  public static get Instance () {
+    return this.instance || (this.instance = new this())
   }
 
   /**
    * Methods to get Channels / Channelstatistics
    */
 
-  public getById = (channel_id: string): Promise<Channel> => {
+  public getById = async (channel_id: string): Promise<Channel> => {
     return new Promise<Channel>((resolve, reject) => {
       connection.query(
         'SELECT * FROM channel WHERE channel_id = ?',
@@ -73,85 +89,25 @@ export class ChannelRepository {
             const channel = new Channel(rows[0])
             resolve(channel)
           } else {
-            reject(new Error('There is no Channel with this ID'))
+            reject(new Error('No Channel with this ID found.'))
           }
         },
       )
     })
   }
 
-  getByIdWithStatsInRange = (channel_id: string, from: Date, to: Date): Promise<Channel> => {
-    return new Promise<Channel>((resolve, reject) => {
-      connection.query(
-        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
-        [channel_id, moment(from).format('YYYY-MM-DD HH:mm:ss'), moment(to).format('YYYY-MM-DD HH:mm:ss')],
-
-        async (err, rows) => {
-          if (err) reject(err)
-          if (rows.length > 0) {
-            const channel = new Channel(rows[0])
-            await Promise.all(rows.map(row => {
-              const statistic = new ChannelStatistic(row)
-              if (channel.statistics) channel.statistics = [...channel.statistics, statistic]
-              else channel.statistics = [statistic]
-              return true
-            }))
-            resolve(channel)
-          } else {
-            reject(new Error('There is no Channel with this ID'))
-          }
-        },
-      )
-    })
-  }
-
-  getByIdWithNewestStats = (channel_id: string): Promise<Channel> => {
-    return new Promise<Channel>((resolve, reject) => {
-      connection.query(
-        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE channel.channel_id = ? AND DATE(timestamp) = (SELECT DATE(timestamp) FROM channel_statistic ORDER BY timestamp DESC LIMIT 1)',
-        [channel_id],
-
-        (err, rows) => {
-          if (err) reject(err)
-          if (rows.length > 0) {
-            const channel = new Channel(rows[0])
-            const stat = new ChannelStatistic(rows[0])
-            channel.statistics = [stat]
-            resolve(channel)
-          } else {
-            reject(new Error('There is no Channel with this ID'))
-          }
-        },
-      )
-    })
-  }
-
-  public getAll = (): Promise<Channel[]> => {
+  public getAll = async (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
         'SELECT * FROM channel',
 
         (err, rows) => {
           if (err) reject(err)
-          resolve(this.convertQueryRowsToChannelModel(rows))
-        },
-      )
-    })
-  }
-
-  public getAllWithNewestStats = (): Promise<Channel[]> => {
-    return new Promise<Channel[]>((resolve, reject) => {
-      connection.query(
-        'SELECT channel.created_at, channel_statistic.* FROM channel LEFT JOIN channel_statistic ON channel.channel_id = channel_statistic.channel_id WHERE DATE(timestamp) = (SELECT DATE(timestamp) FROM channel_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY channel_statistic.subscriber_count DESC',
-
-        async (err, rows) => {
-          if (err) reject(err)
-          resolve(Promise.all(rows.map(row => {
-            const statistic = new ChannelStatistic(row)
-            const channel = new Channel(row)
-            channel.statistics = [statistic]
-            return channel
-          })))
+          const channels: Channel[] = []
+          rows.forEach(row => {
+            channels.push(new Channel(row))
+          })
+          resolve(channels)
         },
       )
     })
@@ -161,7 +117,50 @@ export class ChannelRepository {
    * Methods to save/create/update/delete Channels / Channelstatistics
    */
 
-  protected create = (channel: Channel): Promise<boolean> => {
+  public saveMeta = async (channelMeta: ChannelMeta): Promise<number> => {
+    return new Promise<number>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO channel_meta(username, profile_picture, description, keywords) VALUES (?, ?, ?, ?)',
+        [channelMeta.username, channelMeta.profile_picture, channelMeta.description, channelMeta.keywords],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (!rows.insertId) reject(new Error("Unexpected Error. This shouldn't happen."))
+          resolve(rows.insertId)
+        },
+      )
+    })
+  }
+
+  public migrateStatistic = async (channelStatistic: ChannelStatistic): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id, moment(channelStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss')],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  public saveStatistic = async (channelStatistic: ChannelStatistic): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  protected create = async (channel: Channel): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
         'INSERT INTO channel(channel_id, created_at) VALUES (?, ?)',
@@ -175,7 +174,7 @@ export class ChannelRepository {
     })
   }
 
-  protected update = (channel: Channel): Promise<boolean> => {
+  protected update = async (channel: Channel): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
         'UPDATE channel SET created_at = ? WHERE channel_id = ?',
@@ -189,43 +188,16 @@ export class ChannelRepository {
     })
   }
 
-  public save = (channel: Channel): Promise<boolean> => {
+  public save = async (channel: Channel): Promise<boolean> => {
     return this.getById(channel.channel_id)
       .then(() => { return this.update(channel) })
       .catch(() => { return this.create(channel) })
   }
 
-  public saveMultiple = (channels: Channel[]): Promise<boolean[]> => {
-    return Promise.all(channels.map(channel => {
+  public saveMultiple = async (channels: Channel[]): Promise<boolean> => {
+    const promises = await Promise.all(channels.map(channel => {
       return this.save(channel)
     }))
-  }
-
-  public saveStatistic = (channelStatistic: ChannelStatistic): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'INSERT INTO channel_statistic(channel_id, username, profile_picture, description, subscriber_count, subscriber_count_hidden, view_count, video_count, made_for_kids, trailer_video, keywords) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [channelStatistic.channel_id, channelStatistic.username, channelStatistic.profile_picture, channelStatistic.description, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.made_for_kids, channelStatistic.trailer_video, channelStatistic.keywords],
-
-        err => {
-          if (err) reject(err)
-          resolve(true)
-        },
-      )
-    })
-  }
-
-  public delete = (channel: Channel): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'DELETE FROM channel WHERE channel_id = ?',
-        [channel.channel_id],
-
-        err => {
-          if (err) reject(err)
-          resolve(true)
-        },
-      )
-    })
+    return !promises.includes(false)
   }
 }

@@ -1,30 +1,43 @@
-import { callFiftyNewestVideosOfChannel, callVideoStatistics } from './YoutubeApiCaller/VideoCaller'
-import { callChannelStatistics } from './YoutubeApiCaller/ChannelCaller'
 import { ChannelRepository } from './Domain/Repository/ChannelRepository'
-import { VideoRepository } from './Domain/Repository/VideoRepository'
 
-const run = async () => {
-  const channelRepository = new ChannelRepository()
-  const videoRepository = new VideoRepository()
+const run = async (): Promise<boolean> => {
+  // Load all Channel from Database
+  const channels = await ChannelRepository.Instance.getAll()
 
-  const channels = await channelRepository.getAll()
+  console.log('SUCCESS: Loaded channels from database')
 
+  // Load Stats for all Channels
   await Promise.all(channels.map(async channel => {
-    await callChannelStatistics(channelRepository, channel.channel_id)
-
-    await callFiftyNewestVideosOfChannel(videoRepository, channel.channel_id)
-    const videos = await videoRepository.getFiftyNewestByChannel(channel.channel_id)
-
-    await Promise.all(videos.map(async video => {
-      await callVideoStatistics(videoRepository, video.video_id)
-      return true
-    }))
+    return channel.callStatistics()
+      .then(promise => { return promise })
+      .catch(err => err.log(err))
   }))
+
+  console.log('SUCCESS: Fetched statistics for all channels')
+
+  // Load Video Stats for all Channels
+  await Promise.all(channels.map(async channel => {
+    await channel.callFiftyNewestVideos()
+      .then(async () => {
+        console.log('SUCCESS: Fetched 50 newest videos for channel with the id ' + channel.channel_id)
+        await Promise.all(channel.videos.map(video => {
+          return video.callStatistics()
+            .then(promise => {
+              console.log('SUCCESS: Fetched statistics for the video with the id ' + video.video_id)
+              return promise
+            })
+            .catch(err => console.error(err))
+        }))
+      })
+      .catch(err => console.error(err))
+  }))
+
+  return true
 }
 
 run()
   .then(() => {
-    console.log('Successfully called Data')
+    console.log('SUCCESS: Successfully called all data')
     process.exit(1)
   })
   .catch(err => {
