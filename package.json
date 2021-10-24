@@ -7,7 +7,7 @@
     "dev": "parcel src/frontend/index.html",
     "build": "parcel build src/frontend/index.html --out-dir build --public-url ./",
     "api": "ts-node src/backend/Api.ts",
-    "fetch": "ts-node src/backend/Runner.ts",
+    "fetch": "ts-node src/backend/Runner.ts"
   },
   "browserslist": [
     "Chrome > 75",
