@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           <MenuItem
             onClick={() => history.push('/channels')}
           >
-            Kanalübersicht
+            Kanalliste
           </MenuItem>
           <SearchContainer>
             <SearchTextField

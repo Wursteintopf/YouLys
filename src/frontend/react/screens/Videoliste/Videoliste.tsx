@@ -50,7 +50,7 @@ const Videoliste: React.FC = () => {
       <ContentContainer>
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Hochgeladene Videos im ausgewählten Zeitraum'>
-            {(channel.videos && channel.videos.length > 0) ? <VideoList all videos={channel.videos} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+            {(channel.videos && channel.videos.length > 0) ? <VideoList all videos={channel.videos} /> : (fetching ? <Progress /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.')}
           </ContentBox>
         </ContentBoxWrapper>
       </ContentContainer>

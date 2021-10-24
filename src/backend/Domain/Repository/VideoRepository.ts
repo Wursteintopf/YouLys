@@ -1,19 +1,55 @@
 import { connection } from '../../Helper/DatabaseHelper'
 import { Video } from '../Model/Video'
-import { Channel } from '../Model/Channel'
 import { VideoStatistic } from '../Model/VideoStatistic'
+import { VideoMeta } from '../Model/VideoMeta'
+import { VideoThumbnail } from '../Model/VideoThumbnail'
+import moment from 'moment'
 
 export class VideoRepository {
+  private static instance: VideoRepository
+
   protected setUpVideoTable = () => {
     connection.query(
       'CREATE TABLE IF NOT EXISTS video(' +
-      'video_id VARCHAR(255) NOT NULL,' +
-      'channel_id VARCHAR(255),' +
+      'video_id VARCHAR(30) NOT NULL,' +
+      'channel_id VARCHAR(30),' +
       'upload_time TIMESTAMP,' +
       'duration INT,' +
       'PRIMARY KEY (video_id),' +
-      'FOREIGN KEY (channel_id) REFERENCES channel(channel_id)' +
-      ')',
+      'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
+      'INDEX (upload_time)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
+
+      err => {
+        if (err) console.log(err)
+      },
+    )
+  }
+
+  protected setUpVideoMetaTable = () => {
+    connection.query(
+      'CREATE TABLE IF NOT EXISTS video_meta(' +
+      'video_meta_id INT NOT NULL AUTO_INCREMENT,' +
+      'title VARCHAR(255),' +
+      'description VARCHAR(5000),' +
+      'tags VARCHAR(1024),' +
+      'PRIMARY KEY (video_meta_id),' +
+      'INDEX (title)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
+
+      err => {
+        if (err) console.log(err)
+      },
+    )
+  }
+
+  protected setUpVideoThumbnailTable = () => {
+    connection.query(
+      'CREATE TABLE IF NOT EXISTS video_thumbnail(' +
+      'video_thumbnail_id INT NOT NULL AUTO_INCREMENT,' +
+      'thumbnail VARCHAR(255),' +
+      'PRIMARY KEY (video_thumbnail_id)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
       err => {
         if (err) console.log(err)
@@ -25,20 +61,21 @@ export class VideoRepository {
     connection.query(
       'CREATE TABLE IF NOT EXISTS video_statistic(' +
       'video_statistic_id INT NOT NULL AUTO_INCREMENT,' +
-      'video_id VARCHAR(255),' +
-      'views VARCHAR(255),' +
-      'title VARCHAR(255),' +
-      'thumbnail VARCHAR(255),' +
-      'description VARCHAR(5000),' +
-      'tags VARCHAR(1024),' +
+      'video_id VARCHAR(30),' +
+      'video_meta_id INT,' +
+      'video_thumbnail_id INT,' +
+      'views INT,' +
       'likes INT,' +
       'dislikes INT,' +
       'favouriteCount INT,' +
       'commentCount INT,' +
       'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
       'PRIMARY KEY (video_statistic_id),' +
-      'FOREIGN KEY (video_id) REFERENCES video(video_id)' +
-      ')',
+      'FOREIGN KEY (video_id) REFERENCES video(video_id),' +
+      'FOREIGN KEY (video_meta_id) REFERENCES video_meta(video_meta_id) ON DELETE CASCADE,' +
+      'FOREIGN KEY (video_thumbnail_id) REFERENCES video_thumbnail(video_thumbnail_id) ON DELETE CASCADE,' +
+      'INDEX (timestamp)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
       err => {
         if (err) console.log(err)
@@ -54,16 +91,22 @@ export class VideoRepository {
     return videos
   }
 
-  constructor () {
+  private constructor () {
     this.setUpVideoTable()
+    this.setUpVideoMetaTable()
+    this.setUpVideoThumbnailTable()
     this.setUpVideoStatisticTable()
+  }
+
+  public static get Instance () {
+    return this.instance || (this.instance = new this())
   }
 
   /**
    * Methods to get Videos / Videostatistics
    */
 
-  public getById = (video_id: string): Promise<Video> => {
+  public getById = async (video_id: string): Promise<Video> => {
     return new Promise<Video>((resolve, reject) => {
       connection.query(
         'SELECT * FROM video WHERE video_id = ?',
@@ -71,8 +114,9 @@ export class VideoRepository {
 
         (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 1) {
-            resolve(this.convertQueryRowsToVideoModel(rows)[0])
+          if (rows.length > 0) {
+            const video = new Video(rows[0])
+            resolve(video)
           } else {
             reject(new Error('There is no Video with this ID'))
           }
@@ -81,7 +125,7 @@ export class VideoRepository {
     })
   }
 
-  public getAll = (): Promise<Video[]> => {
+  public getAll = async (): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
         'SELECT * FROM video',
@@ -94,9 +138,7 @@ export class VideoRepository {
     })
   }
 
-  public getByChannel = (channel: Channel | string): Promise<Video[]> => {
-    const channelId = channel instanceof Channel ? channel.channel_id : channel
-
+  public getByChannelId = async (channelId: string): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
         'SELECT * FROM video WHERE channel_id = ?',
@@ -110,62 +152,16 @@ export class VideoRepository {
     })
   }
 
-  public getFiftyNewestByChannel = (channel: Channel | string): Promise<Video[]> => {
-    const channelId = channel instanceof Channel ? channel.channel_id : channel
-
+  public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
-        'SELECT * FROM video WHERE channel_id = ? ORDER BY upload_time DESC LIMIT 50',
-        [channelId],
-
-        (err, rows) => {
-          if (err) reject(err)
-          resolve(this.convertQueryRowsToVideoModel(rows))
-        },
-      )
-    })
-  }
-
-  public getByChannelInRangeWithNewestStats = (channelId: string, from: Date, to: Date): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
-      connection.query(
-        'SELECT video.channel_id, video.duration, video.upload_time, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY upload_time DESC',
+        'SELECT * FROM video WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) ORDER BY upload_time DESC',
         [channelId, from, to],
 
         (err, rows) => {
           if (err) reject(err)
-          resolve(Promise.all(rows.map(row => {
-            const video = new Video(row)
-            const statistic = new VideoStatistic(row)
-            video.statistics = [statistic]
-            return video
-          })))
+          resolve(rows.map(row => new Video(row)))
         },
-      )
-    })
-  }
-
-  public getByIdWithStatsInRange = (videoId: string, from: Date, to: Date): Promise<Video> => {
-    return new Promise<Video>((resolve, reject) => {
-      connection.query(
-        'SELECT video.channel_id, video.duration, video.upload_time, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE video.video_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
-        [videoId, from, to],
-
-        async (err, rows) => {
-          if (err) reject(err)
-          if (rows.length >= 1) {
-            const video = new Video(rows[0])
-            await Promise.all(rows.map(row => {
-              const statistic = new VideoStatistic(row)
-              if (video.statistics) video.statistics = [...video.statistics, statistic]
-              else video.statistics = [statistic]
-              return true
-            }))
-            resolve(video)
-          } else {
-            reject(new Error('No video with this id found'))
-          }
-        }
       )
     })
   }
@@ -174,7 +170,65 @@ export class VideoRepository {
    * Methods to save/create/update Videos / Videostatistics
    */
 
-  protected create = (video: Video): Promise<boolean> => {
+  public saveMeta = async (videoMeta: VideoMeta): Promise<number> => {
+    return new Promise<number>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video_meta(title, description, tags) VALUES (?, ?, ?)',
+        [videoMeta.title, videoMeta.description, videoMeta.tags],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (!rows.insertId) reject(new Error("Unexpected Error. This shouldn't happen."))
+          resolve(rows.insertId)
+        },
+      )
+    })
+  }
+
+  public saveThumbnail = async (videoThumbnail: VideoThumbnail): Promise<number> => {
+    return new Promise<number>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video_thumbnail(thumbnail) VALUES (?)',
+        [videoThumbnail.thumbnail],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (!rows.insertId) reject(new Error("Unexpected Error. This shouldn't happen."))
+          resolve(rows.insertId)
+        },
+      )
+    })
+  }
+
+  public migrateStatistic = async (videoStatistic: VideoStatistic): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, dislikes, favouriteCount, commentCount, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [videoStatistic.video_id, videoStatistic.video_meta.video_meta_id, videoStatistic.video_thumbnail.video_thumbnail_id, videoStatistic.views, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount, moment(videoStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss')],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  public saveStatistic = async (videoStatistic: VideoStatistic): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, dislikes, favouriteCount, commentCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [videoStatistic.video_id, videoStatistic.video_meta.video_meta_id, videoStatistic.video_thumbnail.video_thumbnail_id, videoStatistic.views, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  public create = (video: Video): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
         'INSERT INTO video(video_id, channel_id, upload_time, duration) VALUES (?, ?, ?, ?)',
@@ -188,7 +242,7 @@ export class VideoRepository {
     })
   }
 
-  protected update = (video: Video): Promise<boolean> => {
+  public update = (video: Video): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
         'UPDATE video SET upload_time = ?, duration = ? WHERE video_id = ?',
@@ -206,33 +260,5 @@ export class VideoRepository {
     return this.getById(video.video_id)
       .then(() => { return this.update(video) })
       .catch(() => { return this.create(video) })
-  }
-
-  public saveStatistic = (videoStatistic: VideoStatistic): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'INSERT INTO video_statistic(video_id, views, title, thumbnail, description, tags, likes, dislikes, favouriteCount, commentCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [videoStatistic.video_id, videoStatistic.views, videoStatistic.title, videoStatistic.thumbnail, videoStatistic.description, videoStatistic.tags, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
-
-        err => {
-          if (err) reject(err)
-          resolve(true)
-        },
-      )
-    })
-  }
-
-  public delete = (video: Video): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'DELETE FROM video WHERE video_id = ?',
-        [video.video_id],
-
-        err => {
-          if (err) reject(err)
-          resolve(true)
-        },
-      )
-    })
   }
 }
