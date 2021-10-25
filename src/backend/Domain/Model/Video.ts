@@ -71,6 +71,7 @@ export class Video implements VideoInterface {
               statistic.video_meta = new VideoMeta(row)
               return statistic
             })
+            resolve(true)
           } else {
             reject(new Error('Unable to load video stats in Range. No stats found.'))
           }

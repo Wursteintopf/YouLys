@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Divider, MenuItem, Popover, TextField, Typography } from '@mui/material'
 import { TimeRange } from '../../../../shared/Enums/TimeRange'
 import { DatePicker, DatePickerWrapper, TimePickerStyled } from './TimePickerStyling'

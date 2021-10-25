@@ -34,14 +34,14 @@ const VideoList: React.FC<VideoListProps> = (props) => {
           return (
             <VideoListEntry key={index}>
               <VideoListThumbnail>
-                <img src={video.statistics?.[0].thumbnail} />
+                <img src={video.statistics[0].video_thumbnail.thumbnail} />
               </VideoListThumbnail>
               <VideoListTitle>
-                <b>{clampByLength(video.statistics?.[0].title, 50)}</b>
-                <p>{clampByLength(video.statistics?.[0].description, 80)}</p>
+                <b>{clampByLength(video.statistics[0].video_meta.title, 50)}</b>
+                <p>{clampByLength(video.statistics[0].video_meta.description, 80)}</p>
               </VideoListTitle>
               <VideoListViews>
-                {numberFormatter(video.statistics?.[0].views, 1)}
+                {numberFormatter(video.statistics[0].views, 1)}
                 <VideoListSmallText>Aufrufe</VideoListSmallText>
               </VideoListViews>
               <VideoListSuccess>

@@ -21,15 +21,11 @@ import ToolTip from '../../components/ToolTip/ToolTip'
 import {
   ChannelDetailOverview,
   ChannelDetailsLink,
-  ChannelDetailsName, ChannelDetailsProfilePicture, ChannelHeader, VideoDetailsProfilePicture,
+  ChannelDetailsName, ChannelHeader, VideoDetailsProfilePicture,
 } from '../Kanaldetailseite/KanaldetailseiteStyling'
 import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { AllVideosButton } from '../../components/VideoList/VideoListStyling'
 import { useHistory } from 'react-router'
-import { Button } from '@mui/material'
-import themeVariables from '../../../styles/themeVariables'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -52,10 +48,10 @@ const Videodetailseite: React.FC = () => {
       <SubHeader>
         <ChannelHeader>
           <VideoDetailsProfilePicture>
-            <img src={video.statistics[0].thumbnail} />
+            <img src={video.statistics[0].video_thumbnail.thumbnail} />
           </VideoDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{video.statistics[0].title}</Headline>
+            <Headline>{video.statistics[0].video_meta.title}</Headline>
             <ChannelDetailsLink href={'https://www.youtube.com/watch?v=' + video.video_id}>Zum YouTube Video</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>

@@ -3,15 +3,10 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import channelRouter from './Router/ChannelRouter'
-import { ChannelRepository } from './Domain/Repository/ChannelRepository'
-import { VideoRepository } from './Domain/Repository/VideoRepository'
 import https from 'https'
 import fs from 'fs'
 import config from './Config'
 import videoRouter from './Router/VideoRouter'
-
-export const channelRepository = new ChannelRepository()
-export const videoRepository = new VideoRepository()
 
 const app = express()
 

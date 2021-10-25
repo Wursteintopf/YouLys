@@ -12,6 +12,7 @@ export class ChannelRepository {
       'CREATE TABLE IF NOT EXISTS channel(' +
       'channel_id VARCHAR(30) NOT NULL,' +
       'created_at TIMESTAMP,' +
+      'tracked BOOLEAN DEFAULT true NOT NULL,' +
       'PRIMARY KEY (channel_id)' +
       ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
@@ -99,7 +100,7 @@ export class ChannelRepository {
   public getAll = async (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
-        'SELECT * FROM channel',
+        'SELECT * FROM channel WHERE tracked = true',
 
         (err, rows) => {
           if (err) reject(err)

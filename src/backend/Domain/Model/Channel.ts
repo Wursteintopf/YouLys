@@ -68,6 +68,7 @@ export class Channel implements ChannelInterface {
               statistic.channel_meta = new ChannelMeta(row)
               return statistic
             })
+            resolve(true)
           } else {
             reject(new Error('Unable to load channel stats in Range. No stats found.'))
           }

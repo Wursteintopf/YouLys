@@ -1,5 +1,4 @@
 import actionCreatorFactory from 'typescript-fsa'
-import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
 import { VideoInterface } from '../../../shared/Domain/Model/VideoInterface'
 
 const actionCreator = actionCreatorFactory()

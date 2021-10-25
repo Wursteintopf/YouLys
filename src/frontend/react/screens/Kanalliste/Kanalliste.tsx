@@ -5,7 +5,7 @@ import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching } from '../../../store/ui/ui.selector'
 import { getChannels } from '../../../store/channel/channel.selector'
-import { fetchChannels, fetchCurrentChannel } from '../../../store/channel/channel.actions'
+import { fetchChannels } from '../../../store/channel/channel.actions'
 import { setFetching } from '../../../store/ui/ui.actions'
 import {
   ChannelListClicks, ChannelListDetailsButton,
@@ -47,17 +47,17 @@ const Kanalliste: React.FC = () => {
                 return (
                   <ChannelListEntry key={channel.channel_id}>
                     <ChannelListProfilePicture>
-                      <img src={channel.statistics?.[0].profile_picture} />
+                      <img src={channel.statistics[0].channel_meta.profile_picture} />
                     </ChannelListProfilePicture>
                     <ChannelListUsername>
-                      {clampByLength(channel.statistics?.[0].username, 40)}
+                      {clampByLength(channel.statistics[0].channel_meta.username, 40)}
                     </ChannelListUsername>
                     <ChannelListSubs>
-                      {numberFormatter(channel.statistics?.[0].subscriber_count, 1)}
+                      {numberFormatter(channel.statistics[0].subscriber_count, 1)}
                       <ChannelListSmallText>Abonennten</ChannelListSmallText>
                     </ChannelListSubs>
                     <ChannelListClicks>
-                      {numberFormatter(channel.statistics?.[0].view_count, 1)}
+                      {numberFormatter(channel.statistics[0].view_count, 1)}
                       <ChannelListSmallText>Aufrufe</ChannelListSmallText>
                     </ChannelListClicks>
                     <ChannelListSuccess>

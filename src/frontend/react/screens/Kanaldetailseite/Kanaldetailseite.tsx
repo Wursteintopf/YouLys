@@ -5,7 +5,7 @@ import { Headline } from '../../components/Headline/Headline'
 import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
 import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
-import { getFetching, getFrom, getRange, getTo } from '../../../store/ui/ui.selector'
+import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { getCurrentChannel } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
@@ -40,17 +40,17 @@ const Kanaldetailseite: React.FC = () => {
     dispatch(fetchCurrentChannel(window.location.pathname.split('/')[2]))
   }, [from, to])
 
-  if (channel.channel_id === '' || !channel.statistics) return <Progress />
+  if (channel.channel_id === '') return <Progress />
 
   return (
     <>
       <SubHeader>
         <ChannelHeader>
           <ChannelDetailsProfilePicture>
-            <img src={channel.statistics[0].profile_picture} />
+            <img src={channel.statistics[0].channel_meta.profile_picture} />
           </ChannelDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{channel.statistics[0].username}</Headline>
+            <Headline>{channel.statistics[0].channel_meta.username}</Headline>
             <ChannelDetailsLink href={'https://www.youtube.com/channel/' + channel.channel_id}>Zum Youtube Kanal</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>

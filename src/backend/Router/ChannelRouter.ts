@@ -1,15 +1,16 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { channelRepository, videoRepository } from '../Api'
-import { ApiStatusCodes } from '../../shared/Enums/StatusCodes'
-import { TimeRange } from '../../shared/Enums/TimeRange'
+import { ApiStatusCodes } from '../../shared/Enums/ApiStatusCodes'
 import moment from 'moment'
+import { ChannelRepository } from '../Domain/Repository/ChannelRepository'
+import { VideoRepository } from '../Domain/Repository/VideoRepository'
+import { Channel } from '../Domain/Model/Channel'
 
 const channelRouter = express.Router()
 channelRouter.use(bodyParser.json())
 
 channelRouter.get('/getChannels', (req, res) => {
-  channelRepository.getAll()
+  ChannelRepository.Instance.getAll()
     .then(channels => {
       res.send({
         status: ApiStatusCodes.SUCCESS,
@@ -25,8 +26,10 @@ channelRouter.get('/getChannels', (req, res) => {
 })
 
 channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
-  channelRepository.getAllWithNewestStats()
-    .then(channels => {
+  ChannelRepository.Instance.getAll()
+    .then(async channels => {
+      await Promise.all(channels.map(channel => channel.loadNewestStats()))
+
       res.send({
         status: ApiStatusCodes.SUCCESS,
         result: channels,
@@ -40,7 +43,7 @@ channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
     })
 })
 
-channelRouter.post('/getChannelWithStatsInRange', (req, res) => {
+channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
   if (!req.body.channelId || !req.body.from || !req.body.to) {
     res.send({
       status: ApiStatusCodes.INSUFFICIENT_DATA_PROVIDED,
@@ -49,29 +52,35 @@ channelRouter.post('/getChannelWithStatsInRange', (req, res) => {
     const from = moment(req.body.from).subtract(1, 'days').toDate()
     const to = moment(req.body.to).add(1, 'days').toDate()
 
-    channelRepository.getByIdWithStatsInRange(req.body.channelId, from, to)
-      .then(channel => {
-        videoRepository.getByChannelInRangeWithNewestStats(channel.channel_id, from, to)
-          .then(videos => {
-            channel.videos = videos
-            res.send({
-              status: ApiStatusCodes.SUCCESS,
-              result: channel,
-            })
-          })
-          .catch(err => {
-            console.log(err)
-            res.send({
-              status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
-            })
-          })
+    let channel: Channel
+
+    try {
+      channel = await ChannelRepository.Instance.getById(req.body.channelId)
+    } catch (e) {
+      res.send({
+        status: ApiStatusCodes.NOT_FOUND,
       })
-      .catch(err => {
-        console.log(err)
-        res.send({
-          status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
-        })
+      return
+    }
+
+    try {
+      await channel.loadStatsInRange(from, to)
+
+      const videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
+
+      await Promise.all(videos.map(video => video.loadNewestStats()))
+
+      channel.videos = videos
+
+      res.send({
+        status: ApiStatusCodes.SUCCESS,
+        result: channel,
       })
+    } catch (e) {
+      res.send({
+        status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
+      })
+    }
   }
 })
 
