@@ -1,8 +1,9 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { ApiStatusCodes } from '../../shared/Enums/StatusCodes'
+import { ApiStatusCodes } from '../../shared/Enums/ApiStatusCodes'
 import moment from 'moment'
-import { channelRepository, videoRepository } from '../Api'
+import { VideoRepository } from '../Domain/Repository/VideoRepository'
+import { ChannelRepository } from '../Domain/Repository/ChannelRepository'
 
 const videoRouter = express.Router()
 videoRouter.use(bodyParser.json())
@@ -16,11 +17,15 @@ videoRouter.post('/getVideoWithStatsInRange', (req, res) => {
     const from = moment(req.body.from).subtract(1, 'days').toDate()
     const to = moment(req.body.to).add(1, 'days').toDate()
 
-    videoRepository.getByIdWithStatsInRange(req.body.videoId, from, to)
-      .then(video => {
+    VideoRepository.Instance.getById(req.body.videoId)
+      .then(async video => {
+        await video.loadStatsInRange(from, to)
+
         if (video.channel_id) {
-          channelRepository.getByIdWithNewestStats(video.channel_id)
-            .then(channel => {
+          ChannelRepository.Instance.getById(video.channel_id)
+            .then(async channel => {
+              await channel.loadNewestStats()
+
               res.send({
                 status: ApiStatusCodes.SUCCESS,
                 result: {

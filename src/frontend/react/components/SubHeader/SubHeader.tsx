@@ -24,11 +24,11 @@ const SubHeader: React.FC = props => {
   const renderBreadcrumb = () => {
     switch (path) {
       case 'channeldetails':
-        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / {channel.statistics?.[0].username}</>
+        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / {channel.statistics[0].channel_meta.username}</>
       case 'videos':
-        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / <BreadCrumbLink href={'/channeldetails/' + channel.channel_id}>{channel.statistics?.[0].username}</BreadCrumbLink> / Videos</>
+        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / <BreadCrumbLink href={'/channeldetails/' + channel.channel_id}>{channel.statistics[0].channel_meta.username}</BreadCrumbLink> / Videos</>
       case 'videodetails':
-        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / <BreadCrumbLink href={'/channeldetails/' + channel.channel_id}>{channel.statistics?.[0].username}</BreadCrumbLink> / <BreadCrumbLink href={'/videos/' + channel.channel_id}>Videos</BreadCrumbLink> / {clampByLength(video.statistics?.[0].title, 30)}</>
+        return <><BreadCrumbLink href='/channels'>Alle Kanäle</BreadCrumbLink> / <BreadCrumbLink href={'/channeldetails/' + channel.channel_id}>{channel.statistics[0].channel_meta.username}</BreadCrumbLink> / <BreadCrumbLink href={'/videos/' + channel.channel_id}>Videos</BreadCrumbLink> / {clampByLength(video.statistics[0].video_meta.title, 30)}</>
     }
   }
 

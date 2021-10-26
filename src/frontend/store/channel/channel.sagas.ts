@@ -2,9 +2,9 @@ import { put, takeEvery, select } from '@redux-saga/core/effects'
 import { fetchChannels, fetchCurrentChannel, setChannels, setCurrentChannel } from './channel.actions'
 import { baseUrl } from '../../../shared/paths'
 import axios from 'axios'
-import { ApiStatusCodes } from '../../../shared/Enums/StatusCodes'
+import { ApiStatusCodes } from '../../../shared/Enums/ApiStatusCodes'
 import { setFetching } from '../ui/ui.actions'
-import { getFrom, getRange, getTo } from '../ui/ui.selector'
+import { getFrom, getTo } from '../ui/ui.selector'
 
 const channelBaseUrl = baseUrl + '/channel'
 

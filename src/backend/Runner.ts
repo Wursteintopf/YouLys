@@ -20,14 +20,17 @@ const run = async (): Promise<boolean> => {
     await channel.callFiftyNewestVideos()
       .then(async () => {
         console.log('SUCCESS: Fetched 50 newest videos for channel with the id ' + channel.channel_id)
-        await Promise.all(channel.videos.map(video => {
-          return video.callStatistics()
+
+        channel.videos.sort((a, b) => a.upload_time.getTime() - b.upload_time.getTime())
+
+        for await (const video of channel.videos) {
+          await video.callStatistics()
             .then(promise => {
               console.log('SUCCESS: Fetched statistics for the video with the id ' + video.video_id)
               return promise
             })
             .catch(err => console.error(err))
-        }))
+        }
       })
       .catch(err => console.error(err))
   }))
@@ -38,9 +41,9 @@ const run = async (): Promise<boolean> => {
 run()
   .then(() => {
     console.log('SUCCESS: Successfully called all data')
-    process.exit(1)
+    process.exit(0)
   })
   .catch(err => {
     console.log(err)
-    process.exit(0)
+    process.exit(1)
   })

@@ -6,6 +6,7 @@ export interface ChannelInterface {
   created_at: Date
   statistics: ChannelStatisticInterface[]
   videos: VideoInterface[]
+  tracked: boolean
 }
 
 export const EMPTY_CHANNEL: ChannelInterface = {
@@ -13,4 +14,5 @@ export const EMPTY_CHANNEL: ChannelInterface = {
   created_at: new Date(),
   statistics: [],
   videos: [],
+  tracked: true,
 }

@@ -1,11 +1,7 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import { channelState } from './channel.interfaces'
 import { setChannels, setCurrentChannel } from './channel.actions'
-import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
-
-const EMPTY_CHANNEL: ChannelInterface = {
-  channel_id: '',
-}
+import { EMPTY_CHANNEL } from '../../../shared/Domain/Model/ChannelInterface'
 
 const INITIAL_STATE: channelState = {
   channels: [],

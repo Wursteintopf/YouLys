@@ -38,10 +38,10 @@ const Videoliste: React.FC = () => {
       <SubHeader>
         <ChannelHeader>
           <ChannelDetailsProfilePicture>
-            <img src={channel.statistics[0].profile_picture} />
+            <img src={channel.statistics[0].channel_meta.profile_picture} />
           </ChannelDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{channel.statistics[0].username}</Headline>
+            <Headline>{channel.statistics[0].channel_meta.username}</Headline>
             <ChannelDetailsLink href={'https://www.youtube.com/channel/' + channel.channel_id}>Zum Youtube Kanal</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>
