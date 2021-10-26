@@ -70,6 +70,7 @@ export class VideoRepository {
       'favouriteCount INT,' +
       'commentCount INT,' +
       'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
+      'success_factor FLOAT,' +
       'PRIMARY KEY (video_statistic_id),' +
       'FOREIGN KEY (video_id) REFERENCES video(video_id),' +
       'FOREIGN KEY (video_meta_id) REFERENCES video_meta(video_meta_id) ON DELETE CASCADE,' +
@@ -217,8 +218,8 @@ export class VideoRepository {
   public saveStatistic = async (videoStatistic: VideoStatistic): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, dislikes, favouriteCount, commentCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [videoStatistic.video_id, videoStatistic.video_meta.video_meta_id, videoStatistic.video_thumbnail.video_thumbnail_id, videoStatistic.views, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount],
+        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, dislikes, favouriteCount, commentCount, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [videoStatistic.video_id, videoStatistic.video_meta.video_meta_id, videoStatistic.video_thumbnail.video_thumbnail_id, videoStatistic.views, videoStatistic.likes, videoStatistic.dislikes, videoStatistic.favouriteCount, videoStatistic.commentCount, videoStatistic.success_factor],
 
         err => {
           if (err) reject(err)

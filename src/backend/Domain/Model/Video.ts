@@ -9,6 +9,13 @@ import { ChannelRepository } from '../Repository/ChannelRepository'
 import { callVideoStatistics } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { VideoThumbnail } from './VideoThumbnail'
 
+interface successFactors {
+  views: number
+  likes: number
+  dislikes: number
+  commentCount: number
+}
+
 export class Video implements VideoInterface {
   video_id: string
   channel_id: string
@@ -56,11 +63,10 @@ export class Video implements VideoInterface {
     })
   }
 
-  // TODO: Add Thumbnail table
   public loadStatsInRange = async (from: Date, to: Date): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'SELECT video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video_statistic LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE video_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
+        'SELECT video_meta.title, video_meta.description, video_meta.tags, video_thumbnail.thumbnail, video_statistic.* FROM video_statistic LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id LEFT JOIN video_thumbnail ON video_statistic.video_thumbnail_id = video_thumbnail.video_thumbnail_id WHERE video_id = ? AND (timestamp BETWEEN ? AND ?) ORDER BY timestamp DESC',
         [this.video_id, moment(from).format('YYYY-MM-DD HH:mm:ss'), moment(to).format('YYYY-MM-DD HH:mm:ss')],
 
         async (err, rows) => {
@@ -69,6 +75,7 @@ export class Video implements VideoInterface {
             this.statistics = rows.map(row => {
               const statistic = new VideoStatistic(row)
               statistic.video_meta = new VideoMeta(row)
+              statistic.video_thumbnail = new VideoThumbnail(row)
               return statistic
             })
             resolve(true)
@@ -84,6 +91,28 @@ export class Video implements VideoInterface {
     const channel = await ChannelRepository.Instance.getById(this.channel_id)
     channel.videos = [this]
     return channel
+  }
+
+  public loadPreviousVideosFromSameChannel = async (): Promise<Video[]> => {
+    return new Promise<Video[]>((resolve, reject) => {
+      connection.query(
+        'SELECT video.channel_id, video.upload_time, video.duration, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE (video.channel_id = ?) AND (video.upload_time < ?) AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY video.upload_time DESC LIMIT 50',
+        [this.channel_id, this.upload_time],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows.length > 0) {
+            resolve(rows.map(row => {
+              const video = new Video(row)
+              video.statistics = [ new VideoStatistic(row) ]
+              return video
+            }))
+          } else {
+            reject(new Error('No previous Videos found.'))
+          }
+        }
+      )
+    })
   }
 
   /**
@@ -135,7 +164,35 @@ export class Video implements VideoInterface {
         favouriteCount: apiResult.statistics.favouriteCount,
         commentCount: apiResult.statistics.commentCount,
         timestamp: new Date(),
+        success_factor: 5,
       })
+
+      await this.loadPreviousVideosFromSameChannel()
+        .then(async prevVideos => {
+          let previousSuccess: successFactors = prevVideos.reduce((a, b) => {
+            return {
+              views: a.views + b.statistics[0].views,
+              likes: a.likes + b.statistics[0].likes,
+              dislikes: a.dislikes + b.statistics[0].dislikes,
+              commentCount: a.commentCount + b.statistics[0].commentCount }
+          }, { views: 0, likes: 0, dislikes: 0, commentCount: 0 })
+
+          previousSuccess = {
+            views: previousSuccess.views / prevVideos.length,
+            likes: previousSuccess.likes / prevVideos.length,
+            dislikes: previousSuccess.dislikes / prevVideos.length,
+            commentCount: previousSuccess.commentCount / prevVideos.length,
+          }
+
+          stat.success_factor =
+            (2 * (apiResult.statistics.viewCount / previousSuccess.views)) +
+            (apiResult.statistics.likeCount / previousSuccess.likes) +
+            (apiResult.statistics.dislikeCount / previousSuccess.dislikes) +
+            (apiResult.statistics.commentCount / previousSuccess.commentCount)
+
+          console.log('SUCCESS: Calculated success factor of ' + stat.success_factor + ' for video with the id ' + this.video_id)
+        })
+        .catch(e => console.error(e))
 
       await VideoRepository.Instance.saveStatistic(stat)
 

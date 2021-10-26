@@ -15,6 +15,7 @@ export class VideoStatistic implements VideoStatisticInterface {
   favouriteCount: number
   commentCount: number
   timestamp: Date
+  success_factor: number
 
   constructor (props: VideoStatisticInterface) {
     this.video_statistic_id = props.video_statistic_id
@@ -25,6 +26,7 @@ export class VideoStatistic implements VideoStatisticInterface {
     this.favouriteCount = props.favouriteCount
     this.commentCount = props.commentCount
     this.timestamp = props.timestamp
+    this.success_factor = props.success_factor
 
     if (props.video_meta) this.video_meta = new VideoMeta(props.video_meta)
     else this.video_meta = new VideoMeta(EMPTY_VIDEO_META)

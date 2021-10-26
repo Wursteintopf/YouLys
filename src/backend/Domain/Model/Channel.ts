@@ -13,10 +13,12 @@ export class Channel implements ChannelInterface {
   created_at: Date
   statistics: ChannelStatistic[]
   videos: Video[]
+  tracked: boolean
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
     this.created_at = props.created_at
+    this.tracked = props.tracked
 
     if (props.statistics) this.statistics = props.statistics.map(stat => new ChannelStatistic(stat))
     else this.statistics = []

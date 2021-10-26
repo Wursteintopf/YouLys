@@ -12,6 +12,7 @@ export interface VideoStatisticInterface {
   favouriteCount: number
   commentCount: number
   timestamp: Date
+  success_factor: number
 }
 
 export const EMPTY_VIDEO_STATISTIC: VideoStatisticInterface = {
@@ -25,4 +26,5 @@ export const EMPTY_VIDEO_STATISTIC: VideoStatisticInterface = {
   video_statistic_id: 0,
   video_thumbnail: EMPTY_VIDEO_THUMBNAIL,
   views: 0,
+  success_factor: 5,
 }
