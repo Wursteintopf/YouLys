@@ -145,12 +145,14 @@ export class Video implements VideoInterface {
       let thumb = new VideoThumbnail({
         video_thumbnail_id: 0,
         thumbnail: apiResult.snippet.thumbnails.maxres ? apiResult.snippet.thumbnails.maxres.url : (apiResult.snippet.thumbnails.standard ? apiResult.snippet.thumbnails.standard.url : apiResult.snippet.thumbnails.high.url),
+        faces: []
       })
 
       if (statsLoaded && thumb.equals(this.statistics[0].video_thumbnail)) {
         thumb = this.statistics[0].video_thumbnail
       } else {
         thumb.video_thumbnail_id = await VideoRepository.Instance.saveThumbnail(thumb)
+        await thumb.detectFaces()
       }
 
       const stat = new VideoStatistic({

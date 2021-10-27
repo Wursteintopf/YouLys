@@ -4,6 +4,7 @@ import { VideoStatistic } from '../Model/VideoStatistic'
 import { VideoMeta } from '../Model/VideoMeta'
 import { VideoThumbnail } from '../Model/VideoThumbnail'
 import moment from 'moment'
+import { Face } from '../Model/Face'
 
 export class VideoRepository {
   private static instance: VideoRepository
@@ -73,8 +74,8 @@ export class VideoRepository {
       'success_factor FLOAT,' +
       'PRIMARY KEY (video_statistic_id),' +
       'FOREIGN KEY (video_id) REFERENCES video(video_id),' +
-      'FOREIGN KEY (video_meta_id) REFERENCES video_meta(video_meta_id) ON DELETE CASCADE,' +
-      'FOREIGN KEY (video_thumbnail_id) REFERENCES video_thumbnail(video_thumbnail_id) ON DELETE CASCADE,' +
+      'FOREIGN KEY (video_meta_id) REFERENCES video_meta(video_meta_id),' +
+      'FOREIGN KEY (video_thumbnail_id) REFERENCES video_thumbnail(video_thumbnail_id),' +
       'INDEX (timestamp)' +
       ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
 
@@ -97,6 +98,7 @@ export class VideoRepository {
     this.setUpVideoMetaTable()
     this.setUpVideoThumbnailTable()
     this.setUpVideoStatisticTable()
+    Face.setUpFaceTable()
   }
 
   public static get Instance () {
