@@ -1,5 +1,6 @@
+import '@tensorflow/tfjs-node'
 import * as canvas from 'canvas'
-import * as faceapi from 'face-api.js'
+import * as faceapi from '@vladmandic/face-api'
 import * as path from 'path'
 
 const { Canvas, Image, ImageData } = canvas
@@ -11,7 +12,7 @@ export const faceDetectionNet = faceapi.nets.tinyFaceDetector
 const inputSize = 480
 const scoreThreshold = 0.5
 
-function getFaceDetectorOptions(net: faceapi.NeuralNetwork<any>) {
+function getFaceDetectorOptions (net: faceapi.NeuralNetwork<any>) {
   return new faceapi.TinyFaceDetectorOptions({ inputSize, scoreThreshold })
 }
 

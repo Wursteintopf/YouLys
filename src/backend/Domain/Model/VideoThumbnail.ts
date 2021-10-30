@@ -39,5 +39,6 @@ export class VideoThumbnail implements VideoThumbnailInterface {
         face.create()
       })
     }
+    console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Faces')
   }
 }
