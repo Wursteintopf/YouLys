@@ -53,6 +53,7 @@ export class Video implements VideoInterface {
             const stat = new VideoStatistic(rows[0])
             stat.video_meta = new VideoMeta(rows[0])
             stat.video_thumbnail = new VideoThumbnail(rows[0])
+            stat.video_thumbnail.loadFaces()
             this.statistics = [stat]
             resolve(true)
           } else {
@@ -73,10 +74,11 @@ export class Video implements VideoInterface {
           if (err) reject(err)
           if (rows.length > 0) {
             this.statistics = rows.map(row => {
-              const statistic = new VideoStatistic(row)
-              statistic.video_meta = new VideoMeta(row)
-              statistic.video_thumbnail = new VideoThumbnail(row)
-              return statistic
+              const stat = new VideoStatistic(row)
+              stat.video_meta = new VideoMeta(row)
+              stat.video_thumbnail = new VideoThumbnail(row)
+              stat.video_thumbnail.loadFaces()
+              return stat
             })
             resolve(true)
           } else {

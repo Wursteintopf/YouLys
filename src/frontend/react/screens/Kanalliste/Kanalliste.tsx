@@ -43,7 +43,7 @@ const Kanalliste: React.FC = () => {
         <ContentBox title='Kanäle'>
           <ChannelListStyled>
             {
-              channels.map(channel => {
+              channels.sort((a, b) => b.statistics[0].subscriber_count - a.statistics[0].subscriber_count).map(channel => {
                 return (
                   <ChannelListEntry key={channel.channel_id}>
                     <ChannelListProfilePicture>
@@ -69,8 +69,8 @@ const Kanalliste: React.FC = () => {
                         <Headline>Erfolgsfaktor</Headline>
                         <p>
                           Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
-                          Dabei werden immer das neuste Video mit den 30 vorhergehenden Videos verglichen. Der Erfolgsfaktor
-                          eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 30 Videos.
+                          Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen. Der Erfolgsfaktor
+                          eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 50 Videos.
                           <br /><br />
                           Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                         </p>

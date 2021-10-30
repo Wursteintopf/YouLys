@@ -30,7 +30,7 @@ const VideoList: React.FC<VideoListProps> = (props) => {
   return (
     <VideoListStyled>
       {
-        props.videos.map((video, index) => {
+        props.videos.filter(e => e.statistics.length > 0).map((video, index) => {
           return (
             <VideoListEntry key={index}>
               <VideoListThumbnail>
@@ -45,7 +45,7 @@ const VideoList: React.FC<VideoListProps> = (props) => {
                 <VideoListSmallText>Aufrufe</VideoListSmallText>
               </VideoListViews>
               <VideoListSuccess>
-                A++
+                {video.statistics[0].success_factor}
                 <VideoListSmallText>Erfolgsfaktor</VideoListSmallText>
               </VideoListSuccess>
               <VideoListButton>

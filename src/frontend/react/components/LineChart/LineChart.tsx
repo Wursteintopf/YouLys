@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import bezierSpline from '@freder/bezier-spline'
 import { scaleLinear, scaleTime } from 'd3-scale'
 import { path } from 'd3-path'
 import { min, max } from 'd3-array'
@@ -10,13 +9,18 @@ import numberFormatter from '../../../util/numberFormatter'
 import moment from 'moment'
 
 interface LineChartProps {
-  values: number[]
-  timeValues: Date[]
+  values: {
+    value: number
+    timestamp: Date
+  }[]
 }
 
 const LineChart: React.FC<LineChartProps> = (props) => {
   const from = useSelector(getFrom)
   const to = useSelector(getTo)
+
+  const sorted = props.values.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+  console.log(sorted)
 
   const height = 300
   const width = 548
@@ -25,7 +29,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const spacingBottom = 20
 
   const y = useMemo(() => {
-    return scaleLinear().domain([min(props.values), max(props.values)]).range([height - spacingBottom - 30, 30])
+    return scaleLinear().domain([min(props.values.map(v => v.value)), max(props.values.map(v => v.value))]).range([height - spacingBottom - 30, 30])
   }, [props])
 
   const x = useMemo(() => {
@@ -35,21 +39,14 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const yTicks = y.ticks(3)
   const xTicks = x.ticks(5)
 
-  const points = props.values.map((value, index) => [x(props.timeValues[index]), y(value)])
-  const controlPoints = bezierSpline.getControlPoints(points)
-  const combined = bezierSpline.combinePoints(points, controlPoints)
-  const segments = bezierSpline.getSegments(combined)
-
   const area = (context) => {
-    console.log(props.values)
-
-    segments.forEach((segment, index) => {
-      if (index === 0) context.moveTo(segment[0][0], segment[0][1])
-      context.bezierCurveTo(segment[1][0], segment[1][1], segment[2][0], segment[2][1], segment[3][0], segment[3][1])
+    sorted.forEach((point, index) => {
+      if (index === 0) context.moveTo(x(point.timestamp), y(point.value))
+      else context.lineTo(x(point.timestamp), y(point.value))
     })
-    context.lineTo(segments[segments.length - 1][3][0], height - spacingBottom)
-    context.lineTo(segments[0][0][0], height - spacingBottom)
-    context.lineTo(segments[0][0][0], segments[0][0][1])
+    context.lineTo(x(sorted[sorted.length - 1].timestamp), height - spacingBottom)
+    context.lineTo(x(sorted[0].timestamp), height - spacingBottom)
+    context.lineTo(x(sorted[0].timestamp), y(sorted[0].value))
     return context
   }
 

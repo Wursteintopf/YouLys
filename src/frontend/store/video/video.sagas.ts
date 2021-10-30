@@ -20,6 +20,9 @@ function * fetchCurrentVideoSaga (action) {
   const response = yield axios.post(channelBaseUrl + '/getVideoWithStatsInRange', requestData)
   const data = yield response.data
 
+  data.result.video.statistics = data.result.video.statistics.map(stat => { return { ...stat, timestamp: new Date(stat.timestamp) } })
+  data.result.channel.statistics = data.result.channel.statistics.map(stat => { return { ...stat, timestamp: new Date(stat.timestamp) } })
+
   if (data.status === ApiStatusCodes.SUCCESS) {
     yield put(setCurrentVideo(data.result.video))
     yield put(setCurrentChannel(data.result.channel))

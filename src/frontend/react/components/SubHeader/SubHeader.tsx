@@ -15,11 +15,12 @@ import { getCurrentVideo } from '../../../store/video/video.selector'
 import clampByLength from '../../../util/clampByLength'
 
 const SubHeader: React.FC = props => {
-  const history = useHistory()
   const channel = useSelector(getCurrentChannel)
   const video = useSelector(getCurrentVideo)
 
   const path = window.location.pathname.split('/')[1]
+
+  if (!channel.statistics[0]) return <></>
 
   const renderBreadcrumb = () => {
     switch (path) {

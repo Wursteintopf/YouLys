@@ -6,7 +6,7 @@ import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper
 import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
-import { getCurrentChannel } from '../../../store/channel/channel.selector'
+import { getCurrentChannel, getNewestChannelStatistic } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
 import {
@@ -32,6 +32,7 @@ const Kanaldetailseite: React.FC = () => {
   const to = useSelector(getTo)
   const fetching = useSelector(getFetching)
   const channel = useSelector(getCurrentChannel)
+  const stat = useSelector(getNewestChannelStatistic)
 
   const dispatch = useDispatch()
 
@@ -47,10 +48,10 @@ const Kanaldetailseite: React.FC = () => {
       <SubHeader>
         <ChannelHeader>
           <ChannelDetailsProfilePicture>
-            <img src={channel.statistics[0].channel_meta.profile_picture} />
+            <img src={stat.channel_meta.profile_picture} />
           </ChannelDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{channel.statistics[0].channel_meta.username}</Headline>
+            <Headline>{stat.channel_meta.username}</Headline>
             <ChannelDetailsLink href={'https://www.youtube.com/channel/' + channel.channel_id}>Zum Youtube Kanal</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>
@@ -61,11 +62,11 @@ const Kanaldetailseite: React.FC = () => {
           <ContentBox title='Übersicht'>
             <ChannelDetailOverview>
               <ChannelListSubs>
-                {numberFormatter(channel.statistics[0].subscriber_count, 1)}
+                {numberFormatter(stat.subscriber_count, 1)}
                 <ChannelListSmallText>Abonennten</ChannelListSmallText>
               </ChannelListSubs>
               <ChannelListClicks>
-                {numberFormatter(channel.statistics[0].view_count, 1)}
+                {numberFormatter(stat.view_count, 1)}
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
               </ChannelListClicks>
               <ChannelListSuccess>
@@ -100,8 +101,12 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.reverse().map(stat => stat.view_count ? stat.view_count : 0)}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                    values={channel.statistics.map(stat => {
+                      return {
+                        value: stat.view_count,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
+                    })}
                   />
             }
           </ContentBox>
@@ -110,8 +115,12 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.reverse().map(stat => stat.subscriber_count ? stat.subscriber_count : 0)}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                    values={channel.statistics.map(stat => {
+                      return {
+                        value: stat.subscriber_count,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
+                    })}
                   />
             }
           </ContentBox>
@@ -123,12 +132,15 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.reverse().map((stat, index) => {
-                      if (index === 0 || !stat.view_count || !channel.statistics || !channel.statistics[index - 1].view_count) return 0
-                      // @ts-ignore
-                      else return stat.view_count - channel.statistics[index - 1].view_count
+                    values={channel.statistics.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).map((stat, index) => {
+                      let views = 0
+                      if (index === 0 || !stat.view_count || !channel.statistics || !channel.statistics[index - 1].view_count) views = 0
+                      else views = stat.view_count - channel.statistics[index - 1].view_count
+                      return {
+                        value: views,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
                     })}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
           </ContentBox>
@@ -137,12 +149,15 @@ const Kanaldetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={channel.statistics.map((stat, index) => {
-                      if (index === 0 || !stat.subscriber_count || !channel.statistics || !channel.statistics[index - 1].subscriber_count) return 0
-                      // @ts-ignore
-                      else return stat.subscriber_count - channel.statistics[index - 1].subscriber_count
+                    values={channel.statistics.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).map((stat, index) => {
+                      let subs = 0
+                      if (index === 0 || !stat.subscriber_count || !channel.statistics || !channel.statistics[index - 1].subscriber_count) subs = 0
+                      else subs = stat.subscriber_count - channel.statistics[index - 1].subscriber_count
+                      return {
+                        value: subs,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
                     })}
-                    timeValues={channel.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
           </ContentBox>
