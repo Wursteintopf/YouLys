@@ -70,7 +70,12 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
 
       const videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
 
-      await Promise.all(videos.map(video => video.loadNewestStats().catch(e => { return EMPTY_VIDEO_STATISTIC })))
+      await Promise.all(videos.map(video => {
+        return video.loadNewestStats()
+          .catch(e => {
+            console.error(e)
+          })
+      }))
 
       channel.videos = videos
 
@@ -79,7 +84,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
         result: channel,
       })
     } catch (e) {
-      console.log(e)
+      console.error(e)
       res.send({
         status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
       })
