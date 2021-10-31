@@ -5,6 +5,7 @@ import moment from 'moment'
 import { ChannelRepository } from '../Domain/Repository/ChannelRepository'
 import { VideoRepository } from '../Domain/Repository/VideoRepository'
 import { Channel } from '../Domain/Model/Channel'
+import { EMPTY_VIDEO_STATISTIC } from '../../shared/Domain/Model/VideoStatisticInterface'
 
 const channelRouter = express.Router()
 channelRouter.use(bodyParser.json())
@@ -57,6 +58,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
     try {
       channel = await ChannelRepository.Instance.getById(req.body.channelId)
     } catch (e) {
+      console.log(e)
       res.send({
         status: ApiStatusCodes.NOT_FOUND,
       })
@@ -68,7 +70,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
 
       const videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
 
-      await Promise.all(videos.map(video => video.loadNewestStats()))
+      await Promise.all(videos.map(video => video.loadNewestStats().catch(e => { return EMPTY_VIDEO_STATISTIC })))
 
       channel.videos = videos
 
@@ -77,6 +79,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
         result: channel,
       })
     } catch (e) {
+      console.log(e)
       res.send({
         status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
       })

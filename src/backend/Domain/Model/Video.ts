@@ -8,6 +8,7 @@ import { Channel } from './Channel'
 import { ChannelRepository } from '../Repository/ChannelRepository'
 import { callVideoStatistics } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { VideoThumbnail } from './VideoThumbnail'
+import { median } from '../../../shared/Utils/mathUtil'
 
 interface successFactors {
   views: number
@@ -53,6 +54,7 @@ export class Video implements VideoInterface {
             const stat = new VideoStatistic(rows[0])
             stat.video_meta = new VideoMeta(rows[0])
             stat.video_thumbnail = new VideoThumbnail(rows[0])
+            stat.video_thumbnail.loadFaces()
             this.statistics = [stat]
             resolve(true)
           } else {
@@ -73,10 +75,11 @@ export class Video implements VideoInterface {
           if (err) reject(err)
           if (rows.length > 0) {
             this.statistics = rows.map(row => {
-              const statistic = new VideoStatistic(row)
-              statistic.video_meta = new VideoMeta(row)
-              statistic.video_thumbnail = new VideoThumbnail(row)
-              return statistic
+              const stat = new VideoStatistic(row)
+              stat.video_meta = new VideoMeta(row)
+              stat.video_thumbnail = new VideoThumbnail(row)
+              stat.video_thumbnail.loadFaces()
+              return stat
             })
             resolve(true)
           } else {
@@ -104,7 +107,7 @@ export class Video implements VideoInterface {
           if (rows.length > 0) {
             resolve(rows.map(row => {
               const video = new Video(row)
-              video.statistics = [ new VideoStatistic(row) ]
+              video.statistics = [new VideoStatistic(row)]
               return video
             }))
           } else {
@@ -145,7 +148,7 @@ export class Video implements VideoInterface {
       let thumb = new VideoThumbnail({
         video_thumbnail_id: 0,
         thumbnail: apiResult.snippet.thumbnails.maxres ? apiResult.snippet.thumbnails.maxres.url : (apiResult.snippet.thumbnails.standard ? apiResult.snippet.thumbnails.standard.url : apiResult.snippet.thumbnails.high.url),
-        faces: []
+        faces: [],
       })
 
       if (statsLoaded && thumb.equals(this.statistics[0].video_thumbnail)) {
@@ -171,30 +174,26 @@ export class Video implements VideoInterface {
 
       await this.loadPreviousVideosFromSameChannel()
         .then(async prevVideos => {
-          let previousSuccess: successFactors = prevVideos.reduce((a, b) => {
-            return {
-              views: a.views + b.statistics[0].views,
-              likes: a.likes + b.statistics[0].likes,
-              dislikes: a.dislikes + b.statistics[0].dislikes,
-              commentCount: a.commentCount + b.statistics[0].commentCount }
-          }, { views: 0, likes: 0, dislikes: 0, commentCount: 0 })
+          const medianViews = median(prevVideos.map(v => v.statistics[0].views ? v.statistics[0].views : 0))
+          const medianLikes = median(prevVideos.map(v => v.statistics[0].likes ? v.statistics[0].likes : 0))
+          const medianDislikes = median(prevVideos.map(v => v.statistics[0].dislikes ? v.statistics[0].dislikes : 0))
+          const medianCommentCount = median(prevVideos.map(v => v.statistics[0].commentCount ? v.statistics[0].commentCount : 0))
 
-          previousSuccess = {
-            views: previousSuccess.views / prevVideos.length,
-            likes: previousSuccess.likes / prevVideos.length,
-            dislikes: previousSuccess.dislikes / prevVideos.length,
-            commentCount: previousSuccess.commentCount / prevVideos.length,
-          }
+          const currentViews = apiResult.statistics.viewCount ? apiResult.statistics.viewCount : 0
+          const currentLikes = apiResult.statistics.likeCount ? apiResult.statistics.likeCount : 0
+          const currentDislikes = apiResult.statistics.dislikeCount ? apiResult.statistics.dislikeCount : 0
+          const currentCommentCount = apiResult.statistics.commentCount ? apiResult.statistics.commentCount : 0
+          
+          const comparedViews = currentViews === 0 ? 0 : (medianViews === 0 ? currentViews : currentViews / medianViews)
+          const comparedLikes = currentLikes === 0 ? 0 : (medianLikes === 0 ? currentLikes : currentLikes / medianLikes)
+          const comparedDislikes = currentDislikes === 0 ? 0 : (medianDislikes === 0 ? currentDislikes : currentDislikes / medianDislikes)
+          const comparedCommentCount = currentCommentCount === 0 ? 0 : (medianCommentCount === 0 ? currentCommentCount : currentCommentCount / medianCommentCount)
 
-          stat.success_factor =
-            (2 * (apiResult.statistics.viewCount / previousSuccess.views)) +
-            (apiResult.statistics.likeCount / previousSuccess.likes) +
-            (apiResult.statistics.dislikeCount / previousSuccess.dislikes) +
-            (apiResult.statistics.commentCount / previousSuccess.commentCount)
+          stat.success_factor = (2 * comparedViews) + comparedLikes + comparedDislikes + comparedCommentCount
 
           console.log('SUCCESS: Calculated success factor of ' + stat.success_factor + ' for video with the id ' + this.video_id)
         })
-        .catch(e => console.error(e))
+        .catch(() => console.log('ERROR: Success factor not calculated. No previous videos found for video with the id ' + this.video_id))
 
       await VideoRepository.Instance.saveStatistic(stat)
 

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { setFetching } from '../../../store/ui/ui.actions'
 import { fetchCurrentVideo } from '../../../store/video/video.actions'
-import { getCurrentVideo } from '../../../store/video/video.selector'
+import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/video/video.selector'
 import Progress from '../../components/Progress/Progress'
 import {
   ChannelListClicks,
@@ -25,14 +25,14 @@ import {
 } from '../Kanaldetailseite/KanaldetailseiteStyling'
 import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
-import { useHistory } from 'react-router'
+import themeVariables from '../../../styles/themeVariables'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
   const to = useSelector(getTo)
   const fetching = useSelector(getFetching)
   const video = useSelector(getCurrentVideo)
-  const history = useHistory()
+  const stat = useSelector(getNewestVideoStatistic)
 
   const dispatch = useDispatch()
 
@@ -41,17 +41,17 @@ const Videodetailseite: React.FC = () => {
     dispatch(fetchCurrentVideo(window.location.pathname.split('/')[2]))
   }, [from, to])
 
-  if (video.video_id === '' || !video.statistics) return <Progress />
+  if (video.video_id === '' || !stat) return <Progress />
 
   return (
     <>
       <SubHeader>
         <ChannelHeader>
           <VideoDetailsProfilePicture>
-            <img src={video.statistics[0].video_thumbnail.thumbnail} />
+            <img src={stat.video_thumbnail.thumbnail} />
           </VideoDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{video.statistics[0].video_meta.title}</Headline>
+            <Headline>{stat.video_meta.title}</Headline>
             <ChannelDetailsLink href={'https://www.youtube.com/watch?v=' + video.video_id}>Zum YouTube Video</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>
@@ -66,11 +66,11 @@ const Videodetailseite: React.FC = () => {
                 <ChannelListSmallText>Veröffentlicht</ChannelListSmallText>
               </ChannelListSubs>
               <ChannelListClicks>
-                {numberFormatter(video.statistics[0].views, 1)}
+                {numberFormatter(stat.views, 1)}
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
               </ChannelListClicks>
               <ChannelListSuccess>
-                A++
+                {stat.success_factor}
                 <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
                 <ToolTip
                   offSetX={65}
@@ -78,7 +78,7 @@ const Videodetailseite: React.FC = () => {
                   <Headline>Erfolgsfaktor</Headline>
                   <p>
                     Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
-                    Dabei werden immer das neuste Video mit den 30 vorhergehenden Videos verglichen.
+                    Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen.
                     <br /><br />
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                   </p>
@@ -94,8 +94,12 @@ const Videodetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={video.statistics.reverse().map(stat => stat.views ? stat.views : 0)}
-                    timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
+                    values={video.statistics.map(stat => {
+                      return {
+                        value: stat.views,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
+                    })}
                   />
             }
           </ContentBox>
@@ -105,13 +109,42 @@ const Videodetailseite: React.FC = () => {
                 ? <Progress />
                 : <LineChart
                     values={video.statistics.map((stat, index) => {
-                      if (!stat.views || index === 0 || !video.statistics || !video.statistics[index - 1].views) return 0
-                      // @ts-ignore
-                      else return stat.views - video.statistics[index - 1].views
+                      let views = 0
+                      if (!stat.views || index === 0 || !video.statistics || !video.statistics[index - 1].views) views = 0
+                      else views = stat.views - video.statistics[index - 1].views
+                      return {
+                        value: views,
+                        timestamp: moment(stat.timestamp).startOf('day').toDate(),
+                      }
                     })}
-                    timeValues={video.statistics.map(s => moment(s.timestamp).startOf('day').toDate())}
                   />
             }
+          </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Analysiertes Thumbnail'>
+            <svg viewBox='0 0 1280 720'>
+              <image href={stat.video_thumbnail.thumbnail} />
+              {
+                stat.video_thumbnail.faces.map((face, index) => {
+                  return (
+                    <g key={index}>
+                      <rect x={face.x} y={face.y} width={face.width} height={face.height} fill='none' strokeWidth={5} stroke={themeVariables.colorBlue} />
+                      <g transform={`translate(${face.x},${face.y + face.height})`}>
+                        <rect x={-2.5} y={0} width={270} height={70} fill={themeVariables.colorBlue} />
+                        <text x={7} y={20} fill={themeVariables.colorWhite} fontWeight={600}>Gender:</text>
+                        <text x={95} y={20} fill={themeVariables.colorWhite}>{face.gender === 'male' ? 'männlich' : 'weiblich'} ({(face.gender_probability * 100).toFixed(0)}% sicher)</text>
+                        <text x={7} y={40} fill={themeVariables.colorWhite} fontWeight={600}>Alter:</text>
+                        <text x={95} y={40} fill={themeVariables.colorWhite}>ca. {face.age.toFixed(0)}</text>
+                        <text x={7} y={60} fill={themeVariables.colorWhite} fontWeight={600}>Stimmung:</text>
+                        <text x={95} y={60} fill={themeVariables.colorWhite}>{face.expression}</text>
+                      </g>
+                    </g>
+                  )
+                })
+              }
+            </svg>
           </ContentBox>
         </ContentBoxWrapper>
       </ContentContainer>

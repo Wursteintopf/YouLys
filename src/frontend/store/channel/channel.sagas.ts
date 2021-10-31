@@ -29,6 +29,8 @@ function * fetchCurrentChannelSaga (action) {
   const response = yield axios.post(channelBaseUrl + '/getChannelWithStatsInRange', requestData)
   const data = yield response.data
 
+  data.result.statistics = data.result.statistics.map(stat => { return { ...stat, timestamp: new Date(stat.timestamp) } })
+
   if (data.status === ApiStatusCodes.SUCCESS) {
     yield put(setCurrentChannel(data.result))
     yield put(setFetching(false))

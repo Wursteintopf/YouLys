@@ -1,6 +1,9 @@
 import { VideoThumbnailInterface } from '../../../shared/Domain/Model/VideoThumbnailInterface'
 import { detectFaces } from '../../FaceApi/FaceApi'
 import { Face } from './Face'
+import { connection } from '../../Helper/DatabaseHelper'
+import { VideoStatistic } from './VideoStatistic'
+import { VideoMeta } from './VideoMeta'
 
 export class VideoThumbnail implements VideoThumbnailInterface {
   video_thumbnail_id: number
@@ -40,5 +43,27 @@ export class VideoThumbnail implements VideoThumbnailInterface {
       })
     }
     console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Faces')
+  }
+
+  public loadFaces = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'SELECT * FROM face WHERE video_thumbnail_id = ?',
+        [this.video_thumbnail_id],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows.length > 0) {
+            rows.forEach(row => {
+              const face = new Face(row)
+              this.faces = [...this.faces, face]
+            })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        },
+      )
+    })
   }
 }
