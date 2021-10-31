@@ -1,30 +1,31 @@
 import { ChannelStatistic } from './ChannelStatistic'
 import { Video } from './Video'
-import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
+import {
+  AveragePerformanceInterface,
+  ChannelInterface,
+  EMPTY_AVERAGE_PERFORMANCE,
+} from '../../../shared/Domain/Model/ChannelInterface'
 import { connection } from '../../Helper/DatabaseHelper'
 import moment from 'moment'
 import { ChannelMeta } from './ChannelMeta'
 import { ChannelRepository } from '../Repository/ChannelRepository'
 import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
+import { quantileSeq, min, max } from 'mathjs'
+import { percentageLikes } from '../../../shared/Utils/mathUtil'
 
 export class Channel implements ChannelInterface {
   channel_id: string
   created_at: Date
-  statistics: ChannelStatistic[]
-  videos: Video[]
   tracked: boolean
+  statistics: ChannelStatistic[] = []
+  videos: Video[] = []
+  average_performance: AveragePerformanceInterface = EMPTY_AVERAGE_PERFORMANCE
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
     this.created_at = props.created_at
     this.tracked = props.tracked
-
-    if (props.statistics) this.statistics = props.statistics.map(stat => new ChannelStatistic(stat))
-    else this.statistics = []
-
-    if (props.videos) this.videos = props.videos.map(video => new Video(video))
-    else this.videos = []
   }
 
   public save = async (): Promise<boolean> => {
@@ -83,6 +84,46 @@ export class Channel implements ChannelInterface {
     this.videos = await VideoRepository.Instance.getByChannelAndUploadTime(this.channel_id, from, to)
     const promises = await Promise.all(this.videos.map(video => video.loadNewestStats()))
     return (!promises.includes(false))
+  }
+
+  public loadAveragePerformance = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'SELECT video_statistic.views, video_statistic.likes, video_statistic.dislikes, video_statistic.commentCount FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE channel_id = ? AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1) ORDER BY upload_time DESC LIMIT 50',
+        [this.channel_id],
+
+        (err, rows) => {
+          if (err) console.log(err)
+          const views = rows.map(row => row.views)
+          const likePercentages = rows.map(row => percentageLikes(row.likes, row.dislikes))
+          const commentCounts = rows.map(row => row.commentCount)
+          this.average_performance = {
+            views: {
+              minimum: min(views),
+              lowerQuantile: quantileSeq(views, 0.25) as number,
+              median: quantileSeq(views, 0.5) as number,
+              upperQuantile: quantileSeq(views, 0.75) as number,
+              maximum: max(views),
+            },
+            likePercentage: {
+              minimum: min(likePercentages),
+              lowerQuantile: quantileSeq(likePercentages, 0.25) as number,
+              median: quantileSeq(likePercentages, 0.5) as number,
+              upperQuantile: quantileSeq(likePercentages, 0.75) as number,
+              maximum: max(likePercentages),
+            },
+            commentCount: {
+              minimum: min(commentCounts),
+              lowerQuantile: quantileSeq(commentCounts, 0.25) as number,
+              median: quantileSeq(commentCounts, 0.5) as number,
+              upperQuantile: quantileSeq(commentCounts, 0.75) as number,
+              maximum: max(commentCounts),
+            },
+          }
+          resolve(true)
+        },
+      )
+    })
   }
 
   /**

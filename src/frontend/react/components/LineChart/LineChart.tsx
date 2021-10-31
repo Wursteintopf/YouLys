@@ -20,7 +20,6 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const to = useSelector(getTo)
 
   const sorted = props.values.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-  console.log(sorted)
 
   const height = 300
   const width = 548

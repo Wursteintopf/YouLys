@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import themeVariables from '../../../styles/themeVariables'
+import { Link } from 'react-router-dom'
 
 export const SubHeaderStyled = styled.div`
   height: ${themeVariables.headerHeight}px;
@@ -25,6 +26,6 @@ export const BreadCrumb = styled.div`
   font-size: ${themeVariables.fontSizeSmall}px;
 `
 
-export const BreadCrumbLink = styled.a`
+export const BreadCrumbLink = styled(Link)`
   color: ${themeVariables.colorBlue};
 `

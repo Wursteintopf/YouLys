@@ -25,6 +25,7 @@ videoRouter.post('/getVideoWithStatsInRange', (req, res) => {
           ChannelRepository.Instance.getById(video.channel_id)
             .then(async channel => {
               await channel.loadNewestStats()
+              await channel.loadAveragePerformance()
 
               res.send({
                 status: ApiStatusCodes.SUCCESS,

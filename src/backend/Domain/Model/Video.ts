@@ -10,13 +10,6 @@ import { callVideoStatistics } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { VideoThumbnail } from './VideoThumbnail'
 import { median } from '../../../shared/Utils/mathUtil'
 
-interface successFactors {
-  views: number
-  likes: number
-  dislikes: number
-  commentCount: number
-}
-
 export class Video implements VideoInterface {
   video_id: string
   channel_id: string
@@ -45,7 +38,7 @@ export class Video implements VideoInterface {
   public loadNewestStats = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'SELECT video_meta.title, video_meta.description, video_meta.tags, video_thumbnail.thumbnail, video_statistic.* FROM video_statistic LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id LEFT JOIN video_thumbnail ON video_statistic.video_thumbnail_id = video_thumbnail.video_thumbnail_id WHERE video_id = ? AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic ORDER BY timestamp DESC LIMIT 1)',
+        'SELECT video_meta.title, video_meta.description, video_meta.tags, video_thumbnail.thumbnail, video_statistic.* FROM video_statistic LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id LEFT JOIN video_thumbnail ON video_statistic.video_thumbnail_id = video_thumbnail.video_thumbnail_id WHERE video_id = ? ORDER BY timestamp DESC LIMIT 1',
         [this.video_id],
 
         (err, rows) => {
@@ -96,7 +89,7 @@ export class Video implements VideoInterface {
     return channel
   }
 
-  public loadPreviousVideosFromSameChannel = async (): Promise<Video[]> => {
+  public loadFiftyPreviousVideosFromSameChannel = async (): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
         'SELECT video.channel_id, video.upload_time, video.duration, video_statistic.* FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE (video.channel_id = ?) AND (video.upload_time < ?) AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic ORDER BY timestamp DESC LIMIT 1) ORDER BY video.upload_time DESC LIMIT 50',
@@ -172,7 +165,7 @@ export class Video implements VideoInterface {
         success_factor: 5,
       })
 
-      await this.loadPreviousVideosFromSameChannel()
+      await this.loadFiftyPreviousVideosFromSameChannel()
         .then(async prevVideos => {
           const medianViews = median(prevVideos.map(v => v.statistics[0].views ? v.statistics[0].views : 0))
           const medianLikes = median(prevVideos.map(v => v.statistics[0].likes ? v.statistics[0].likes : 0))

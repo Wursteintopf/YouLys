@@ -26,6 +26,9 @@ import {
 import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
+import Performance from '../../components/Performance/Performance'
+import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
+import { percentageLikes } from '../../../../shared/Utils/mathUtil'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -60,16 +63,24 @@ const Videodetailseite: React.FC = () => {
       <ContentContainer>
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Übersicht'>
-            <ChannelDetailOverview>
-              <ChannelListSubs>
+            <VideoDetailOverview>
+              <VideoOverviewElement>
                 {moment(video.upload_time).format('DD.MM.YYYY')}
                 <ChannelListSmallText>Veröffentlicht</ChannelListSmallText>
-              </ChannelListSubs>
-              <ChannelListClicks>
+              </VideoOverviewElement>
+              <VideoOverviewElement>
                 {numberFormatter(stat.views, 1)}
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
-              </ChannelListClicks>
-              <ChannelListSuccess>
+              </VideoOverviewElement>
+              <VideoOverviewElement>
+                {numberFormatter(stat.commentCount, 0)}
+                <ChannelListSmallText>Kommentare</ChannelListSmallText>
+              </VideoOverviewElement>
+              <VideoOverviewElement>
+                {percentageLikes(stat.likes, stat.dislikes).toFixed(2)} %
+                <ChannelListSmallText>Likes/Dislikes</ChannelListSmallText>
+              </VideoOverviewElement>
+              <VideoOverviewElement>
                 {stat.success_factor}
                 <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
                 <ToolTip
@@ -78,13 +89,19 @@ const Videodetailseite: React.FC = () => {
                   <Headline>Erfolgsfaktor</Headline>
                   <p>
                     Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
-                    Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen.
+                    Dabei wird jedes Video immer mit den 50 vorhergehenden Videos verglichen.
                     <br /><br />
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                   </p>
                 </ToolTip>
-              </ChannelListSuccess>
-            </ChannelDetailOverview>
+              </VideoOverviewElement>
+            </VideoDetailOverview>
+          </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Performance im Vergleich zum Kanaldurchschnitt'>
+            <Performance />
           </ContentBox>
         </ContentBoxWrapper>
 

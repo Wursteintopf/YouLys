@@ -7,16 +7,15 @@ const run = async (): Promise<boolean> => {
   console.log('SUCCESS: Loaded channels from database')
 
   // Load Stats for all Channels
-  await Promise.all(channels.map(async channel => {
-    return channel.callStatistics()
-      .then(promise => { return promise })
-      .catch(err => err.log(err))
-  }))
+  for await (const channel of channels) {
+    channel.callStatistics()
+      .catch(err => console.error(err))
+  }
 
   console.log('SUCCESS: Fetched statistics for all channels')
 
   // Load Video Stats for all Channels
-  await Promise.all(channels.map(async channel => {
+  for await (const channel of channels) {
     await channel.callFiftyNewestVideos()
       .then(async () => {
         console.log('SUCCESS: Fetched 50 newest videos for channel with the id ' + channel.channel_id)
@@ -33,7 +32,7 @@ const run = async (): Promise<boolean> => {
         }
       })
       .catch(err => console.error(err))
-  }))
+  }
 
   return true
 }

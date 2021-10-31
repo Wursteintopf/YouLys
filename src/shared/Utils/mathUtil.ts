@@ -11,3 +11,7 @@ export const median = (values: number[]) => {
 
   return sorted[middle]
 }
+
+export const percentageLikes = (likes: number, dislikes: number) => {
+  return likes / ((likes + dislikes) / 100)
+}
