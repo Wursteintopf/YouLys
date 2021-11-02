@@ -17,6 +17,7 @@ function getFaceDetectorOptions (net: faceapi.NeuralNetwork<any>) {
 }
 
 export const detectFaces = async (url: string) => {
+  faceapi.tf.engine().startScope()
   await faceDetectionNet.loadFromDisk(path.join(__dirname, 'weights'))
   await faceapi.nets.faceLandmark68Net.loadFromDisk(path.join(__dirname, 'weights'))
   await faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))
@@ -30,5 +31,6 @@ export const detectFaces = async (url: string) => {
     .withFaceExpressions()
     .withAgeAndGender()
 
+  faceapi.tf.engine().endScope()
   return results
 }
