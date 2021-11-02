@@ -11,15 +11,11 @@ import { fetchCurrentVideo } from '../../../store/video/video.actions'
 import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/video/video.selector'
 import Progress from '../../components/Progress/Progress'
 import {
-  ChannelListClicks,
   ChannelListSmallText,
-  ChannelListSubs,
-  ChannelListSuccess,
 } from '../Kanalliste/KanallisteStyling'
 import numberFormatter from '../../../util/numberFormatter'
 import ToolTip from '../../components/ToolTip/ToolTip'
 import {
-  ChannelDetailOverview,
   ChannelDetailsLink,
   ChannelDetailsName, ChannelHeader, VideoDetailsProfilePicture,
 } from '../Kanaldetailseite/KanaldetailseiteStyling'
