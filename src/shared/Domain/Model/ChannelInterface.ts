@@ -12,7 +12,7 @@ export interface PerformanceInterface {
 export interface AveragePerformanceInterface {
   views: PerformanceInterface
   commentCount: PerformanceInterface
-  likePercentage: PerformanceInterface
+  likes: PerformanceInterface
 }
 
 export const EMPTY_AVERAGE_PERFORMANCE: AveragePerformanceInterface = {
@@ -23,7 +23,7 @@ export const EMPTY_AVERAGE_PERFORMANCE: AveragePerformanceInterface = {
     minimum: 0,
     upperQuantile: 0,
   },
-  likePercentage: {
+  likes: {
     lowerQuantile: 0,
     maximum: 0,
     median: 0,

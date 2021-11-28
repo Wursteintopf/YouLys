@@ -160,8 +160,9 @@ export class Channel implements ChannelInterface {
         (err, rows) => {
           if (err) console.log(err)
           const views = rows.map(row => row.views)
-          const likePercentages = rows.map(row => percentageLikes(row.likes, row.dislikes))
+          const likes = rows.map(row => row.likes)
           const commentCounts = rows.map(row => row.commentCount)
+
           this.average_performance = {
             views: {
               minimum: min(views),
@@ -170,12 +171,12 @@ export class Channel implements ChannelInterface {
               upperQuantile: quantileSeq(views, 0.75) as number,
               maximum: max(views),
             },
-            likePercentage: {
-              minimum: min(likePercentages),
-              lowerQuantile: quantileSeq(likePercentages, 0.25) as number,
-              median: quantileSeq(likePercentages, 0.5) as number,
-              upperQuantile: quantileSeq(likePercentages, 0.75) as number,
-              maximum: max(likePercentages),
+            likes: {
+              minimum: min(likes),
+              lowerQuantile: quantileSeq(likes, 0.25) as number,
+              median: quantileSeq(likes, 0.5) as number,
+              upperQuantile: quantileSeq(likes, 0.75) as number,
+              maximum: max(likes),
             },
             commentCount: {
               minimum: min(commentCounts),
@@ -265,8 +266,8 @@ export class Channel implements ChannelInterface {
       const apiResults = await callFiftyNewestVideosOfChannel(this.channel_id)
 
       this.videos = await Promise.all(apiResults.map(async result => {
-        const video = new Video({
-          video_id: result.snippet.resourceId.videoId,
+        const video = new Video(result.snippet.resourceId.videoId)
+        video.setAll({
           channel_id: this.channel_id,
           upload_time: new Date(result.snippet.publishedAt),
           duration: 0,

@@ -17,8 +17,8 @@ export class Video implements VideoInterface {
   duration = 0
   statistics: VideoStatistic[] = []
 
-  constructor (props: VideoInterface) {
-    this.video_id = props.video_id
+  constructor (video_id: string) {
+    this.video_id = video_id
   }
 
   /**
@@ -101,10 +101,16 @@ export class Video implements VideoInterface {
         (err, rows) => {
           if (err) reject(err)
           if (rows.length > 0) {
-            const stat = new VideoStatistic(rows[0])
-            stat.video_meta = new VideoMeta(rows[0])
-            stat.video_thumbnail = new VideoThumbnail(rows[0])
+            const stat = new VideoStatistic(rows[0].video_statistic_id)
+            stat.setAll(rows[0])
+
+            stat.video_meta = new VideoMeta(rows[0].video_meta_id)
+            stat.video_meta.setAll(rows[0])
+
+            stat.video_thumbnail = new VideoThumbnail(rows[0].video_thumbnail_id)
+            stat.video_thumbnail.setAll(rows[0])
             stat.video_thumbnail.loadFaces()
+
             this.statistics = [stat]
             resolve(true)
           } else {
@@ -125,10 +131,16 @@ export class Video implements VideoInterface {
           if (err) reject(err)
           if (rows.length > 0) {
             this.statistics = rows.map(row => {
-              const stat = new VideoStatistic(row)
-              stat.video_meta = new VideoMeta(row)
-              stat.video_thumbnail = new VideoThumbnail(row)
+              const stat = new VideoStatistic(row.video_statistic_id)
+              stat.setAll(row)
+
+              stat.video_meta = new VideoMeta(row.video_meta_id)
+              stat.video_meta.setAll(row)
+
+              stat.video_thumbnail = new VideoThumbnail(row.video_thumbnail_id)
+              stat.video_thumbnail.setAll(row)
               stat.video_thumbnail.loadFaces()
+
               return stat
             })
             resolve(true)

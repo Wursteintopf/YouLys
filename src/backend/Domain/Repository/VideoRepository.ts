@@ -10,7 +10,9 @@ export class VideoRepository {
 
   protected convertQueryRowsToVideoModel = (rows): Video[] => {
     return rows.map(row => {
-      return new Video(row.video_id).setAll(row)
+      const video = new Video(row.video_id)
+      video.setAll(row)
+      return video
     })
   }
 

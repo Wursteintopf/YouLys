@@ -71,7 +71,7 @@ export class VideoThumbnail implements VideoThumbnailInterface {
 
         (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length > 0) {
             rows.forEach(row => {
               const face = new Face(row.face_id)
               face.setAll(row)

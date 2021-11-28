@@ -24,7 +24,6 @@ import LineChart from '../../components/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
 import Performance from '../../components/Performance/Performance'
 import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
-import { percentageLikes } from '../../../../shared/Utils/mathUtil'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -73,7 +72,7 @@ const Videodetailseite: React.FC = () => {
                 <ChannelListSmallText>Kommentare</ChannelListSmallText>
               </VideoOverviewElement>
               <VideoOverviewElement>
-                {percentageLikes(stat.likes, stat.dislikes).toFixed(2)} %
+                {stat.likes.toFixed(2)} %
                 <ChannelListSmallText>Likes/Dislikes</ChannelListSmallText>
               </VideoOverviewElement>
               <VideoOverviewElement>
