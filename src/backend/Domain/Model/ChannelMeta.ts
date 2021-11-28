@@ -3,10 +3,10 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class ChannelMeta implements ChannelMetaInterface {
   channel_meta_id: number
-  username: string = ''
-  profile_picture: string = ''
-  description: string = ''
-  keywords: string = ''
+  username = ''
+  profile_picture = ''
+  description = ''
+  keywords = ''
 
   constructor (channel_meta_id: number) {
     this.channel_meta_id = channel_meta_id

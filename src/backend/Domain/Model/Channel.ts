@@ -18,8 +18,8 @@ import { VideoMeta } from './VideoMeta'
 
 export class Channel implements ChannelInterface {
   channel_id: string
-  created_at: Date = new Date
-  tracked: boolean = true
+  created_at: Date = new Date()
+  tracked = true
   statistics: ChannelStatistic[] = []
   videos: Video[] = []
   average_performance: AveragePerformanceInterface = EMPTY_AVERAGE_PERFORMANCE
@@ -209,7 +209,7 @@ export class Channel implements ChannelInterface {
           } else {
             resolve(false)
           }
-        }
+        },
       )
     })
   }
@@ -272,7 +272,7 @@ export class Channel implements ChannelInterface {
           duration: 0,
           statistics: [],
         })
-        await VideoRepository.Instance.save(video)
+        await video.save()
         return video
       }))
 

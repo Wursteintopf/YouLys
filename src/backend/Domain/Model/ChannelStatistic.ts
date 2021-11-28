@@ -1,20 +1,19 @@
 import { ChannelStatisticInterface } from '../../../shared/Domain/Model/ChannelStatisticInterface'
 import { ChannelMeta } from './ChannelMeta'
-import { EMPTY_CHANNEL_META } from '../../../shared/Domain/Model/ChannelMetaInterface'
 import { connection } from '../../Helper/DatabaseHelper'
 import moment from 'moment'
 
 export class ChannelStatistic implements ChannelStatisticInterface {
   channel_statistic_id: number
-  channel_id: string = ''
+  channel_id = ''
   channel_meta: ChannelMeta = new ChannelMeta(0)
-  subscriber_count: number = 0
-  subscriber_count_hidden: boolean = false
-  view_count: number = 0
-  video_count: number = 0
-  trailer_video_id: string = ''
+  subscriber_count = 0
+  subscriber_count_hidden = false
+  view_count = 0
+  video_count = 0
+  trailer_video_id = ''
   timestamp: Date = new Date()
-  success_factor: number = 0
+  success_factor = 0
 
   constructor (channel_statistic_id: number) {
     this.channel_statistic_id = channel_statistic_id

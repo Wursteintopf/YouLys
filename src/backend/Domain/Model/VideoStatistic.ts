@@ -5,16 +5,16 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class VideoStatistic implements VideoStatisticInterface {
   video_statistic_id: number
-  video_id: string = ''
+  video_id = ''
   video_meta: VideoMeta = new VideoMeta(0)
   video_thumbnail: VideoThumbnail = new VideoThumbnail(0)
-  views: number = 0
-  likes: number = 0
-  dislikes: number = 0
-  favouriteCount: number = 0
-  commentCount: number = 0
+  views = 0
+  likes = 0
+  dislikes = 0
+  favouriteCount = 0
+  commentCount = 0
   timestamp: Date = new Date()
-  success_factor: number = 4
+  success_factor = 4
 
   constructor (props: VideoStatisticInterface) {
     this.video_statistic_id = props.video_statistic_id
@@ -64,14 +64,12 @@ export class VideoStatistic implements VideoStatisticInterface {
     if (props.video_meta) {
       this.video_meta = new VideoMeta(props.video_meta.video_meta_id)
       this.video_meta.setAll(props.video_meta)
-    }
-    else this.video_meta = new VideoMeta(0)
+    } else this.video_meta = new VideoMeta(0)
 
     if (props.video_thumbnail) {
       this.video_thumbnail = new VideoThumbnail(props.video_thumbnail.video_thumbnail_id)
       this.video_thumbnail.setAll(props.video_thumbnail)
-    }
-    else this.video_thumbnail = new VideoThumbnail(0)
+    } else this.video_thumbnail = new VideoThumbnail(0)
 
     return this
   }

@@ -3,9 +3,9 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class VideoMeta implements VideoMetaInterface {
   video_meta_id: number
-  title: string = ''
-  description: string = ''
-  tags: string = ''
+  title = ''
+  description = ''
+  tags = ''
 
   constructor (video_meta_id: number) {
     this.video_meta_id = video_meta_id

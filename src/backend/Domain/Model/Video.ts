@@ -12,9 +12,9 @@ import { median } from '../../../shared/Utils/mathUtil'
 
 export class Video implements VideoInterface {
   video_id: string
-  channel_id: string = ''
+  channel_id = ''
   upload_time: Date = new Date()
-  duration: number = 0
+  duration = 0
   statistics: VideoStatistic[] = []
 
   constructor (props: VideoInterface) {
@@ -163,7 +163,7 @@ export class Video implements VideoInterface {
           } else {
             reject(new Error('No previous Videos found.'))
           }
-        }
+        },
       )
     })
   }
@@ -182,8 +182,8 @@ export class Video implements VideoInterface {
 
       const apiResult = await callVideoStatistics(this.video_id)
 
-      let meta = new VideoMeta({
-        video_meta_id: 0,
+      let meta = new VideoMeta(0)
+      meta.setAll({
         title: apiResult.snippet.title,
         description: apiResult.snippet.description,
         tags: apiResult.snippet.tags ? apiResult.snippet.tags?.join(',') : '',
@@ -192,11 +192,11 @@ export class Video implements VideoInterface {
       if (statsLoaded && meta.equals(this.statistics[0].video_meta)) {
         meta = this.statistics[0].video_meta
       } else {
-        meta.video_meta_id = await VideoRepository.Instance.saveMeta(meta)
+        meta.video_meta_id = await meta.save()
       }
 
-      let thumb = new VideoThumbnail({
-        video_thumbnail_id: 0,
+      let thumb = new VideoThumbnail(0)
+      thumb.setAll({
         thumbnail: apiResult.snippet.thumbnails.maxres ? apiResult.snippet.thumbnails.maxres.url : (apiResult.snippet.thumbnails.standard ? apiResult.snippet.thumbnails.standard.url : apiResult.snippet.thumbnails.high.url),
         faces: [],
       })
@@ -204,7 +204,7 @@ export class Video implements VideoInterface {
       if (statsLoaded && thumb.equals(this.statistics[0].video_thumbnail)) {
         thumb = this.statistics[0].video_thumbnail
       } else {
-        thumb.video_thumbnail_id = await VideoRepository.Instance.saveThumbnail(thumb)
+        thumb.video_thumbnail_id = await thumb.save()
         await thumb.detectFaces()
       }
 
@@ -245,7 +245,7 @@ export class Video implements VideoInterface {
         })
         .catch(() => console.log('ERROR: Success factor not calculated. No previous videos found for video with the id ' + this.video_id))
 
-      await VideoRepository.Instance.saveStatistic(stat)
+      await stat.save()
 
       this.duration = moment.duration(apiResult.contentDetails.duration).asSeconds()
       await this.update()

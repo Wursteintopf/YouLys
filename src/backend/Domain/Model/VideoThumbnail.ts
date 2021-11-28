@@ -5,7 +5,7 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class VideoThumbnail implements VideoThumbnailInterface {
   video_thumbnail_id: number
-  thumbnail: string = ''
+  thumbnail = ''
   faces: Face[] = []
 
   constructor (video_thumbnail_id: number) {

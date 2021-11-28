@@ -3,15 +3,15 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class Face implements FaceInterface {
   face_id: number
-  video_thumbnail_id: number = 0
+  video_thumbnail_id = 0
   gender: 'female' | 'male' = 'female'
-  gender_probability: number = 0
-  age: number = 0
-  expression: string = 'neutral'
-  x: number = 0
-  y: number = 0
-  width: number = 0
-  height: number = 0
+  gender_probability = 0
+  age = 0
+  expression = 'neutral'
+  x = 0
+  y = 0
+  width = 0
+  height = 0
 
   constructor (face_id: number) {
     this.face_id = face_id
