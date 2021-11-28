@@ -12,23 +12,80 @@ import { median } from '../../../shared/Utils/mathUtil'
 
 export class Video implements VideoInterface {
   video_id: string
-  channel_id: string
-  upload_time: Date
-  duration: number
-  statistics: VideoStatistic[]
+  channel_id: string = ''
+  upload_time: Date = new Date()
+  duration: number = 0
+  statistics: VideoStatistic[] = []
 
   constructor (props: VideoInterface) {
     this.video_id = props.video_id
+  }
+
+  /**
+   * Basics
+   */
+
+  public static setUpVideoTable = () => {
+    connection.query(
+      'CREATE TABLE IF NOT EXISTS video(' +
+      'video_id VARCHAR(30) NOT NULL,' +
+      'channel_id VARCHAR(30),' +
+      'upload_time TIMESTAMP,' +
+      'duration INT,' +
+      'PRIMARY KEY (video_id),' +
+      'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
+      'INDEX (upload_time)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
+
+      err => {
+        if (err) console.log(err)
+      },
+    )
+  }
+
+  public setAll = (props): Video => {
     this.channel_id = props.channel_id
     this.upload_time = props.upload_time
     this.duration = props.duration
 
     if (props.statistics) this.statistics = props.statistics.map(stat => new VideoStatistic(stat))
     else this.statistics = []
+
+    return this
   }
 
-  public update = async (): Promise<boolean> => {
-    return VideoRepository.Instance.update(this)
+  protected create = (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video(video_id, channel_id, upload_time, duration) VALUES (?, ?, ?, ?)',
+        [this.video_id, this.channel_id, this.upload_time, this.duration],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  protected update = (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'UPDATE video SET upload_time = ?, duration = ? WHERE video_id = ?',
+        [this.upload_time, this.duration, this.video_id],
+
+        err => {
+          if (err) reject(err)
+          resolve(true)
+        },
+      )
+    })
+  }
+
+  public save = (): Promise<boolean> => {
+    return VideoRepository.Instance.getById(this.video_id)
+      .then(() => { return this.update() })
+      .catch(() => { return this.create() })
   }
 
   /**

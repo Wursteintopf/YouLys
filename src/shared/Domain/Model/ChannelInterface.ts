@@ -1,28 +1,18 @@
 import { ChannelStatisticInterface } from './ChannelStatisticInterface'
 import { VideoInterface } from './VideoInterface'
 
+export interface PerformanceInterface {
+  minimum: number
+  lowerQuantile: number
+  median: number
+  upperQuantile: number
+  maximum: number
+}
+
 export interface AveragePerformanceInterface {
-  views: {
-    minimum: number
-    lowerQuantile: number
-    median: number
-    upperQuantile: number
-    maximum: number
-  }
-  commentCount: {
-    minimum: number
-    lowerQuantile: number
-    median: number
-    upperQuantile: number
-    maximum: number
-  }
-  likePercentage: {
-    minimum: number
-    lowerQuantile: number
-    median: number
-    upperQuantile: number
-    maximum: number
-  }
+  views: PerformanceInterface
+  commentCount: PerformanceInterface
+  likePercentage: PerformanceInterface
 }
 
 export const EMPTY_AVERAGE_PERFORMANCE: AveragePerformanceInterface = {
