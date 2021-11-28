@@ -10,7 +10,6 @@ export class VideoStatistic implements VideoStatisticInterface {
   video_thumbnail: VideoThumbnail = new VideoThumbnail(0)
   views = 0
   likes = 0
-  dislikes = 0
   favouriteCount = 0
   commentCount = 0
   timestamp: Date = new Date()
@@ -33,7 +32,6 @@ export class VideoStatistic implements VideoStatisticInterface {
       'video_thumbnail_id INT,' +
       'views INT,' +
       'likes INT,' +
-      'dislikes INT,' +
       'favouriteCount INT,' +
       'commentCount INT,' +
       'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
@@ -55,7 +53,6 @@ export class VideoStatistic implements VideoStatisticInterface {
     this.video_id = props.video_id
     this.views = props.views
     this.likes = props.likes
-    this.dislikes = props.dislikes
     this.favouriteCount = props.favouriteCount
     this.commentCount = props.commentCount
     this.timestamp = props.timestamp
@@ -77,8 +74,8 @@ export class VideoStatistic implements VideoStatisticInterface {
   public save = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, dislikes, favouriteCount, commentCount, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [this.video_id, this.video_meta.video_meta_id, this.video_thumbnail.video_thumbnail_id, this.views, this.likes, this.dislikes, this.favouriteCount, this.commentCount, this.success_factor],
+        'INSERT INTO video_statistic(video_id, video_meta_id, video_thumbnail_id, views, likes, favouriteCount, commentCount, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [this.video_id, this.video_meta.video_meta_id, this.video_thumbnail.video_thumbnail_id, this.views, this.likes, this.favouriteCount, this.commentCount, this.success_factor],
 
         err => {
           if (err) reject(err)

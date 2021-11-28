@@ -8,7 +8,6 @@ export interface VideoStatisticInterface {
   video_thumbnail: VideoThumbnailInterface
   views: number
   likes: number
-  dislikes: number
   favouriteCount: number
   commentCount: number
   timestamp: Date
@@ -17,7 +16,6 @@ export interface VideoStatisticInterface {
 
 export const EMPTY_VIDEO_STATISTIC: VideoStatisticInterface = {
   commentCount: 0,
-  dislikes: 0,
   favouriteCount: 0,
   likes: 0,
   timestamp: new Date(),

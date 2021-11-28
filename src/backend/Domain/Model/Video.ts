@@ -215,7 +215,6 @@ export class Video implements VideoInterface {
         video_thumbnail: thumb,
         views: apiResult.statistics.viewCount,
         likes: apiResult.statistics.likeCount,
-        dislikes: apiResult.statistics.dislikeCount,
         favouriteCount: apiResult.statistics.favouriteCount,
         commentCount: apiResult.statistics.commentCount,
         timestamp: new Date(),
@@ -226,20 +225,17 @@ export class Video implements VideoInterface {
         .then(async prevVideos => {
           const medianViews = median(prevVideos.map(v => v.statistics[0].views ? v.statistics[0].views : 0))
           const medianLikes = median(prevVideos.map(v => v.statistics[0].likes ? v.statistics[0].likes : 0))
-          const medianDislikes = median(prevVideos.map(v => v.statistics[0].dislikes ? v.statistics[0].dislikes : 0))
           const medianCommentCount = median(prevVideos.map(v => v.statistics[0].commentCount ? v.statistics[0].commentCount : 0))
 
           const currentViews = apiResult.statistics.viewCount ? apiResult.statistics.viewCount : 0
           const currentLikes = apiResult.statistics.likeCount ? apiResult.statistics.likeCount : 0
-          const currentDislikes = apiResult.statistics.dislikeCount ? apiResult.statistics.dislikeCount : 0
           const currentCommentCount = apiResult.statistics.commentCount ? apiResult.statistics.commentCount : 0
           
           const comparedViews = currentViews === 0 ? 0 : (medianViews === 0 ? currentViews : currentViews / medianViews)
           const comparedLikes = currentLikes === 0 ? 0 : (medianLikes === 0 ? currentLikes : currentLikes / medianLikes)
-          const comparedDislikes = currentDislikes === 0 ? 0 : (medianDislikes === 0 ? currentDislikes : currentDislikes / medianDislikes)
           const comparedCommentCount = currentCommentCount === 0 ? 0 : (medianCommentCount === 0 ? currentCommentCount : currentCommentCount / medianCommentCount)
 
-          stat.success_factor = (2 * comparedViews) + comparedLikes + comparedDislikes + comparedCommentCount
+          stat.success_factor = (2 * comparedViews) + comparedLikes + comparedCommentCount
 
           console.log('SUCCESS: Calculated success factor of ' + stat.success_factor + ' for video with the id ' + this.video_id)
         })
