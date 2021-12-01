@@ -36,3 +36,7 @@ export const ChannelDetailOverview = styled.div`
   display: flex;
   align-items: center;
 `
+
+export const RecognizedFaces = styled.div`
+  
+`

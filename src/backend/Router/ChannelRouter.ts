@@ -5,7 +5,6 @@ import moment from 'moment'
 import { ChannelRepository } from '../Domain/Repository/ChannelRepository'
 import { VideoRepository } from '../Domain/Repository/VideoRepository'
 import { Channel } from '../Domain/Model/Channel'
-import { EMPTY_VIDEO_STATISTIC } from '../../shared/Domain/Model/VideoStatisticInterface'
 
 const channelRouter = express.Router()
 channelRouter.use(bodyParser.json())
@@ -78,6 +77,8 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
       }))
 
       channel.videos = videos
+
+      channel.calculateFaceSuccess()
 
       res.send({
         status: ApiStatusCodes.SUCCESS,

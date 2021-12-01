@@ -5,7 +5,7 @@
   "main": "src/index.html",
   "scripts": {
     "dev": "parcel src/frontend/index.html",
-    "build": "parcel build src/frontend/index.html --out-dir build --public-url ./",
+    "build": "parcel build src/frontend/index.html --out-dir build",
     "api": "ts-node src/backend/Api.ts",
     "fetch": "ts-node src/backend/Runner.ts"
   },

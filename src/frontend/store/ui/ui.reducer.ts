@@ -5,8 +5,8 @@ import { setFetching, setFrom, setRange, setTo } from './ui.actions'
 import moment from 'moment'
 
 const INITIAL_STATE: uiState = {
-  range: TimeRange.LAST_28_DAYS,
-  from: moment().subtract(28, 'days').startOf('day').toDate(),
+  range: TimeRange.LAST_90_DAYS,
+  from: moment().subtract(90, 'days').startOf('day').toDate(),
   to: moment().startOf('day').toDate(),
   fetching: false,
 }

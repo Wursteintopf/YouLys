@@ -6,6 +6,8 @@ const mainColors = {
   colorWhite: '#FFFFFF',
 
   colorBlack: '#000000',
+
+  blueShades: ['#1a1c5a', '#4d4f7f', '#8081a4', '#b3b3c8', '#e6e6ed']
 }
 
 const fontSizes = {

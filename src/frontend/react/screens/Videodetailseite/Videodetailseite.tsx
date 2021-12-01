@@ -23,8 +23,7 @@ import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
 import Performance from '../../components/Performance/Performance'
-import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
-import { percentageLikes } from '../../../../shared/Utils/mathUtil'
+import { ThumbnailWrapper, VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -73,18 +72,18 @@ const Videodetailseite: React.FC = () => {
                 <ChannelListSmallText>Kommentare</ChannelListSmallText>
               </VideoOverviewElement>
               <VideoOverviewElement>
-                {percentageLikes(stat.likes, stat.dislikes).toFixed(2)} %
+                {numberFormatter(stat.likes, 1)}
                 <ChannelListSmallText>Likes/Dislikes</ChannelListSmallText>
               </VideoOverviewElement>
               <VideoOverviewElement>
-                {stat.success_factor}
-                <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
+                {stat.success_factor.toFixed(2)}
+                <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
                 <ToolTip
                   offSetX={65}
                 >
-                  <Headline>Erfolgsfaktor</Headline>
+                  <Headline>Erfolgswert</Headline>
                   <p>
-                    Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
+                    Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
                     Dabei wird jedes Video immer mit den 50 vorhergehenden Videos verglichen.
                     <br /><br />
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
@@ -121,7 +120,7 @@ const Videodetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={video.statistics.map((stat, index) => {
+                    values={video.statistics.reverse().map((stat, index) => {
                       let views = 0
                       if (!stat.views || index === 0 || !video.statistics || !video.statistics[index - 1].views) views = 0
                       else views = stat.views - video.statistics[index - 1].views
@@ -136,22 +135,25 @@ const Videodetailseite: React.FC = () => {
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Analysiertes Thumbnail'>
+          <ContentBox title='Gesichtsanalyse auf dem Thumbnail'>
             <svg viewBox='0 0 1280 720'>
               <image href={stat.video_thumbnail.thumbnail} />
               {
                 stat.video_thumbnail.faces.map((face, index) => {
+                  const size = face.width * face.height
                   return (
                     <g key={index}>
                       <rect x={face.x} y={face.y} width={face.width} height={face.height} fill='none' strokeWidth={5} stroke={themeVariables.colorBlue} />
                       <g transform={`translate(${face.x},${face.y + face.height})`}>
-                        <rect x={-2.5} y={0} width={270} height={70} fill={themeVariables.colorBlue} />
+                        <rect x={-2.5} y={0} width={270} height={90} fill={themeVariables.colorBlue} />
                         <text x={7} y={20} fill={themeVariables.colorWhite} fontWeight={600}>Gender:</text>
                         <text x={95} y={20} fill={themeVariables.colorWhite}>{face.gender === 'male' ? 'männlich' : 'weiblich'} ({(face.gender_probability * 100).toFixed(0)}% sicher)</text>
                         <text x={7} y={40} fill={themeVariables.colorWhite} fontWeight={600}>Alter:</text>
                         <text x={95} y={40} fill={themeVariables.colorWhite}>ca. {face.age.toFixed(0)}</text>
                         <text x={7} y={60} fill={themeVariables.colorWhite} fontWeight={600}>Stimmung:</text>
                         <text x={95} y={60} fill={themeVariables.colorWhite}>{face.expression}</text>
+                        <text x={7} y={80} fill={themeVariables.colorWhite} fontWeight={600}>Größe:</text>
+                        <text x={95} y={80} fill={themeVariables.colorWhite}>{size > 100000 ? 'groß' : 'klein'}</text>
                       </g>
                     </g>
                   )

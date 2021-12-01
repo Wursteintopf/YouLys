@@ -3,28 +3,23 @@ import { connection } from '../../Helper/DatabaseHelper'
 
 export class Face implements FaceInterface {
   face_id: number
-  video_thumbnail_id: number
-  gender: 'female' | 'male'
-  gender_probability: number
-  age: number
-  expression: string
-  x: number
-  y: number
-  width: number
-  height: number
+  video_thumbnail_id = 0
+  gender: 'female' | 'male' = 'female'
+  gender_probability = 0
+  age = 0
+  expression = 'neutral'
+  x = 0
+  y = 0
+  width = 0
+  height = 0
 
-  constructor (props: FaceInterface) {
-    this.face_id = props.face_id
-    this.video_thumbnail_id = props.video_thumbnail_id
-    this.gender = props.gender
-    this.gender_probability = props.gender_probability
-    this.age = props.age
-    this.expression = props.expression
-    this.x = props.x
-    this.y = props.y
-    this.width = props.width
-    this.height = props.height
+  constructor (face_id: number) {
+    this.face_id = face_id
   }
+
+  /**
+   * Basics
+   */
 
   public static setUpFaceTable = () => {
     connection.query(
@@ -47,6 +42,20 @@ export class Face implements FaceInterface {
         if (err) console.log(err)
       },
     )
+  }
+
+  public setAll = (props): Face => {
+    this.video_thumbnail_id = props.video_thumbnail_id
+    this.gender = props.gender
+    this.gender_probability = props.gender_probability
+    this.age = props.age
+    this.expression = props.expression
+    this.x = props.x
+    this.y = props.y
+    this.width = props.width
+    this.height = props.height
+
+    return this
   }
 
   public create = async (): Promise<number> => {

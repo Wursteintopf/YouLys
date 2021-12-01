@@ -40,14 +40,13 @@ const Performance: React.FC = () => {
       <PerformanceBox>
         <Headline>Likes/Dislikes</Headline>
         <BoxPlot
-          minimum={channel.average_performance.likePercentage.minimum}
-          lowerQuantile={channel.average_performance.likePercentage.lowerQuantile}
-          median={channel.average_performance.likePercentage.median}
-          upperQuantile={channel.average_performance.likePercentage.upperQuantile}
-          maximum={channel.average_performance.likePercentage.maximum}
-          value={percentageLikes(currentStats.likes, currentStats.dislikes)}
+          minimum={channel.average_performance.likes.minimum}
+          lowerQuantile={channel.average_performance.likes.lowerQuantile}
+          median={channel.average_performance.likes.median}
+          upperQuantile={channel.average_performance.likes.upperQuantile}
+          maximum={channel.average_performance.likes.maximum}
+          value={currentStats.likes}
           label='Likes'
-          percentage
         />
       </PerformanceBox>
     </PerformanceStyled>

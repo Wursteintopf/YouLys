@@ -17,6 +17,8 @@ import Button from '../Button/Button'
 import { useHistory } from 'react-router'
 import { useSelector } from 'react-redux'
 import { getCurrentChannel } from '../../../store/channel/channel.selector'
+import { Headline } from '../Headline/Headline'
+import ToolTip from '../ToolTip/ToolTip'
 
 interface VideoListProps {
  videos: VideoInterface[]
@@ -45,8 +47,19 @@ const VideoList: React.FC<VideoListProps> = (props) => {
                 <VideoListSmallText>Aufrufe</VideoListSmallText>
               </VideoListViews>
               <VideoListSuccess>
-                {video.statistics[0].success_factor}
-                <VideoListSmallText>Erfolgsfaktor</VideoListSmallText>
+                {video.statistics[0].success_factor.toFixed(2)}
+                <VideoListSmallText>Erfolgswert</VideoListSmallText>
+                <ToolTip
+                  offSetX={65}
+                >
+                  <Headline>Erfolgswert</Headline>
+                  <p>
+                    Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
+                    Dabei wird jedes Video immer mit den 50 vorhergehenden Videos verglichen.
+                    <br /><br />
+                    Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
+                  </p>
+                </ToolTip>
               </VideoListSuccess>
               <VideoListButton>
                 <Button

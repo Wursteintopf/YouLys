@@ -8,12 +8,10 @@ import {
 } from './SubHeaderStyling'
 import { ContentContainer } from '../../../styles/GlobalStyling'
 import TimePicker from '../TimePicker/TimePicker'
-import { useHistory } from 'react-router'
 import { useSelector } from 'react-redux'
 import { getCurrentChannel } from '../../../store/channel/channel.selector'
 import { getCurrentVideo } from '../../../store/video/video.selector'
 import clampByLength from '../../../util/clampByLength'
-import { Link } from 'react-router-dom'
 
 const SubHeader: React.FC = props => {
   const channel = useSelector(getCurrentChannel)

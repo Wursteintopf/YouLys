@@ -2,20 +2,56 @@ import { VideoThumbnailInterface } from '../../../shared/Domain/Model/VideoThumb
 import { detectFaces } from '../../FaceApi/FaceApi'
 import { Face } from './Face'
 import { connection } from '../../Helper/DatabaseHelper'
-import { VideoStatistic } from './VideoStatistic'
-import { VideoMeta } from './VideoMeta'
 
 export class VideoThumbnail implements VideoThumbnailInterface {
   video_thumbnail_id: number
-  thumbnail: string
-  faces: Face[]
+  thumbnail = ''
+  faces: Face[] = []
 
-  constructor (props: VideoThumbnailInterface) {
-    this.video_thumbnail_id = props.video_thumbnail_id
+  constructor (video_thumbnail_id: number) {
+    this.video_thumbnail_id = video_thumbnail_id
+  }
+
+  /**
+   * Basics
+   */
+
+  public static setUpVideoThumbnailTable = () => {
+    connection.query(
+      'CREATE TABLE IF NOT EXISTS video_thumbnail(' +
+      'video_thumbnail_id INT NOT NULL AUTO_INCREMENT,' +
+      'thumbnail VARCHAR(255),' +
+      'PRIMARY KEY (video_thumbnail_id)' +
+      ') DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci',
+
+      err => {
+        if (err) console.log(err)
+      },
+    )
+  }
+
+  public setAll = (props): VideoThumbnail => {
     this.thumbnail = props.thumbnail
 
     if (props.faces) this.faces = props.faces.map(face => new Face(face))
     else this.faces = []
+
+    return this
+  }
+
+  public save = async (): Promise<number> => {
+    return new Promise<number>((resolve, reject) => {
+      connection.query(
+        'INSERT INTO video_thumbnail(thumbnail) VALUES (?)',
+        [this.thumbnail],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (!rows.insertId) reject(new Error("Unexpected Error. This shouldn't happen."))
+          resolve(rows.insertId)
+        },
+      )
+    })
   }
 
   public equals = (other: VideoThumbnailInterface): boolean => {
@@ -23,27 +59,9 @@ export class VideoThumbnail implements VideoThumbnailInterface {
     else return false
   }
 
-  public detectFaces = async () => {
-    if (this.faces.length === 0) {
-      const results = await detectFaces(this.thumbnail)
-      results.forEach(result => {
-        const face = new Face({
-          face_id: 0,
-          video_thumbnail_id: this.video_thumbnail_id,
-          gender: result.gender,
-          gender_probability: result.genderProbability,
-          age: result.age,
-          expression: Object.keys(result.expressions).reduce((a, b) => result.expressions[a] > result.expressions[b] ? a : b),
-          x: result.detection.box.x,
-          y: result.detection.box.y,
-          width: result.detection.box.width,
-          height: result.detection.box.height,
-        })
-        face.create()
-      })
-    }
-    console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Faces')
-  }
+  /**
+   * Load Data from Database
+   */
 
   public loadFaces = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
@@ -53,9 +71,10 @@ export class VideoThumbnail implements VideoThumbnailInterface {
 
         (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length > 0) {
             rows.forEach(row => {
-              const face = new Face(row)
+              const face = new Face(row.face_id)
+              face.setAll(row)
               this.faces = [...this.faces, face]
             })
             resolve(true)
@@ -65,5 +84,29 @@ export class VideoThumbnail implements VideoThumbnailInterface {
         },
       )
     })
+  }
+
+  /**
+   * Calculate stuff
+   */
+
+  public detectFaces = async () => {
+    if (this.faces.length === 0) {
+      const results = await detectFaces(this.thumbnail)
+      results.forEach(result => {
+        const face = new Face(0)
+        face.video_thumbnail_id = this.video_thumbnail_id
+        face.gender = result.gender
+        face.gender_probability = result.genderProbability
+        face.age = result.age
+        face.expression = Object.keys(result.expressions).reduce((a, b) => result.expressions[a] > result.expressions[b] ? a : b)
+        face.x = result.detection.box.x
+        face.y = result.detection.box.y
+        face.width = result.detection.box.width
+        face.height = result.detection.box.height
+        face.create()
+      })
+    }
+    console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Faces')
   }
 }

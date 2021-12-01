@@ -6,7 +6,11 @@ import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper
 import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
-import { getCurrentChannel, getNewestChannelStatistic } from '../../../store/channel/channel.selector'
+import {
+  getCurrentChannel, getCurrentChannelFaceMaxAmount, getCurrentChannelFaceMaxSuccess, getCurrentChannelFaceSuccess,
+  getCurrentChannelSuccessResults,
+  getNewestChannelStatistic,
+} from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
 import {
@@ -26,6 +30,9 @@ import LineChart from '../../components/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
 import VideoList from '../../components/VideoList/VideoList'
+import { ContentBoxDivider, ContentBoxDividerWrapper } from '../../components/ContentBox/ContentBoxStyling'
+import StackedBarGraph from '../../components/StackedBarGraph/StackedBarGraph'
+import BarChart from '../../components/BarChart/BarChart'
 
 const Kanaldetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -33,6 +40,10 @@ const Kanaldetailseite: React.FC = () => {
   const fetching = useSelector(getFetching)
   const channel = useSelector(getCurrentChannel)
   const stat = useSelector(getNewestChannelStatistic)
+  const success = useSelector(getCurrentChannelSuccessResults)
+  const faceSuccess = useSelector(getCurrentChannelFaceSuccess)
+  const maxSuccessFaces = useSelector(getCurrentChannelFaceMaxSuccess)
+  const maxAmountFaces = useSelector(getCurrentChannelFaceMaxAmount)
 
   const dispatch = useDispatch()
 
@@ -70,16 +81,16 @@ const Kanaldetailseite: React.FC = () => {
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
               </ChannelListClicks>
               <ChannelListSuccess>
-                A++
-                <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
+                {stat.success_factor ? stat.success_factor.toFixed(2) : 4}
+                <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
                 <ToolTip
                   offSetX={65}
                 >
-                  <Headline>Erfolgsfaktor</Headline>
+                  <Headline>Erfolgswert</Headline>
                   <p>
-                    Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
-                    Dabei werden immer das neuste Video mit den 30 vorhergehenden Videos verglichen. Der Erfolgsfaktor
-                    eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 30 Videos.
+                    Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
+                    Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen. Der Erfolgsfaktor
+                    eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 50 Videos.
                     <br /><br />
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                   </p>
@@ -92,6 +103,124 @@ const Kanaldetailseite: React.FC = () => {
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Neue Videos'>
             {(channel.videos && channel.videos.length > 0) ? <VideoList all={false} videos={channel.videos.slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+          </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Gesichter auf Thumbnails' subtitle={success.amountOfVideosAnalyzed + ' Thumbnails im gewählten Zeitraum analysiert'}>
+            <ContentBoxDividerWrapper>
+              <ContentBoxDivider>
+                <Headline>Anzahl Thumbnails / Anzahl Gesichter</Headline>
+
+                <BarChart
+                  maxValue={maxAmountFaces}
+                  bars={[
+                    { label: 'Keine', value: faceSuccess.existence.no.amount || 0 },
+                    { label: '1 Gesicht', value: faceSuccess.amount.one.amount || 0 },
+                    { label: '2 Gesichter', value: faceSuccess.amount.two.amount || 0 },
+                    { label: 'Mehr als 2', value: faceSuccess.amount.more.amount || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+
+              <ContentBoxDivider>
+                <Headline>Durchschnittlicher Erfolgswert</Headline>
+
+                <BarChart
+                  maxValue={maxSuccessFaces}
+                  bars={[
+                    { label: 'Keine', value: faceSuccess.existence.no.meanSuccessFactor || 0 },
+                    { label: '1 Gesicht', value: faceSuccess.amount.one.meanSuccessFactor || 0 },
+                    { label: '2 Gesichter', value: faceSuccess.amount.two.meanSuccessFactor || 0 },
+                    { label: 'Mehr als 2', value: faceSuccess.amount.more.meanSuccessFactor || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+            </ContentBoxDividerWrapper>
+
+            <ContentBoxDividerWrapper>
+              <ContentBoxDivider>
+                <Headline>Anzahl Thumbnails / Erkannte Emotion</Headline>
+
+                <BarChart
+                  maxValue={maxAmountFaces}
+                  bars={[
+                    { label: 'Wütend', value: faceSuccess.expression.angry.amount || 0 },
+                    { label: 'Traurig', value: faceSuccess.expression.sad.amount || 0 },
+                    { label: 'Erstaunt', value: faceSuccess.expression.surprised.amount || 0 },
+                    { label: 'Glücklich', value: faceSuccess.expression.happy.amount || 0 },
+                    { label: 'Neutral', value: faceSuccess.expression.neutral.amount || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+
+              <ContentBoxDivider>
+                <Headline>Durchschnittlicher Erfolgswert</Headline>
+
+                <BarChart
+                  maxValue={maxSuccessFaces}
+                  bars={[
+                    { label: 'Wütend', value: faceSuccess.expression.angry.meanSuccessFactor || 0 },
+                    { label: 'Traurig', value: faceSuccess.expression.sad.meanSuccessFactor || 0 },
+                    { label: 'Erstaunt', value: faceSuccess.expression.surprised.meanSuccessFactor || 0 },
+                    { label: 'Glücklich', value: faceSuccess.expression.happy.meanSuccessFactor || 0 },
+                    { label: 'Neutral', value: faceSuccess.expression.neutral.meanSuccessFactor || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+            </ContentBoxDividerWrapper>
+
+            <ContentBoxDividerWrapper>
+              <ContentBoxDivider>
+                <Headline>Anzahl Thumbnails / Geschlecht</Headline>
+
+                <BarChart
+                  maxValue={maxAmountFaces}
+                  bars={[
+                    { label: 'Männlich', value: faceSuccess.gender.male.amount || 0 },
+                    { label: 'Weiblich', value: faceSuccess.gender.female.amount || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+
+              <ContentBoxDivider>
+                <Headline>Durchschnittlicher Erfolgswert</Headline>
+
+                <BarChart
+                  maxValue={maxSuccessFaces}
+                  bars={[
+                    { label: 'Männlich', value: faceSuccess.gender.male.meanSuccessFactor || 0 },
+                    { label: 'Weiblich', value: faceSuccess.gender.female.meanSuccessFactor || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+            </ContentBoxDividerWrapper>
+
+            <ContentBoxDividerWrapper>
+              <ContentBoxDivider>
+                <Headline>Anzahl Thumbnails / Größe des Gesichts</Headline>
+
+                <BarChart
+                  maxValue={maxAmountFaces}
+                  bars={[
+                    { label: 'Groß', value: faceSuccess.size.big.amount || 0 },
+                    { label: 'Klein', value: faceSuccess.size.small.amount || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+
+              <ContentBoxDivider>
+                <Headline>Durchschittlicher Erfolgswert</Headline>
+
+                <BarChart
+                  maxValue={maxSuccessFaces}
+                  bars={[
+                    { label: 'Groß', value: faceSuccess.size.big.meanSuccessFactor || 0 },
+                    { label: 'Klein', value: faceSuccess.size.small.meanSuccessFactor || 0 },
+                  ]}
+                />
+              </ContentBoxDivider>
+            </ContentBoxDividerWrapper>
           </ContentBox>
         </ContentBoxWrapper>
 
