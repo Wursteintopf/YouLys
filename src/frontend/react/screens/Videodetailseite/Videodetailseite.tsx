@@ -120,7 +120,7 @@ const Videodetailseite: React.FC = () => {
               fetching
                 ? <Progress />
                 : <LineChart
-                    values={video.statistics.map((stat, index) => {
+                    values={video.statistics.reverse().map((stat, index) => {
                       let views = 0
                       if (!stat.views || index === 0 || !video.statistics || !video.statistics[index - 1].views) views = 0
                       else views = stat.views - video.statistics[index - 1].views
