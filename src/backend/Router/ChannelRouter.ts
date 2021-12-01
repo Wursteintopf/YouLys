@@ -78,6 +78,8 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
 
       channel.videos = videos
 
+      channel.calculateFaceSuccess()
+
       res.send({
         status: ApiStatusCodes.SUCCESS,
         result: channel,

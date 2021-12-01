@@ -45,6 +45,8 @@ export const VideoListSmallText = styled.div`
 
 export const VideoListSuccess = styled.div`
   flex-basis: 15%;
+
+  position: relative;
 `
 
 export const VideoListButton = styled.div`

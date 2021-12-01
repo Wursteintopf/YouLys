@@ -1,43 +1,7 @@
 import { ChannelStatisticInterface } from './ChannelStatisticInterface'
 import { VideoInterface } from './VideoInterface'
-
-export interface PerformanceInterface {
-  minimum: number
-  lowerQuantile: number
-  median: number
-  upperQuantile: number
-  maximum: number
-}
-
-export interface AveragePerformanceInterface {
-  views: PerformanceInterface
-  commentCount: PerformanceInterface
-  likes: PerformanceInterface
-}
-
-export const EMPTY_AVERAGE_PERFORMANCE: AveragePerformanceInterface = {
-  commentCount: {
-    lowerQuantile: 0,
-    maximum: 0,
-    median: 0,
-    minimum: 0,
-    upperQuantile: 0,
-  },
-  likes: {
-    lowerQuantile: 0,
-    maximum: 0,
-    median: 0,
-    minimum: 0,
-    upperQuantile: 0,
-  },
-  views: {
-    lowerQuantile: 0,
-    maximum: 0,
-    median: 0,
-    minimum: 0,
-    upperQuantile: 0,
-  },
-}
+import { ChannelAveragePerformanceInterface, EMPTY_CHANNEL_AVERAGE_PERFORMANCE } from './ChannelAveragePerformanceInterface'
+import { ChannelSuccessResultsInterface, EMPTY_CHANNEL_SUCCESS_RESULTS } from './ChannelSuccessResultsInterface'
 
 export interface ChannelInterface {
   channel_id: string
@@ -45,7 +9,8 @@ export interface ChannelInterface {
   statistics: ChannelStatisticInterface[]
   videos: VideoInterface[]
   tracked: boolean
-  average_performance: AveragePerformanceInterface
+  average_performance: ChannelAveragePerformanceInterface
+  success_results: ChannelSuccessResultsInterface
 }
 
 export const EMPTY_CHANNEL: ChannelInterface = {
@@ -54,5 +19,6 @@ export const EMPTY_CHANNEL: ChannelInterface = {
   statistics: [],
   videos: [],
   tracked: true,
-  average_performance: EMPTY_AVERAGE_PERFORMANCE,
+  average_performance: EMPTY_CHANNEL_AVERAGE_PERFORMANCE,
+  success_results: EMPTY_CHANNEL_SUCCESS_RESULTS,
 }

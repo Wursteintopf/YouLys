@@ -98,7 +98,7 @@ export class Video implements VideoInterface {
         'SELECT video_meta.title, video_meta.description, video_meta.tags, video_thumbnail.thumbnail, video_statistic.* FROM video_statistic LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id LEFT JOIN video_thumbnail ON video_statistic.video_thumbnail_id = video_thumbnail.video_thumbnail_id WHERE video_id = ? ORDER BY timestamp DESC LIMIT 1',
         [this.video_id],
 
-        (err, rows) => {
+        async (err, rows) => {
           if (err) reject(err)
           if (rows.length > 0) {
             const stat = new VideoStatistic(rows[0].video_statistic_id)
@@ -109,7 +109,7 @@ export class Video implements VideoInterface {
 
             stat.video_thumbnail = new VideoThumbnail(rows[0].video_thumbnail_id)
             stat.video_thumbnail.setAll(rows[0])
-            stat.video_thumbnail.loadFaces()
+            await stat.video_thumbnail.loadFaces()
 
             this.statistics = [stat]
             resolve(true)
@@ -130,7 +130,7 @@ export class Video implements VideoInterface {
         async (err, rows) => {
           if (err) reject(err)
           if (rows.length > 0) {
-            this.statistics = rows.map(row => {
+            this.statistics = await Promise.all(rows.map(async row => {
               const stat = new VideoStatistic(row.video_statistic_id)
               stat.setAll(row)
 
@@ -139,10 +139,10 @@ export class Video implements VideoInterface {
 
               stat.video_thumbnail = new VideoThumbnail(row.video_thumbnail_id)
               stat.video_thumbnail.setAll(row)
-              stat.video_thumbnail.loadFaces()
+              await stat.video_thumbnail.loadFaces()
 
               return stat
-            })
+            }))
             resolve(true)
           } else {
             reject(new Error('Unable to load video stats in Range. No stats found.'))

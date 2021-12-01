@@ -24,5 +24,5 @@ export const EMPTY_VIDEO_STATISTIC: VideoStatisticInterface = {
   video_statistic_id: 0,
   video_thumbnail: EMPTY_VIDEO_THUMBNAIL,
   views: 0,
-  success_factor: 5,
+  success_factor: 4,
 }

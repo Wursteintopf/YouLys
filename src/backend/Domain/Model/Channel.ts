@@ -1,20 +1,20 @@
 import { ChannelStatistic } from './ChannelStatistic'
 import { Video } from './Video'
-import {
-  AveragePerformanceInterface,
-  ChannelInterface,
-  EMPTY_AVERAGE_PERFORMANCE,
-} from '../../../shared/Domain/Model/ChannelInterface'
+import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
+import { ChannelAveragePerformanceInterface, EMPTY_CHANNEL_AVERAGE_PERFORMANCE } from '../../../shared/Domain/Model/ChannelAveragePerformanceInterface'
 import { connection } from '../../Helper/DatabaseHelper'
 import moment from 'moment'
 import { ChannelMeta } from './ChannelMeta'
 import { ChannelRepository } from '../Repository/ChannelRepository'
 import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
-import { quantileSeq, min, max } from 'mathjs'
-import { percentageLikes } from '../../../shared/Utils/mathUtil'
+import { quantileSeq, min, max, mean } from 'mathjs'
 import { VideoStatistic } from './VideoStatistic'
 import { VideoMeta } from './VideoMeta'
+import {
+  ChannelSuccessResultsInterface,
+  EMPTY_CHANNEL_SUCCESS_RESULTS, Result,
+} from '../../../shared/Domain/Model/ChannelSuccessResultsInterface'
 
 export class Channel implements ChannelInterface {
   channel_id: string
@@ -22,7 +22,8 @@ export class Channel implements ChannelInterface {
   tracked = true
   statistics: ChannelStatistic[] = []
   videos: Video[] = []
-  average_performance: AveragePerformanceInterface = EMPTY_AVERAGE_PERFORMANCE
+  average_performance: ChannelAveragePerformanceInterface = EMPTY_CHANNEL_AVERAGE_PERFORMANCE
+  success_results: ChannelSuccessResultsInterface = EMPTY_CHANNEL_SUCCESS_RESULTS
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
@@ -250,6 +251,8 @@ export class Channel implements ChannelInterface {
       stat.video_count = apiResult.statistics.videoCount
       stat.view_count = apiResult.statistics.viewCount
 
+      stat.success_factor = await this.calculateSuccessFactor()
+
       await stat.create()
 
       this.created_at = new Date(apiResult.snippet.publishedAt)
@@ -287,9 +290,77 @@ export class Channel implements ChannelInterface {
    * Calculate stuff
    */
 
+  private calculateMean = (array: number[]) => {
+    if (array.length > 0) return mean(array)
+    else return null
+  }
+
+  private calculateMeanSuccessFromVideoArray = (array: Video[]) => {
+    return this.calculateMean(array.map(v => v.statistics[0].success_factor))
+  }
+
+  private calculateResultFromVideoArray = (array: Video[]): Result => {
+    return {
+      amount: array.length,
+      meanSuccessFactor: this.calculateMeanSuccessFromVideoArray(array),
+    }
+  }
+
   public calculateSuccessFactor = async (): Promise<number> => {
     await this.loadFiftyNewestVideos()
 
-    return quantileSeq(this.videos.map(video => video.statistics[0].success_factor), 0.5) as number
+    return this.calculateMean(this.videos.map(video => video.statistics[0].success_factor))
+  }
+
+  public calculateFaceSuccess = (): void => {
+    const videosWithFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length > 0)
+    const videosWithOutFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 0)
+
+    const videosWithOneFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 1)
+    const videosWithTwoFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 2)
+    const videosWithMoreFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length > 2)
+
+    const videosWithAngryFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('angry'))
+    const videosWithSadFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('sad'))
+    const videosWithSurprisedFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('surprised'))
+    const videosWithHappyFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('happy'))
+    const videosWithNeutralFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('neutral'))
+
+    const videosWithMale = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('female'))
+    const videosWithFemale = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('male'))
+
+    const videosWithSmallFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height > 100000).includes(true))
+    const videosWithBigFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height < 100000).includes(true))
+
+    this.success_results = {
+      ...this.success_results,
+      amountOfVideosAnalyzed: this.videos.length,
+      faces: {
+        existence: {
+          yes: this.calculateResultFromVideoArray(videosWithFaces),
+          no: this.calculateResultFromVideoArray(videosWithOutFaces),
+        },
+        amount: {
+          one: this.calculateResultFromVideoArray(videosWithOneFace),
+          two: this.calculateResultFromVideoArray(videosWithTwoFaces),
+          more: this.calculateResultFromVideoArray(videosWithMoreFaces),
+        },
+        expression: {
+          angry: this.calculateResultFromVideoArray(videosWithAngryFace),
+          happy: this.calculateResultFromVideoArray(videosWithSadFace),
+          neutral: this.calculateResultFromVideoArray(videosWithSurprisedFace),
+          sad: this.calculateResultFromVideoArray(videosWithHappyFace),
+          surprised: this.calculateResultFromVideoArray(videosWithNeutralFace),
+        },
+        gender: {
+          female: this.calculateResultFromVideoArray(videosWithMale),
+          male: this.calculateResultFromVideoArray(videosWithFemale),
+        },
+        size: {
+          big: this.calculateResultFromVideoArray(videosWithSmallFace),
+          small: this.calculateResultFromVideoArray(videosWithBigFace),
+        },
+      },
+    }
   }
 }
