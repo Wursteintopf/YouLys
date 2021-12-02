@@ -169,7 +169,11 @@ export class Video implements VideoInterface {
           if (rows.length > 0) {
             resolve(rows.map(row => {
               const video = new Video(row)
-              video.statistics = [new VideoStatistic(row)]
+
+              const stat = new VideoStatistic(row.video_statistic_id)
+              stat.setAll(row)
+
+              video.statistics = [stat]
               return video
             }))
           } else {

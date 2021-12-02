@@ -147,9 +147,14 @@ export class Channel implements ChannelInterface {
   }
 
   public loadVideosByUploadTime = async (from: Date, to: Date): Promise<boolean> => {
-    this.videos = await VideoRepository.Instance.getByChannelAndUploadTime(this.channel_id, from, to)
-    const promises = await Promise.all(this.videos.map(video => video.loadNewestStats()))
-    return (!promises.includes(false))
+    return new Promise<boolean>((resolve, reject) => {
+      VideoRepository.Instance.getByChannelAndUploadTime(this.channel_id, from, to)
+        .then(videos => {
+          this.videos = videos
+          resolve(true)
+        })
+        .catch(e => reject(e))
+    })
   }
 
   public loadAveragePerformance = async (): Promise<boolean> => {
@@ -195,24 +200,12 @@ export class Channel implements ChannelInterface {
 
   public loadFiftyNewestVideos = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (timestamp = (SELECT timestamp FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC LIMIT 50',
-        [this.channel_id],
-
-        (err, rows) => {
-          if (err) reject(err)
-          if (rows.length > 0) {
-            this.videos = rows.map(row => {
-              const video = new Video(row)
-              const stat = new VideoStatistic(row)
-              stat.video_meta = new VideoMeta(row)
-              video.statistics = [stat]
-            })
-          } else {
-            resolve(false)
-          }
-        },
-      )
+      VideoRepository.Instance.getFiftyNewestByChannel(this.channel_id)
+        .then(videos => {
+          this.videos = videos
+          resolve(true)
+        })
+        .catch(e => reject(e))
     })
   }
 

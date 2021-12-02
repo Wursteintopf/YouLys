@@ -67,16 +67,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
     try {
       await channel.loadStatsInRange(from, to)
 
-      const videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
-
-      await Promise.all(videos.map(video => {
-        return video.loadNewestStats()
-          .catch(e => {
-            console.error(e)
-          })
-      }))
-
-      channel.videos = videos
+      channel.videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
 
       channel.calculateFaceSuccess()
 
