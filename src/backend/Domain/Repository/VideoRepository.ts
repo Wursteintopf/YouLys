@@ -8,12 +8,21 @@ import { Face } from '../Model/Face'
 export class VideoRepository {
   private static instance: VideoRepository
 
-  protected convertQueryRowsToVideoModel = (rows): Video[] => {
-    return rows.map(row => {
-      const video = new Video(row.video_id)
-      video.setAll(row)
-      return video
-    })
+  protected convertQueryRowToVideoModel = (row): Video => {
+    const video = new Video(row.video_id)
+    video.setAll(row)
+
+    const stat = new VideoStatistic(row.video_statistic_id)
+    stat.setAll(row)
+
+    stat.video_meta = new VideoMeta(row.video_meta_id)
+    stat.video_meta.setAll(row)
+
+    return video
+  }
+
+  protected convertMultipleRows = (rows): Video[] => {
+    return rows.map(row => this.convertQueryRowToVideoModel(row))
   }
 
   private constructor () {
@@ -29,21 +38,19 @@ export class VideoRepository {
   }
 
   /**
-   * Methods to get Videos / Videostatistics
+   * Methods to get Videos
    */
 
   public getById = async (video_id: string): Promise<Video> => {
     return new Promise<Video>((resolve, reject) => {
       connection.query(
-        'SELECT * FROM video WHERE video_id = ?',
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE video_id = ?',
         [video_id],
 
         (err, rows) => {
           if (err) reject(err)
           if (rows.length > 0) {
-            const video = new Video(rows[0].video_id)
-            video.setAll(rows[0])
-            resolve(video)
+            resolve(this.convertQueryRowToVideoModel(rows[0]))
           } else {
             reject(new Error('There is no Video with this ID'))
           }
@@ -52,42 +59,37 @@ export class VideoRepository {
     })
   }
 
-  public getAll = async (): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
-      connection.query(
-        'SELECT * FROM video',
-
-        (err, rows) => {
-          if (err) reject(err)
-          resolve(this.convertQueryRowsToVideoModel(rows))
-        },
-      )
-    })
-  }
-
-  public getByChannelId = async (channelId: string): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
-      connection.query(
-        'SELECT * FROM video WHERE channel_id = ?',
-        [channelId],
-
-        (err, rows) => {
-          if (err) reject(err)
-          resolve(this.convertQueryRowsToVideoModel(rows))
-        },
-      )
-    })
-  }
-
   public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
-        'SELECT * FROM video WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) ORDER BY upload_time DESC',
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) ORDER BY upload_time DESC',
         [channelId, from, to],
 
         (err, rows) => {
           if (err) reject(err)
-          resolve(this.convertQueryRowsToVideoModel(rows))
+          if (rows && rows.length > 0) {
+            resolve(this.convertMultipleRows(rows))
+          } else {
+            reject(new Error('No Videos for this ChannelId found'))
+          }
+        },
+      )
+    })
+  }
+
+  public getFiftyNewestByChannel = async (channel_id: string): Promise<Video[]> => {
+    return new Promise<Video[]>((resolve, reject) => {
+      connection.query(
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (timestamp = (SELECT timestamp FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC LIMIT 50',
+        [channel_id],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows && rows.length > 0) {
+            resolve(this.convertMultipleRows(rows))
+          } else {
+            reject(new Error('No Videos for this ChannelId found'))
+          }
         },
       )
     })
