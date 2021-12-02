@@ -44,7 +44,7 @@ export class VideoRepository {
   public getById = async (video_id: string): Promise<Video> => {
     return new Promise<Video>((resolve, reject) => {
       connection.query(
-        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE video_id = ?',
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE video_id = ?',
         [video_id],
 
         (err, rows) => {
@@ -62,7 +62,7 @@ export class VideoRepository {
   public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
-        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) ORDER BY upload_time DESC',
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) ORDER BY upload_time DESC',
         [channelId, from, to],
 
         (err, rows) => {
@@ -80,7 +80,7 @@ export class VideoRepository {
   public getFiftyNewestByChannel = async (channel_id: string): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
-        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN channel_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (timestamp = (SELECT timestamp FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC LIMIT 50',
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE channel_id = ? AND (timestamp = (SELECT timestamp FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC LIMIT 50',
         [channel_id],
 
         (err, rows) => {
