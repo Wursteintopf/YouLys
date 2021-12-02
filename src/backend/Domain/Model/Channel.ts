@@ -9,8 +9,6 @@ import { ChannelRepository } from '../Repository/ChannelRepository'
 import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { quantileSeq, min, max, mean } from 'mathjs'
-import { VideoStatistic } from './VideoStatistic'
-import { VideoMeta } from './VideoMeta'
 import {
   ChannelSuccessResultsInterface,
   EMPTY_CHANNEL_SUCCESS_RESULTS, Result,

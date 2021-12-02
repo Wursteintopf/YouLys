@@ -18,6 +18,8 @@ export class VideoRepository {
     stat.video_meta = new VideoMeta(row.video_meta_id)
     stat.video_meta.setAll(row)
 
+    video.statistics = [stat]
+
     return video
   }
 
