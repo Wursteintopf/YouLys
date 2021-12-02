@@ -15,8 +15,8 @@ export class VideoStatistic implements VideoStatisticInterface {
   timestamp: Date = new Date()
   success_factor = 4
 
-  constructor (props: VideoStatisticInterface) {
-    this.video_statistic_id = props.video_statistic_id
+  constructor (video_statistic_id: number) {
+    this.video_statistic_id = video_statistic_id
   }
 
   /**

@@ -46,12 +46,12 @@ export class VideoRepository {
   public getById = async (video_id: string): Promise<Video> => {
     return new Promise<Video>((resolve, reject) => {
       connection.query(
-        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id WHERE video_id = ?',
+        'SELECT * FROM video WHERE video_id = ?',
         [video_id],
 
         (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length > 0) {
             resolve(this.convertQueryRowToVideoModel(rows[0]))
           } else {
             reject(new Error('There is no Video with this ID'))
