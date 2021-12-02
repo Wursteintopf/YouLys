@@ -287,7 +287,7 @@ export class Channel implements ChannelInterface {
   }
 
   private calculateMeanSuccessFromVideoArray = (array: Video[]) => {
-    return this.calculateMean(array.map(v => v.statistics[0].success_factor))
+    return this.calculateMean(array.filter(v => v.statistics[0].success_factor).map(v => v.statistics[0].success_factor))
   }
 
   private calculateResultFromVideoArray = (array: Video[]): Result => {
@@ -300,7 +300,7 @@ export class Channel implements ChannelInterface {
   public calculateSuccessFactor = async (): Promise<number> => {
     await this.loadFiftyNewestVideos()
 
-    return this.calculateMean(this.videos.map(video => video.statistics[0].success_factor))
+    return this.calculateMeanSuccessFromVideoArray(this.videos)
   }
 
   public calculateFaceSuccess = (): void => {

@@ -224,8 +224,8 @@ export class Video implements VideoInterface {
         await thumb.detectFaces()
       }
 
-      const stat = new VideoStatistic({
-        video_statistic_id: 0,
+      const stat = new VideoStatistic(0)
+      stat.setAll({
         video_id: this.video_id,
         video_meta: meta,
         video_thumbnail: thumb,
@@ -234,7 +234,7 @@ export class Video implements VideoInterface {
         favouriteCount: apiResult.statistics.favouriteCount,
         commentCount: apiResult.statistics.commentCount,
         timestamp: new Date(),
-        success_factor: 5,
+        success_factor: 4,
       })
 
       await this.loadFiftyPreviousVideosFromSameChannel()

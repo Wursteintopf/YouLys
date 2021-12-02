@@ -68,8 +68,8 @@ export class ChannelStatistic implements ChannelStatisticInterface {
   public create = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [this.channel_id, this.channel_meta.channel_meta_id, this.subscriber_count, this.subscriber_count_hidden, this.view_count, this.video_count, this.trailer_video_id],
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [this.channel_id, this.channel_meta.channel_meta_id, this.subscriber_count, this.subscriber_count_hidden, this.view_count, this.video_count, this.trailer_video_id, this.success_factor],
 
         err => {
           if (err) reject(err)
@@ -82,8 +82,8 @@ export class ChannelStatistic implements ChannelStatisticInterface {
   public update = async (channelStatistic: ChannelStatistic): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id, moment(channelStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss')],
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, timestamp, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id, moment(channelStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss'), this.success_factor],
 
         err => {
           if (err) reject(err)
