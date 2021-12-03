@@ -7,6 +7,7 @@ import https from 'https'
 import fs from 'fs'
 import config from './Config'
 import videoRouter from './Router/VideoRouter'
+import successRouter from './Router/SuccessRouter'
 
 const app = express()
 
@@ -17,6 +18,7 @@ app.use(morgan('dev'))
 
 app.use('/channel', channelRouter)
 app.use('/video', videoRouter)
+app.use('/success', successRouter)
 
 if (config.httpsConfig.https) {
   https.createServer({

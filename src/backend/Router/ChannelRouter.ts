@@ -28,11 +28,11 @@ channelRouter.get('/getChannels', (req, res) => {
 channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
   ChannelRepository.Instance.getAll()
     .then(async channels => {
-      await Promise.all(channels.map(channel => channel.loadNewestStats()))
+      await Promise.all(channels.map(channel => channel.loadNewestStats().catch(e => console.error(e))))
 
       res.send({
         status: ApiStatusCodes.SUCCESS,
-        result: channels,
+        result: channels.filter(channel => channel.statistics[0]),
       })
     })
     .catch(err => {
