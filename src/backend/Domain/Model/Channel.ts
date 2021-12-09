@@ -10,9 +10,10 @@ import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { quantileSeq, min, max, mean } from 'mathjs'
 import {
-  ChannelSuccessResultsInterface,
-  EMPTY_CHANNEL_SUCCESS_RESULTS, Result,
+  SuccessResultsInterface,
+  EMPTY_SUCCESS_RESULT, Result,
 } from '../../../shared/Domain/Model/ChannelSuccessResultsInterface'
+import { calculateFaceSuccess } from '../../Helper/CalculateFaceSuccess'
 
 export class Channel implements ChannelInterface {
   channel_id: string
@@ -21,7 +22,7 @@ export class Channel implements ChannelInterface {
   statistics: ChannelStatistic[] = []
   videos: Video[] = []
   average_performance: ChannelAveragePerformanceInterface = EMPTY_CHANNEL_AVERAGE_PERFORMANCE
-  success_results: ChannelSuccessResultsInterface = EMPTY_CHANNEL_SUCCESS_RESULTS
+  success_results: SuccessResultsInterface = EMPTY_SUCCESS_RESULT
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
@@ -151,7 +152,7 @@ export class Channel implements ChannelInterface {
           this.videos = videos
           resolve(true)
         })
-        .catch(e => reject(e))
+        .catch(() => resolve(false))
     })
   }
 
@@ -290,13 +291,6 @@ export class Channel implements ChannelInterface {
     return this.calculateMean(array.filter(v => v.statistics[0].success_factor).map(v => v.statistics[0].success_factor))
   }
 
-  private calculateResultFromVideoArray = (array: Video[]): Result => {
-    return {
-      amount: array.length,
-      meanSuccessFactor: this.calculateMeanSuccessFromVideoArray(array),
-    }
-  }
-
   public calculateSuccessFactor = async (): Promise<number> => {
     await this.loadFiftyNewestVideos()
 
@@ -304,54 +298,7 @@ export class Channel implements ChannelInterface {
   }
 
   public calculateFaceSuccess = (): void => {
-    const videosWithFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length > 0)
-    const videosWithOutFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 0)
-
-    const videosWithOneFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 1)
-    const videosWithTwoFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 2)
-    const videosWithMoreFaces = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.length > 2)
-
-    const videosWithAngryFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('angry'))
-    const videosWithSadFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('sad'))
-    const videosWithSurprisedFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('surprised'))
-    const videosWithHappyFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('happy'))
-    const videosWithNeutralFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('neutral'))
-
-    const videosWithMale = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('female'))
-    const videosWithFemale = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('male'))
-
-    const videosWithSmallFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height > 100000).includes(true))
-    const videosWithBigFace = this.videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height < 100000).includes(true))
-
-    this.success_results = {
-      ...this.success_results,
-      amountOfVideosAnalyzed: this.videos.length,
-      faces: {
-        existence: {
-          yes: this.calculateResultFromVideoArray(videosWithFaces),
-          no: this.calculateResultFromVideoArray(videosWithOutFaces),
-        },
-        amount: {
-          one: this.calculateResultFromVideoArray(videosWithOneFace),
-          two: this.calculateResultFromVideoArray(videosWithTwoFaces),
-          more: this.calculateResultFromVideoArray(videosWithMoreFaces),
-        },
-        expression: {
-          angry: this.calculateResultFromVideoArray(videosWithAngryFace),
-          happy: this.calculateResultFromVideoArray(videosWithSadFace),
-          neutral: this.calculateResultFromVideoArray(videosWithSurprisedFace),
-          sad: this.calculateResultFromVideoArray(videosWithHappyFace),
-          surprised: this.calculateResultFromVideoArray(videosWithNeutralFace),
-        },
-        gender: {
-          female: this.calculateResultFromVideoArray(videosWithMale),
-          male: this.calculateResultFromVideoArray(videosWithFemale),
-        },
-        size: {
-          big: this.calculateResultFromVideoArray(videosWithSmallFace),
-          small: this.calculateResultFromVideoArray(videosWithBigFace),
-        },
-      },
-    }
+    this.success_results.amountOfVideosAnalyzed = this.videos.length
+    this.success_results.faces = calculateFaceSuccess(this.videos)
   }
 }

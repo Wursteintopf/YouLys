@@ -3,34 +3,36 @@ export interface Result {
   meanSuccessFactor?: number
 }
 
-export interface ChannelSuccessResultsInterface {
-  amountOfVideosAnalyzed: number
-  faces: {
-    existence: {
-      yes: Result
-      no: Result
-    }
-    amount: {
-      one: Result
-      two: Result
-      more: Result
-    }
-    expression: {
-      angry: Result
-      sad: Result
-      surprised: Result
-      happy: Result
-      neutral: Result
-    }
-    gender: {
-      male: Result
-      female: Result
-    }
-    size: {
-      small: Result
-      big: Result
-    }
+export interface FaceSuccessResultsInterface {
+  existence: {
+    yes: Result
+    no: Result
   }
+  amount: {
+    one: Result
+    two: Result
+    more: Result
+  }
+  expression: {
+    angry: Result
+    sad: Result
+    surprised: Result
+    happy: Result
+    neutral: Result
+  }
+  gender: {
+    male: Result
+    female: Result
+  }
+  size: {
+    small: Result
+    big: Result
+  }
+}
+
+export interface SuccessResultsInterface {
+  amountOfVideosAnalyzed: number
+  faces: FaceSuccessResultsInterface
 }
 
 export const EMPTY_RESULT: Result = {
@@ -38,7 +40,7 @@ export const EMPTY_RESULT: Result = {
   meanSuccessFactor: undefined,
 }
 
-export const EMPTY_CHANNEL_SUCCESS_RESULTS: ChannelSuccessResultsInterface = {
+export const EMPTY_SUCCESS_RESULT: SuccessResultsInterface = {
   amountOfVideosAnalyzed: 0,
   faces: {
     existence: {

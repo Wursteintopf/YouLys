@@ -65,6 +65,24 @@ export class VideoRepository {
     })
   }
 
+  public getByUploadTime = async (from: Date, to: Date): Promise<Video[]> => {
+    return new Promise<Video[]>((resolve, reject) => {
+      connection.query(
+        'SELECT video.channel_id, video.upload_time, video.duration, video_meta.title, video_meta.description, video_meta.tags, video_thumbnail.thumbnail, video_statistic.* FROM video LEFT JOIN video_statistic on video.video_id = video_statistic.video_id LEFT JOIN video_meta ON video_statistic.video_meta_id = video_meta.video_meta_id LEFT JOIN video_thumbnail ON video_statistic.video_thumbnail_id = video_thumbnail.video_thumbnail_id WHERE (upload_time BETWEEN ? AND ?) AND (DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC',
+        [from, to],
+
+        async (err, rows) => {
+          if (err) reject(err)
+          if (rows && rows.length > 0) {
+            resolve(await this.convertMultipleRows(rows))
+          } else {
+            reject(new Error('No Videos in that timespan found'))
+          }
+        },
+      )
+    })
+  }
+
   public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<Video[]> => {
     return new Promise<Video[]>((resolve, reject) => {
       connection.query(
@@ -76,7 +94,7 @@ export class VideoRepository {
           if (rows && rows.length > 0) {
             resolve(await this.convertMultipleRows(rows))
           } else {
-            reject(new Error('No Videos for this ChannelId found'))
+            reject(new Error('No Videos for the Channel with ChannelId ' + channelId + ' found'))
           }
         },
       )

@@ -3,18 +3,25 @@ import { fetchChannels, fetchCurrentChannel, setChannels, setCurrentChannel } fr
 import { baseUrl } from '../../../shared/paths'
 import axios from 'axios'
 import { ApiStatusCodes } from '../../../shared/Enums/ApiStatusCodes'
-import { setFetching } from '../ui/ui.actions'
-import { getFrom, getTo } from '../ui/ui.selector'
+import { setChannelsFetched, setFetching } from '../ui/ui.actions'
+import { getChannelsFetched, getFrom, getTo } from '../ui/ui.selector'
 
 const channelBaseUrl = baseUrl + '/channel'
 
 function * fetchChannelsSaga () {
+  const channelsFetched = yield select(getChannelsFetched)
+  if (channelsFetched) {
+    yield put(setFetching(false))
+    return
+  }
+
   const response = yield axios.get(channelBaseUrl + '/getChannelsWithNewestStats')
   const data = yield response.data
 
   if (data.status === ApiStatusCodes.SUCCESS) {
     yield put(setChannels(data.result))
     yield put(setFetching(false))
+    yield put(setChannelsFetched())
   }
 }
 

@@ -2,7 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { ApiStatusCodes } from '../../shared/Enums/ApiStatusCodes'
 import moment from 'moment'
-import { ChannelRepository } from '../Domain/Repository/ChannelRepository'
+import { SuccessResultsInterface } from '../../shared/Domain/Model/ChannelSuccessResultsInterface'
+import { VideoRepository } from '../Domain/Repository/VideoRepository'
+import { calculateFaceSuccess } from '../Helper/CalculateFaceSuccess'
 
 const successRouter = express.Router()
 successRouter.use(bodyParser.json())
@@ -16,9 +18,17 @@ successRouter.post('/getSuccessInRange', async (req, res) => {
     const from = moment(req.body.from).subtract(1, 'days').toDate()
     const to = moment(req.body.to).add(1, 'days').toDate()
 
-    const channels = await ChannelRepository.Instance.getAll()
+    const videos = await VideoRepository.Instance.getByUploadTime(from, to)
 
+    const success_result: SuccessResultsInterface = {
+      amountOfVideosAnalyzed: videos.length,
+      faces: calculateFaceSuccess(videos),
+    }
 
+    res.send({
+      status: ApiStatusCodes.SUCCESS,
+      result: success_result,
+    })
   }
 })
 

@@ -1,7 +1,7 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import { uiState } from './ui.interfaces'
 import { TimeRange } from '../../../shared/Enums/TimeRange'
-import { setFetching, setFrom, setRange, setTo } from './ui.actions'
+import { setChannelsFetched, setFetching, setFrom, setRange, setTo } from './ui.actions'
 import moment from 'moment'
 
 const INITIAL_STATE: uiState = {
@@ -9,6 +9,7 @@ const INITIAL_STATE: uiState = {
   from: moment().subtract(90, 'days').startOf('day').toDate(),
   to: moment().startOf('day').toDate(),
   fetching: false,
+  channelsFetched: false,
 }
 
 export const uiReducer = reducerWithInitialState(INITIAL_STATE)
@@ -34,5 +35,11 @@ export const uiReducer = reducerWithInitialState(INITIAL_STATE)
     return {
       ...state,
       fetching: payload,
+    }
+  })
+  .case(setChannelsFetched, (state) => {
+    return {
+      ...state,
+      channelsFetched: true,
     }
   })

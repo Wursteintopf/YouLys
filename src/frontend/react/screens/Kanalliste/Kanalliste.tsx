@@ -61,7 +61,7 @@ const Kanalliste: React.FC = () => {
                       <ChannelListSmallText>Aufrufe</ChannelListSmallText>
                     </ChannelListClicks>
                     <ChannelListSuccess>
-                      A++
+                      {channel.statistics[0].success_factor.toFixed(2)}
                       <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
                       <ToolTip
                         offSetX={65}

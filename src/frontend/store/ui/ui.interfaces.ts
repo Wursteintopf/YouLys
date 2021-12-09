@@ -5,4 +5,5 @@ export interface uiState {
   from: Date
   to: Date
   fetching: boolean
+  channelsFetched: boolean
 }

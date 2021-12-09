@@ -22,3 +22,8 @@ export const getFetching = createSelector(
   selectUi,
   state => state.fetching,
 )
+
+export const getChannelsFetched = createSelector(
+  selectUi,
+  state => state.channelsFetched,
+)
