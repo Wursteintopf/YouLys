@@ -7,8 +7,8 @@ import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import {
-  getCurrentChannel, getCurrentChannelFaceMaxAmount, getCurrentChannelFaceMaxSuccess, getCurrentChannelFaceSuccess,
-  getCurrentChannelSuccessResults,
+  getCurrentChannel, getCurrentChannelFaceMaxAmount, getCurrentChannelFaceMaxSuccess,
+  getCurrentChannelSuccessResults, getCurrentChannelTitleMaxAmount, getCurrentChannelTitleMaxSuccess,
   getNewestChannelStatistic,
 } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
@@ -31,6 +31,7 @@ import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
 import VideoList from '../../components/VideoList/VideoList'
 import FacesOnThumbnails from '../../components/FacesOnThumbnails/FacesOnThumbnails'
+import TitleAnalysis from '../../components/TitleAnalysis/TitleAnalysis'
 
 const Kanaldetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -41,6 +42,8 @@ const Kanaldetailseite: React.FC = () => {
   const success = useSelector(getCurrentChannelSuccessResults)
   const maxSuccessFaces = useSelector(getCurrentChannelFaceMaxSuccess)
   const maxAmountFaces = useSelector(getCurrentChannelFaceMaxAmount)
+  const maxSuccessTitle = useSelector(getCurrentChannelTitleMaxSuccess)
+  const maxAmountTitle = useSelector(getCurrentChannelTitleMaxAmount)
 
   const dispatch = useDispatch()
 
@@ -103,7 +106,13 @@ const Kanaldetailseite: React.FC = () => {
           </ContentBox>
         </ContentBoxWrapper>
 
-        <FacesOnThumbnails success={success} maxAmountFaces={maxAmountFaces} maxSuccessFaces={maxSuccessFaces} />
+        <ContentBoxWrapper amountOfChildren={1}>
+          <TitleAnalysis success={success} maxAmount={maxAmountTitle} maxSuccess={maxSuccessTitle} />
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <FacesOnThumbnails success={success} maxAmountFaces={maxAmountFaces} maxSuccessFaces={maxSuccessFaces} />
+        </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={2}>
           <ContentBox title='Aufrufe'>

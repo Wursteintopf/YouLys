@@ -30,9 +30,25 @@ export interface FaceSuccessResultsInterface {
   }
 }
 
+export interface TitleSuccessResultsInterface {
+  uppercase: {
+    yes: Result
+    no: Result
+  }
+  punctuation: {
+    yes: Result
+    no: Result
+  }
+  emoji: {
+    yes: Result
+    no: Result
+  }
+}
+
 export interface SuccessResultsInterface {
   amountOfVideosAnalyzed: number
   faces: FaceSuccessResultsInterface
+  title: TitleSuccessResultsInterface
 }
 
 export const EMPTY_RESULT: Result = {
@@ -66,6 +82,20 @@ export const EMPTY_SUCCESS_RESULT: SuccessResultsInterface = {
     size: {
       big: EMPTY_RESULT,
       small: EMPTY_RESULT,
+    },
+  },
+  title: {
+    uppercase: {
+      yes: EMPTY_RESULT,
+      no: EMPTY_RESULT,
+    },
+    punctuation: {
+      yes: EMPTY_RESULT,
+      no: EMPTY_RESULT,
+    },
+    emoji: {
+      yes: EMPTY_RESULT,
+      no: EMPTY_RESULT,
     },
   },
 }

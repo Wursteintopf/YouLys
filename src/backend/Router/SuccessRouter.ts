@@ -4,7 +4,8 @@ import { ApiStatusCodes } from '../../shared/Enums/ApiStatusCodes'
 import moment from 'moment'
 import { SuccessResultsInterface } from '../../shared/Domain/Model/ChannelSuccessResultsInterface'
 import { VideoRepository } from '../Domain/Repository/VideoRepository'
-import { calculateFaceSuccess } from '../Helper/CalculateFaceSuccess'
+import { calculateFaceSuccess } from '../SuccessCalculators/CalculateFaceSuccess'
+import { calculateTitleSuccess } from '../SuccessCalculators/CalculateTitleSuccess'
 
 const successRouter = express.Router()
 successRouter.use(bodyParser.json())
@@ -23,6 +24,7 @@ successRouter.post('/getSuccessInRange', async (req, res) => {
     const success_result: SuccessResultsInterface = {
       amountOfVideosAnalyzed: videos.length,
       faces: calculateFaceSuccess(videos),
+      title: calculateTitleSuccess(videos),
     }
 
     res.send({

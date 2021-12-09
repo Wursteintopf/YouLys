@@ -69,7 +69,7 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
 
       channel.videos = await VideoRepository.Instance.getByChannelAndUploadTime(channel.channel_id, from, to)
 
-      channel.calculateFaceSuccess()
+      channel.calculateSuccessResults()
 
       res.send({
         status: ApiStatusCodes.SUCCESS,

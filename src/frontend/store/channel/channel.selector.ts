@@ -29,21 +29,34 @@ export const getCurrentChannelSuccessResults = createSelector(
   state => state.currentChannel.success_results,
 )
 
-export const getCurrentChannelFaceSuccess = createSelector(
-  selectChannel,
-  state => state.currentChannel.success_results.faces,
-)
-
 export const getCurrentChannelFaceMaxSuccess = createSelector(
-  getCurrentChannelFaceSuccess,
+  selectChannel,
   state => {
-    return max(merge(Object.keys(state).map(key => Object.keys(state[key]).map(key2 => state[key][key2].meanSuccessFactor))))
+    const faces = state.currentChannel.success_results.faces
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].meanSuccessFactor))))
   },
 )
 
 export const getCurrentChannelFaceMaxAmount = createSelector(
-  getCurrentChannelFaceSuccess,
+  selectChannel,
   state => {
-    return max(merge(Object.keys(state).map(key => Object.keys(state[key]).map(key2 => state[key][key2].amount))))
+    const faces = state.currentChannel.success_results.faces
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].amount))))
+  },
+)
+
+export const getCurrentChannelTitleMaxSuccess = createSelector(
+  selectChannel,
+  state => {
+    const titles = state.currentChannel.success_results.title
+    return max(merge(Object.keys(titles).map(key => Object.keys(titles[key]).map(key2 => titles[key][key2].meanSuccessFactor))))
+  },
+)
+
+export const getCurrentChannelTitleMaxAmount = createSelector(
+  selectChannel,
+  state => {
+    const titles = state.currentChannel.success_results.title
+    return max(merge(Object.keys(titles).map(key => Object.keys(titles[key]).map(key2 => titles[key][key2].amount))))
   },
 )

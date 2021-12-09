@@ -138,11 +138,9 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
   )
 
   return (
-    <ContentBoxWrapper amountOfChildren={1}>
-      <ContentBox title='Gesichter auf Thumbnails' subtitle={success.amountOfVideosAnalyzed + ' Thumbnails im gewählten Zeitraum analysiert'}>
-        {fetching ? <Progress /> : Content}
-      </ContentBox>
-    </ContentBoxWrapper>
+    <ContentBox title='Gesichter auf Thumbnails' subtitle={success.amountOfVideosAnalyzed + ' Thumbnails im gewählten Zeitraum analysiert'}>
+      {fetching ? <Progress /> : Content}
+    </ContentBox>
   )
 }
 

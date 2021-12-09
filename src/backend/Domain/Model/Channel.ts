@@ -13,7 +13,8 @@ import {
   SuccessResultsInterface,
   EMPTY_SUCCESS_RESULT, Result,
 } from '../../../shared/Domain/Model/ChannelSuccessResultsInterface'
-import { calculateFaceSuccess } from '../../Helper/CalculateFaceSuccess'
+import { calculateFaceSuccess } from '../../SuccessCalculators/CalculateFaceSuccess'
+import { calculateTitleSuccess } from '../../SuccessCalculators/CalculateTitleSuccess'
 
 export class Channel implements ChannelInterface {
   channel_id: string
@@ -297,8 +298,9 @@ export class Channel implements ChannelInterface {
     return this.calculateMeanSuccessFromVideoArray(this.videos)
   }
 
-  public calculateFaceSuccess = (): void => {
+  public calculateSuccessResults = (): void => {
     this.success_results.amountOfVideosAnalyzed = this.videos.length
     this.success_results.faces = calculateFaceSuccess(this.videos)
+    this.success_results.title = calculateTitleSuccess(this.videos)
   }
 }

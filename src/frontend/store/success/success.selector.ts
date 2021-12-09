@@ -9,21 +9,34 @@ export const getSuccess = createSelector(
   state => state.success,
 )
 
-export const getFaceSuccess = createSelector(
-  selectSuccess,
-  state => state.success.faces,
-)
-
 export const getFaceMaxSuccess = createSelector(
-  getFaceSuccess,
+  selectSuccess,
   state => {
-    return max(merge(Object.keys(state).map(key => Object.keys(state[key]).map(key2 => state[key][key2].meanSuccessFactor))))
+    const faces = state.success.faces
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].meanSuccessFactor))))
   },
 )
 
 export const getFaceMaxAmount = createSelector(
-  getFaceSuccess,
+  selectSuccess,
   state => {
-    return max(merge(Object.keys(state).map(key => Object.keys(state[key]).map(key2 => state[key][key2].amount))))
+    const faces = state.success.faces
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].amount))))
+  },
+)
+
+export const getTitleMaxSuccess = createSelector(
+  selectSuccess,
+  state => {
+    const faces = state.success.title
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].meanSuccessFactor))))
+  },
+)
+
+export const getTitleMaxAmount = createSelector(
+  selectSuccess,
+  state => {
+    const faces = state.success.title
+    return max(merge(Object.keys(faces).map(key => Object.keys(faces[key]).map(key2 => faces[key][key2].amount))))
   },
 )

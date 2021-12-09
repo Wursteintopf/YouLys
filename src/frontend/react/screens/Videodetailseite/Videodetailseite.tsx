@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { ContentContainer } from '../../../styles/GlobalStyling'
 import SubHeader from '../../components/SubHeader/SubHeader'
-import { Headline } from '../../components/Headline/Headline'
+import { Bold, Headline } from '../../components/Headline/Headline'
 import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
 import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
@@ -23,7 +23,8 @@ import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
 import Performance from '../../components/Performance/Performance'
-import { ThumbnailWrapper, VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
+import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
+import SingleTitleAnalysis from '../../components/SingleTitleAnalysis/SingleTitleAnalysis'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -132,6 +133,10 @@ const Videodetailseite: React.FC = () => {
                   />
             }
           </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={2}>
+          <SingleTitleAnalysis title={stat.video_meta.title} />
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
