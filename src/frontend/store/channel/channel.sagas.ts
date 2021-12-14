@@ -15,7 +15,7 @@ function * fetchChannelsSaga () {
     return
   }
 
-  const response = yield axios.get(channelBaseUrl + '/getChannelsWithNewestStats')
+  const response = yield axios.get(channelBaseUrl + '/getChannels')
   const data = yield response.data
 
   if (data.status === ApiStatusCodes.SUCCESS) {

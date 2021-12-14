@@ -25,24 +25,6 @@ channelRouter.get('/getChannels', (req, res) => {
     })
 })
 
-channelRouter.get('/getChannelsWithNewestStats', (req, res) => {
-  ChannelRepository.Instance.getAll()
-    .then(async channels => {
-      await Promise.all(channels.map(channel => channel.loadNewestStats().catch(e => console.error(e))))
-
-      res.send({
-        status: ApiStatusCodes.SUCCESS,
-        result: channels.filter(channel => channel.statistics[0]),
-      })
-    })
-    .catch(err => {
-      console.log(err)
-      res.send({
-        status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
-      })
-    })
-})
-
 channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
   if (!req.body.channelId || !req.body.from || !req.body.to) {
     res.send({
@@ -57,7 +39,6 @@ channelRouter.post('/getChannelWithStatsInRange', async (req, res) => {
     try {
       channel = await ChannelRepository.Instance.getById(req.body.channelId)
     } catch (e) {
-      console.log(e)
       res.send({
         status: ApiStatusCodes.NOT_FOUND,
       })

@@ -2,9 +2,30 @@ import { connection } from '../../Helper/DatabaseHelper'
 import { Channel } from '../Model/Channel'
 import { ChannelMeta } from '../Model/ChannelMeta'
 import { ChannelStatistic } from '../Model/ChannelStatistic'
+import { Video } from '../Model/Video'
+import { VideoStatistic } from '../Model/VideoStatistic'
+import { VideoMeta } from '../Model/VideoMeta'
+import { VideoThumbnail } from '../Model/VideoThumbnail'
 
 export class ChannelRepository {
   private static instance: ChannelRepository
+
+  protected convertQueryRowToChannelModel = (row): Channel => {
+    const channel = new Channel(row.channel_id)
+    channel.setAll(row)
+
+    const stat = new ChannelStatistic(row.channel_statistic_id)
+    stat.setAll(row)
+
+    const meta = new ChannelMeta(row.channel_meta_id)
+    meta.setAll(row)
+
+    stat.channel_meta = meta
+
+    channel.statistics = [stat]
+
+    return channel
+  }
 
   private constructor () {
     Channel.setUpChannelTable()
@@ -43,17 +64,28 @@ export class ChannelRepository {
   public getAll = async (): Promise<Channel[]> => {
     return new Promise<Channel[]>((resolve, reject) => {
       connection.query(
+        'SELECT c.created_at, c.tracked, cm.username, cm.profile_picture, cm.description, cm.keywords, cs.* FROM channel c LEFT JOIN channel_statistic cs ON c.channel_id = cs.channel_id LEFT JOIN channel_meta cm on cs.channel_meta_id = cm.channel_meta_id WHERE tracked = true AND (DATE(timestamp) = (SELECT DATE(timestamp) FROM channel_statistic WHERE channel_id = c.channel_id ORDER BY timestamp DESC LIMIT 1))',
+
+        (err, rows) => {
+          if (err) reject(err)
+          resolve(rows.map(row => this.convertQueryRowToChannelModel(row)))
+        },
+      )
+    })
+  }
+
+  public getAllWithoutStats = async (): Promise<Channel[]> => {
+    return new Promise<Channel[]>((resolve, reject) => {
+      connection.query(
         'SELECT * FROM channel WHERE tracked = true',
 
         (err, rows) => {
           if (err) reject(err)
-          const channels: Channel[] = []
-          rows.forEach(row => {
+          resolve(rows.map(row => {
             const channel = new Channel(row.channel_id)
             channel.setAll(row)
-            channels.push(channel)
-          })
-          resolve(channels)
+            return channel
+          }))
         },
       )
     })

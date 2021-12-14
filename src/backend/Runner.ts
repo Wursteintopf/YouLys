@@ -2,7 +2,7 @@ import { ChannelRepository } from './Domain/Repository/ChannelRepository'
 
 const run = async (): Promise<boolean> => {
   // Load all Channel from Database
-  const channels = await ChannelRepository.Instance.getAll()
+  const channels = await ChannelRepository.Instance.getAllWithoutStats()
 
   console.log('SUCCESS: Loaded channels from database')
 
