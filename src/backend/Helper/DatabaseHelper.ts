@@ -18,7 +18,13 @@ function initializeConnection () {
   const connection = mysql.createConnection(config.databaseConfig)
   addDisconnectHandler(connection)
 
-  connection.connect()
+  connection.connect((err) => {
+    if (err) {
+      console.log('Error when connection to Database: ' + err)
+      setTimeout(initializeConnection, 2000)
+    }
+  })
+
   return connection
 }
 
