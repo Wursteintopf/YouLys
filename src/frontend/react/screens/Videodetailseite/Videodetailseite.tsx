@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
 import { ContentContainer } from '../../../styles/GlobalStyling'
 import SubHeader from '../../components/SubHeader/SubHeader'
-import { Bold, Headline } from '../../components/Headline/Headline'
+import { Headline } from '../../components/Headline/Headline'
 import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
 import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { setFetching } from '../../../store/ui/ui.actions'
-import { fetchCurrentVideo } from '../../../store/video/video.actions'
-import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/video/video.selector'
+import { fetchCurrentChannel, fetchCurrentVideo } from '../../../store/channel/channel.actions'
+import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import {
   ChannelListSmallText,
@@ -37,7 +37,8 @@ const Videodetailseite: React.FC = () => {
 
   useEffect(() => {
     dispatch(setFetching(true))
-    dispatch(fetchCurrentVideo(window.location.pathname.split('/')[2]))
+    dispatch(fetchCurrentChannel(window.location.pathname.split('/')[2]))
+    dispatch(fetchCurrentVideo(window.location.pathname.split('/')[3]))
   }, [from, to])
 
   if (video.video_id === '' || !stat) return <Progress />

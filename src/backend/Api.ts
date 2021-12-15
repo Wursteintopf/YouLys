@@ -2,12 +2,10 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
-import channelRouter from './Router/ChannelRouter'
+import youLysRouter from './Router/YouLysRouter'
 import https from 'https'
 import fs from 'fs'
 import config from './Config'
-import videoRouter from './Router/VideoRouter'
-import successRouter from './Router/SuccessRouter'
 
 const app = express()
 
@@ -16,9 +14,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-app.use('/channel', channelRouter)
-app.use('/video', videoRouter)
-app.use('/success', successRouter)
+app.use('/channel', youLysRouter)
 
 if (config.httpsConfig.https) {
   https.createServer({

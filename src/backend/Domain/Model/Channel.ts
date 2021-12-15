@@ -1,7 +1,6 @@
 import { ChannelStatistic } from './ChannelStatistic'
 import { Video } from './Video'
 import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
-import { ChannelAveragePerformanceInterface, EMPTY_CHANNEL_AVERAGE_PERFORMANCE } from '../../../shared/Domain/Model/ChannelAveragePerformanceInterface'
 import { connection } from '../../Helper/DatabaseHelper'
 import moment from 'moment'
 import { ChannelMeta } from './ChannelMeta'
@@ -9,12 +8,6 @@ import { ChannelRepository } from '../Repository/ChannelRepository'
 import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
 import { quantileSeq, min, max, mean } from 'mathjs'
-import {
-  SuccessResultsInterface,
-  EMPTY_SUCCESS_RESULT, Result,
-} from '../../../shared/Domain/Model/ChannelSuccessResultsInterface'
-import { calculateFaceSuccess } from '../../SuccessCalculators/CalculateFaceSuccess'
-import { calculateTitleSuccess } from '../../SuccessCalculators/CalculateTitleSuccess'
 
 export class Channel implements ChannelInterface {
   channel_id: string
@@ -22,8 +15,6 @@ export class Channel implements ChannelInterface {
   tracked = true
   statistics: ChannelStatistic[] = []
   videos: Video[] = []
-  average_performance: ChannelAveragePerformanceInterface = EMPTY_CHANNEL_AVERAGE_PERFORMANCE
-  success_results: SuccessResultsInterface = EMPTY_SUCCESS_RESULT
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
@@ -157,47 +148,6 @@ export class Channel implements ChannelInterface {
     })
   }
 
-  public loadAveragePerformance = async (): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      connection.query(
-        'SELECT video_statistic.views, video_statistic.likes, video_statistic.dislikes, video_statistic.commentCount FROM video LEFT JOIN video_statistic ON video.video_id = video_statistic.video_id WHERE channel_id = ? AND DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic WHERE video_id = video.video_id ORDER BY timestamp DESC LIMIT 1) ORDER BY upload_time DESC LIMIT 50',
-        [this.channel_id],
-
-        (err, rows) => {
-          if (err) console.log(err)
-          const views = rows.map(row => row.views)
-          const likes = rows.map(row => row.likes)
-          const commentCounts = rows.map(row => row.commentCount)
-
-          this.average_performance = {
-            views: {
-              minimum: min(views),
-              lowerQuantile: quantileSeq(views, 0.25) as number,
-              median: quantileSeq(views, 0.5) as number,
-              upperQuantile: quantileSeq(views, 0.75) as number,
-              maximum: max(views),
-            },
-            likes: {
-              minimum: min(likes),
-              lowerQuantile: quantileSeq(likes, 0.25) as number,
-              median: quantileSeq(likes, 0.5) as number,
-              upperQuantile: quantileSeq(likes, 0.75) as number,
-              maximum: max(likes),
-            },
-            commentCount: {
-              minimum: min(commentCounts),
-              lowerQuantile: quantileSeq(commentCounts, 0.25) as number,
-              median: quantileSeq(commentCounts, 0.5) as number,
-              upperQuantile: quantileSeq(commentCounts, 0.75) as number,
-              maximum: max(commentCounts),
-            },
-          }
-          resolve(true)
-        },
-      )
-    })
-  }
-
   public loadFiftyNewestVideos = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       VideoRepository.Instance.getFiftyNewestByChannel(this.channel_id)
@@ -244,7 +194,7 @@ export class Channel implements ChannelInterface {
       stat.video_count = apiResult.statistics.videoCount
       stat.view_count = apiResult.statistics.viewCount
 
-      stat.success_factor = await this.calculateSuccessFactor()
+      stat.channel_success_factor = await this.calculateSuccessFactor()
 
       await stat.create()
 
@@ -296,11 +246,5 @@ export class Channel implements ChannelInterface {
     await this.loadFiftyNewestVideos()
 
     return this.calculateMeanSuccessFromVideoArray(this.videos)
-  }
-
-  public calculateSuccessResults = (): void => {
-    this.success_results.amountOfVideosAnalyzed = this.videos.length
-    this.success_results.faces = calculateFaceSuccess(this.videos)
-    this.success_results.title = calculateTitleSuccess(this.videos)
   }
 }

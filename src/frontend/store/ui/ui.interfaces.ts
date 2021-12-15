@@ -6,4 +6,7 @@ export interface uiState {
   to: Date
   fetching: boolean
   channelsFetched: boolean
+  videosFetched: boolean
+  channelStatsFetched: string[]
+  videoStatsFetched: string[]
 }

@@ -66,7 +66,7 @@ const VideoList: React.FC<VideoListProps> = (props) => {
                   endIcon={<ArrowForwardIcon />}
                   color='secondary'
                   variant='contained'
-                  onClick={() => history.push('/videodetails/' + video.video_id)}
+                  onClick={() => history.push('/videodetails/' + currentChannel.channel_id + '/' + video.video_id)}
                 >
                   Details
                 </Button>

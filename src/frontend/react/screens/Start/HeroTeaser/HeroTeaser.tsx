@@ -24,7 +24,7 @@ const HeroTeaser: React.FC = () => {
           <Title>Erfolgsfaktoren auf Youtube</Title>
           <HeroTeaserDescription>
             YouLys ist eine Plattform, die aktuelle Erfolgstrends in deutschen YouTube Kanälen analysiert und auswertet.
-            Der Klassiker zum Beispiel, bringt es wirklich etwas, ein schockiertes Gesicht auf das Thumbnail zu machen?
+            Der Klassiker zum Beispiel, bringt es wirklich etwas, ein erstauntes Gesicht auf das Thumbnail zu machen?
           </HeroTeaserDescription>
           <Button
             endIcon={<ArrowForwardIcon />}

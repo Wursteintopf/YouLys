@@ -8,7 +8,7 @@ import { Face } from '../Model/Face'
 export class VideoRepository {
   private static instance: VideoRepository
 
-  protected convertQueryRowToVideoModel = (row): Video => {
+  public convertQueryRowToVideoModel = (row): Video => {
     const video = new Video(row.video_id)
     video.setAll(row)
 

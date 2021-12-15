@@ -1,7 +1,16 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import { uiState } from './ui.interfaces'
 import { TimeRange } from '../../../shared/Enums/TimeRange'
-import { setChannelsFetched, setFetching, setFrom, setRange, setTo } from './ui.actions'
+import {
+  addChannelStatsFetched,
+  addVideoStatsFetched,
+  setChannelsFetched,
+  setFetching,
+  setFrom,
+  setRange,
+  setTo,
+  setVideosFetched,
+} from './ui.actions'
 import moment from 'moment'
 
 const INITIAL_STATE: uiState = {
@@ -10,6 +19,9 @@ const INITIAL_STATE: uiState = {
   to: moment().startOf('day').toDate(),
   fetching: false,
   channelsFetched: false,
+  videosFetched: false,
+  channelStatsFetched: [],
+  videoStatsFetched: [],
 }
 
 export const uiReducer = reducerWithInitialState(INITIAL_STATE)
@@ -17,6 +29,9 @@ export const uiReducer = reducerWithInitialState(INITIAL_STATE)
     return {
       ...state,
       range: payload,
+      videosFetched: false,
+      channelStatsFetched: [],
+      videoStatsFetched: [],
     }
   })
   .case(setFrom, (state, payload) => {
@@ -41,5 +56,23 @@ export const uiReducer = reducerWithInitialState(INITIAL_STATE)
     return {
       ...state,
       channelsFetched: true,
+    }
+  })
+  .case(setVideosFetched, state => {
+    return {
+      ...state,
+      videosFetched: true,
+    }
+  })
+  .case(addChannelStatsFetched, (state, payload) => {
+    return {
+      ...state,
+      channelStatsFetched: [...state.channelStatsFetched, payload],
+    }
+  })
+  .case(addVideoStatsFetched, (state, payload) => {
+    return {
+      ...state,
+      videoStatsFetched: [...state.videoStatsFetched, payload],
     }
   })

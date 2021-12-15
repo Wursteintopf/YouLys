@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
-import { scaleLinear, scaleOrdinal } from 'd3-scale'
+import { scaleLinear } from 'd3-scale'
 import themeVariables from '../../../styles/themeVariables'
 import { path } from 'd3-path'
+import { max } from 'd3-array'
 
 interface SingleBar {
   value: number
@@ -32,7 +33,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     return props.bars.map((bar, index) => {
       const returnVal = (
         <g key={index}>
-          <rect x={spacingLeft} y={yOffSet + 2} width={x(bar.value)} height={barHeight - 2} fill={themeVariables.blueShades[index]} />
+          <rect x={spacingLeft} y={yOffSet + 2} width={bar.value ? x(bar.value) : 0} height={barHeight - 2} fill={themeVariables.blueShades[index]} />
           <text x={0} y={yOffSet + barHeight / 2 + 5} fill={themeVariables.colorDarkGrey}>{bar.label}</text>
         </g>
       )

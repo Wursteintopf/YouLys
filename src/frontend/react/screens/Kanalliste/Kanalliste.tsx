@@ -44,6 +44,8 @@ const Kanalliste: React.FC = () => {
           <ChannelListStyled>
             {
               channels.sort((a, b) => b.statistics[0].subscriber_count - a.statistics[0].subscriber_count).map(channel => {
+                channel.statistics = channel.statistics.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+
                 return (
                   <ChannelListEntry key={channel.channel_id}>
                     <ChannelListProfilePicture>
@@ -61,7 +63,7 @@ const Kanalliste: React.FC = () => {
                       <ChannelListSmallText>Aufrufe</ChannelListSmallText>
                     </ChannelListClicks>
                     <ChannelListSuccess>
-                      {channel.statistics[0].success_factor.toFixed(2)}
+                      {channel.statistics[0].channel_success_factor.toFixed(2)}
                       <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
                       <ToolTip
                         offSetX={65}

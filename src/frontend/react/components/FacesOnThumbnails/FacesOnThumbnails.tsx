@@ -1,37 +1,36 @@
 import React from 'react'
-import { SuccessResultsInterface } from '../../../../shared/Domain/Model/ChannelSuccessResultsInterface'
+import {
+  FaceSuccessResultsInterface,
+} from '../../../../shared/Domain/Model/ChannelSuccessResultsInterface'
 import ContentBox from '../ContentBox/ContentBox'
 import { ContentBoxDivider, ContentBoxDividerWrapper } from '../ContentBox/ContentBoxStyling'
 import { Headline } from '../Headline/Headline'
 import BarChart from '../BarChart/BarChart'
-import { ContentBoxWrapper } from '../ContentBox/ContentBoxWrapper'
 import { useSelector } from 'react-redux'
 import { getFetching } from '../../../store/ui/ui.selector'
 import Progress from '../Progress/Progress'
 
 interface FacesOnThumbnailsProps {
-  success: SuccessResultsInterface
-  maxAmountFaces: number
-  maxSuccessFaces: number
+  amountOfVideos: number
+  faceSuccess: FaceSuccessResultsInterface
+  maxAmount: number
+  maxSuccess: number
 }
 
-const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmountFaces, maxSuccessFaces }) => {
-  const faceSuccess = success.faces
+const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = (props) => {
   const fetching = useSelector(getFetching)
 
   const Content = (
     <>
       <ContentBoxDividerWrapper>
         <ContentBoxDivider>
-          <Headline>Anzahl Thumbnails / Anzahl Gesichter</Headline>
+          <Headline>Anzahl Thumbnails / Existieren Gesichter</Headline>
 
           <BarChart
-            maxValue={maxAmountFaces}
+            maxValue={props.maxAmount}
             bars={[
-              { label: 'Keine', value: faceSuccess.existence.no.amount || 0 },
-              { label: '1 Gesicht', value: faceSuccess.amount.one.amount || 0 },
-              { label: '2 Gesichter', value: faceSuccess.amount.two.amount || 0 },
-              { label: 'Mehr als 2', value: faceSuccess.amount.more.amount || 0 },
+              { label: 'Mit Gesicht', value: props.faceSuccess.existence.yes.amount || 0 },
+              { label: 'Ohne Gesicht', value: props.faceSuccess.existence.no.amount || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -40,12 +39,40 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Durchschnittlicher Erfolgswert</Headline>
 
           <BarChart
-            maxValue={maxSuccessFaces}
+            maxValue={props.maxSuccess}
             bars={[
-              { label: 'Keine', value: faceSuccess.existence.no.meanSuccessFactor || 0 },
-              { label: '1 Gesicht', value: faceSuccess.amount.one.meanSuccessFactor || 0 },
-              { label: '2 Gesichter', value: faceSuccess.amount.two.meanSuccessFactor || 0 },
-              { label: 'Mehr als 2', value: faceSuccess.amount.more.meanSuccessFactor || 0 },
+              { label: 'Mit Gesicht', value: props.faceSuccess.existence.yes.meanSuccessFactor || 0 },
+              { label: 'Ohne Gesicht', value: props.faceSuccess.existence.no.meanSuccessFactor || 0 },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
+          <Headline>Anzahl Thumbnails / Anzahl Gesichter</Headline>
+
+          <BarChart
+            maxValue={props.maxAmount}
+            bars={[
+              { label: 'Keine', value: props.faceSuccess.existence.no.amount || 0 },
+              { label: '1 Gesicht', value: props.faceSuccess.amount.one.amount || 0 },
+              { label: '2 Gesichter', value: props.faceSuccess.amount.two.amount || 0 },
+              { label: 'Mehr als 2', value: props.faceSuccess.amount.more.amount || 0 },
+            ]}
+          />
+        </ContentBoxDivider>
+
+        <ContentBoxDivider>
+          <Headline>Durchschnittlicher Erfolgswert</Headline>
+
+          <BarChart
+            maxValue={props.maxSuccess}
+            bars={[
+              { label: 'Keine', value: props.faceSuccess.existence.no.meanSuccessFactor || 0 },
+              { label: '1 Gesicht', value: props.faceSuccess.amount.one.meanSuccessFactor || 0 },
+              { label: '2 Gesichter', value: props.faceSuccess.amount.two.meanSuccessFactor || 0 },
+              { label: 'Mehr als 2', value: props.faceSuccess.amount.more.meanSuccessFactor || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -56,13 +83,13 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Anzahl Thumbnails / Erkannte Emotion</Headline>
 
           <BarChart
-            maxValue={maxAmountFaces}
+            maxValue={props.maxAmount}
             bars={[
-              { label: 'Wütend', value: faceSuccess.expression.angry.amount || 0 },
-              { label: 'Traurig', value: faceSuccess.expression.sad.amount || 0 },
-              { label: 'Erstaunt', value: faceSuccess.expression.surprised.amount || 0 },
-              { label: 'Glücklich', value: faceSuccess.expression.happy.amount || 0 },
-              { label: 'Neutral', value: faceSuccess.expression.neutral.amount || 0 },
+              { label: 'Wütend', value: props.faceSuccess.expression.angry.amount || 0 },
+              { label: 'Traurig', value: props.faceSuccess.expression.sad.amount || 0 },
+              { label: 'Erstaunt', value: props.faceSuccess.expression.surprised.amount || 0 },
+              { label: 'Glücklich', value: props.faceSuccess.expression.happy.amount || 0 },
+              { label: 'Neutral', value: props.faceSuccess.expression.neutral.amount || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -71,13 +98,13 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Durchschnittlicher Erfolgswert</Headline>
 
           <BarChart
-            maxValue={maxSuccessFaces}
+            maxValue={props.maxSuccess}
             bars={[
-              { label: 'Wütend', value: faceSuccess.expression.angry.meanSuccessFactor || 0 },
-              { label: 'Traurig', value: faceSuccess.expression.sad.meanSuccessFactor || 0 },
-              { label: 'Erstaunt', value: faceSuccess.expression.surprised.meanSuccessFactor || 0 },
-              { label: 'Glücklich', value: faceSuccess.expression.happy.meanSuccessFactor || 0 },
-              { label: 'Neutral', value: faceSuccess.expression.neutral.meanSuccessFactor || 0 },
+              { label: 'Wütend', value: props.faceSuccess.expression.angry.meanSuccessFactor || 0 },
+              { label: 'Traurig', value: props.faceSuccess.expression.sad.meanSuccessFactor || 0 },
+              { label: 'Erstaunt', value: props.faceSuccess.expression.surprised.meanSuccessFactor || 0 },
+              { label: 'Glücklich', value: props.faceSuccess.expression.happy.meanSuccessFactor || 0 },
+              { label: 'Neutral', value: props.faceSuccess.expression.neutral.meanSuccessFactor || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -88,10 +115,10 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Anzahl Thumbnails / Geschlecht</Headline>
 
           <BarChart
-            maxValue={maxAmountFaces}
+            maxValue={props.maxAmount}
             bars={[
-              { label: 'Männlich', value: faceSuccess.gender.male.amount || 0 },
-              { label: 'Weiblich', value: faceSuccess.gender.female.amount || 0 },
+              { label: 'Männlich', value: props.faceSuccess.gender.male.amount || 0 },
+              { label: 'Weiblich', value: props.faceSuccess.gender.female.amount || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -100,10 +127,10 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Durchschnittlicher Erfolgswert</Headline>
 
           <BarChart
-            maxValue={maxSuccessFaces}
+            maxValue={props.maxSuccess}
             bars={[
-              { label: 'Männlich', value: faceSuccess.gender.male.meanSuccessFactor || 0 },
-              { label: 'Weiblich', value: faceSuccess.gender.female.meanSuccessFactor || 0 },
+              { label: 'Männlich', value: props.faceSuccess.gender.male.meanSuccessFactor || 0 },
+              { label: 'Weiblich', value: props.faceSuccess.gender.female.meanSuccessFactor || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -114,10 +141,10 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Anzahl Thumbnails / Größe des Gesichts</Headline>
 
           <BarChart
-            maxValue={maxAmountFaces}
+            maxValue={props.maxAmount}
             bars={[
-              { label: 'Groß', value: faceSuccess.size.big.amount || 0 },
-              { label: 'Klein', value: faceSuccess.size.small.amount || 0 },
+              { label: 'Groß', value: props.faceSuccess.size.big.amount || 0 },
+              { label: 'Klein', value: props.faceSuccess.size.small.amount || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -126,10 +153,10 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
           <Headline>Durchschittlicher Erfolgswert</Headline>
 
           <BarChart
-            maxValue={maxSuccessFaces}
+            maxValue={props.maxSuccess}
             bars={[
-              { label: 'Groß', value: faceSuccess.size.big.meanSuccessFactor || 0 },
-              { label: 'Klein', value: faceSuccess.size.small.meanSuccessFactor || 0 },
+              { label: 'Groß', value: props.faceSuccess.size.big.meanSuccessFactor || 0 },
+              { label: 'Klein', value: props.faceSuccess.size.small.meanSuccessFactor || 0 },
             ]}
           />
         </ContentBoxDivider>
@@ -138,7 +165,7 @@ const FacesOnThumbnails: React.FC<FacesOnThumbnailsProps> = ({ success, maxAmoun
   )
 
   return (
-    <ContentBox title='Gesichter auf Thumbnails' subtitle={success.amountOfVideosAnalyzed + ' Thumbnails im gewählten Zeitraum analysiert'}>
+    <ContentBox title='Gesichter auf Thumbnails' subtitle={props.amountOfVideos + ' Thumbnails im gewählten Zeitraum analysiert'}>
       {fetching ? <Progress /> : Content}
     </ContentBox>
   )

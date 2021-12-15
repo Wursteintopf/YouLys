@@ -7,8 +7,7 @@ import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import {
-  getCurrentChannel, getCurrentChannelFaceMaxAmount, getCurrentChannelFaceMaxSuccess,
-  getCurrentChannelSuccessResults, getCurrentChannelTitleMaxAmount, getCurrentChannelTitleMaxSuccess,
+  getCurrentChannel,
   getNewestChannelStatistic,
 } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
@@ -30,8 +29,8 @@ import LineChart from '../../components/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
 import VideoList from '../../components/VideoList/VideoList'
-import FacesOnThumbnails from '../../components/FacesOnThumbnails/FacesOnThumbnails'
-import TitleAnalysis from '../../components/TitleAnalysis/TitleAnalysis'
+import KanalTitleSuccess from './KanalTitleSuccess'
+import KanalFaceSuccess from './KanalFaceSuccess'
 
 const Kanaldetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -39,11 +38,6 @@ const Kanaldetailseite: React.FC = () => {
   const fetching = useSelector(getFetching)
   const channel = useSelector(getCurrentChannel)
   const stat = useSelector(getNewestChannelStatistic)
-  const success = useSelector(getCurrentChannelSuccessResults)
-  const maxSuccessFaces = useSelector(getCurrentChannelFaceMaxSuccess)
-  const maxAmountFaces = useSelector(getCurrentChannelFaceMaxAmount)
-  const maxSuccessTitle = useSelector(getCurrentChannelTitleMaxSuccess)
-  const maxAmountTitle = useSelector(getCurrentChannelTitleMaxAmount)
 
   const dispatch = useDispatch()
 
@@ -81,7 +75,7 @@ const Kanaldetailseite: React.FC = () => {
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
               </ChannelListClicks>
               <ChannelListSuccess>
-                {stat.success_factor ? stat.success_factor.toFixed(2) : 4}
+                {stat.channel_success_factor ? stat.channel_success_factor.toFixed(2) : 4}
                 <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
                 <ToolTip
                   offSetX={65}
@@ -107,11 +101,11 @@ const Kanaldetailseite: React.FC = () => {
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <TitleAnalysis success={success} maxAmount={maxAmountTitle} maxSuccess={maxSuccessTitle} />
+          <KanalTitleSuccess />
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <FacesOnThumbnails success={success} maxAmountFaces={maxAmountFaces} maxSuccessFaces={maxSuccessFaces} />
+          <KanalFaceSuccess />
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={2}>

@@ -27,3 +27,18 @@ export const getChannelsFetched = createSelector(
   selectUi,
   state => state.channelsFetched,
 )
+
+export const getVideosFetched = createSelector(
+  selectUi,
+  state => state.videosFetched,
+)
+
+export const getChannelStatsFetched = createSelector(
+  selectUi,
+  state => state.channelStatsFetched,
+)
+
+export const getVideoStatsFetched = createSelector(
+  selectUi,
+  state => state.videoStatsFetched,
+)

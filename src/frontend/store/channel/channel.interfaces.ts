@@ -1,6 +1,7 @@
 import { ChannelInterface } from '../../../shared/Domain/Model/ChannelInterface'
 
 export interface channelState {
-  channels: ChannelInterface[]
-  currentChannel: ChannelInterface
+  channels: { [id: string]: ChannelInterface }
+  currentChannel: string
+  currentVideo: string
 }
