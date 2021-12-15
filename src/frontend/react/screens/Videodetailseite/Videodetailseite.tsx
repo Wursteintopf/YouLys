@@ -7,8 +7,8 @@ import ContentBox from '../../components/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { setFetching } from '../../../store/ui/ui.actions'
-import { fetchCurrentVideo } from '../../../store/video/video.actions'
-import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/video/video.selector'
+import { fetchCurrentChannel, fetchCurrentVideo } from '../../../store/channel/channel.actions'
+import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/channel/channel.selector'
 import Progress from '../../components/Progress/Progress'
 import {
   ChannelListSmallText,
@@ -23,7 +23,8 @@ import moment from 'moment'
 import LineChart from '../../components/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
 import Performance from '../../components/Performance/Performance'
-import { ThumbnailWrapper, VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
+import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
+import SingleTitleAnalysis from '../../components/SingleTitleAnalysis/SingleTitleAnalysis'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -36,7 +37,8 @@ const Videodetailseite: React.FC = () => {
 
   useEffect(() => {
     dispatch(setFetching(true))
-    dispatch(fetchCurrentVideo(window.location.pathname.split('/')[2]))
+    dispatch(fetchCurrentChannel(window.location.pathname.split('/')[2]))
+    dispatch(fetchCurrentVideo(window.location.pathname.split('/')[3]))
   }, [from, to])
 
   if (video.video_id === '' || !stat) return <Progress />
@@ -132,6 +134,10 @@ const Videodetailseite: React.FC = () => {
                   />
             }
           </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={2}>
+          <SingleTitleAnalysis title={stat.video_meta.title} />
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>

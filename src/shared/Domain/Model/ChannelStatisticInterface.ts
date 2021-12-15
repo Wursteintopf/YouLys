@@ -10,7 +10,7 @@ export interface ChannelStatisticInterface {
   video_count: number
   trailer_video_id: string
   timestamp: Date
-  success_factor: number
+  channel_success_factor: number
 }
 
 export const EMPTY_CHANNEL_STATISTIC: ChannelStatisticInterface = {
@@ -23,5 +23,5 @@ export const EMPTY_CHANNEL_STATISTIC: ChannelStatisticInterface = {
   trailer_video_id: '',
   video_count: 0,
   view_count: 0,
-  success_factor: 4,
+  channel_success_factor: 4,
 }

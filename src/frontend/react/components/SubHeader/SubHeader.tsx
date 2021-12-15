@@ -9,8 +9,7 @@ import {
 import { ContentContainer } from '../../../styles/GlobalStyling'
 import TimePicker from '../TimePicker/TimePicker'
 import { useSelector } from 'react-redux'
-import { getCurrentChannel } from '../../../store/channel/channel.selector'
-import { getCurrentVideo } from '../../../store/video/video.selector'
+import { getCurrentChannel, getCurrentVideo } from '../../../store/channel/channel.selector'
 import clampByLength from '../../../util/clampByLength'
 
 const SubHeader: React.FC = props => {

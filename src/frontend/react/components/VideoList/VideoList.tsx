@@ -16,7 +16,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Button from '../Button/Button'
 import { useHistory } from 'react-router'
 import { useSelector } from 'react-redux'
-import { getCurrentChannel } from '../../../store/channel/channel.selector'
+import { getCurrentChannel, getNewestChannelStatistic } from '../../../store/channel/channel.selector'
 import { Headline } from '../Headline/Headline'
 import ToolTip from '../ToolTip/ToolTip'
 
@@ -47,7 +47,7 @@ const VideoList: React.FC<VideoListProps> = (props) => {
                 <VideoListSmallText>Aufrufe</VideoListSmallText>
               </VideoListViews>
               <VideoListSuccess>
-                {video.statistics[0].success_factor.toFixed(2)}
+                {video.statistics[0].success_factor ? video.statistics[0].success_factor.toFixed(2) : 0}
                 <VideoListSmallText>Erfolgswert</VideoListSmallText>
                 <ToolTip
                   offSetX={65}
@@ -66,7 +66,7 @@ const VideoList: React.FC<VideoListProps> = (props) => {
                   endIcon={<ArrowForwardIcon />}
                   color='secondary'
                   variant='contained'
-                  onClick={() => history.push('/videodetails/' + video.video_id)}
+                  onClick={() => history.push('/videodetails/' + currentChannel.channel_id + '/' + video.video_id)}
                 >
                   Details
                 </Button>

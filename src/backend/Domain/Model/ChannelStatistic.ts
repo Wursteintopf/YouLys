@@ -13,7 +13,7 @@ export class ChannelStatistic implements ChannelStatisticInterface {
   video_count = 0
   trailer_video_id = ''
   timestamp: Date = new Date()
-  success_factor = 0
+  channel_success_factor = 0
 
   constructor (channel_statistic_id: number) {
     this.channel_statistic_id = channel_statistic_id
@@ -35,6 +35,7 @@ export class ChannelStatistic implements ChannelStatisticInterface {
       'video_count INT,' +
       'trailer_video_id VARCHAR(255),' +
       'timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' +
+      'channel_success_factor FLOAT,' +
       'PRIMARY KEY (channel_statistic_id),' +
       'FOREIGN KEY (channel_id) REFERENCES channel(channel_id),' +
       'FOREIGN KEY (channel_meta_id) REFERENCES channel_meta(channel_meta_id) ON DELETE CASCADE,' +
@@ -55,7 +56,7 @@ export class ChannelStatistic implements ChannelStatisticInterface {
     this.video_count = props.video_count
     this.trailer_video_id = props.trailer_video_id
     this.timestamp = props.timestamp
-    this.success_factor = props.success_factor
+    this.channel_success_factor = props.channel_success_factor
 
     if (props.channel_meta) {
       this.channel_meta = new ChannelMeta(props.channel_meta.channel_meta_id)
@@ -68,8 +69,8 @@ export class ChannelStatistic implements ChannelStatisticInterface {
   public create = async (): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [this.channel_id, this.channel_meta.channel_meta_id, this.subscriber_count, this.subscriber_count_hidden, this.view_count, this.video_count, this.trailer_video_id, this.success_factor],
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, channel_success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [this.channel_id, this.channel_meta.channel_meta_id, this.subscriber_count, this.subscriber_count_hidden, this.view_count, this.video_count, this.trailer_video_id, this.channel_success_factor],
 
         err => {
           if (err) reject(err)
@@ -82,8 +83,8 @@ export class ChannelStatistic implements ChannelStatisticInterface {
   public update = async (channelStatistic: ChannelStatistic): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
       connection.query(
-        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, timestamp, success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id, moment(channelStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss'), this.success_factor],
+        'INSERT INTO channel_statistic(channel_id, channel_meta_id, subscriber_count, subscriber_count_hidden, view_count, video_count, trailer_video_id, timestamp, channel_success_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [channelStatistic.channel_id, channelStatistic.channel_meta.channel_meta_id, channelStatistic.subscriber_count, channelStatistic.subscriber_count_hidden, channelStatistic.view_count, channelStatistic.video_count, channelStatistic.trailer_video_id, moment(channelStatistic.timestamp).format('YYYY-MM-DD HH:mm:ss'), this.channel_success_factor],
 
         err => {
           if (err) reject(err)

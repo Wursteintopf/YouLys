@@ -13,3 +13,8 @@ export const SubLine = styled.h4`
   font-size: ${themeVariables.fontSizeRegular}px;
   font-weight: ${themeVariables.fontWeightRegular};
 `
+
+export const Bold = styled.span`
+  font-size: ${themeVariables.fontSizeRegular}px;
+  font-weight: ${themeVariables.fontWeightBold};
+`

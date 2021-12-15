@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
-import { scaleLinear, scaleOrdinal } from 'd3-scale'
+import { scaleLinear } from 'd3-scale'
 import themeVariables from '../../../styles/themeVariables'
 import { path } from 'd3-path'
+import { max } from 'd3-array'
 
 interface SingleBar {
   value: number
@@ -18,7 +19,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   const barHeight = 40
 
   const spacingBottom = 50
-  const spacingLeft = 90
+  const spacingLeft = 110
 
   let yOffSet = 0
 
@@ -31,8 +32,8 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   const renderBars = () => {
     return props.bars.map((bar, index) => {
       const returnVal = (
-        <g>
-          <rect key={index} x={spacingLeft} y={yOffSet + 2} width={x(bar.value)} height={barHeight - 2} fill={themeVariables.blueShades[index]} />
+        <g key={index}>
+          <rect x={spacingLeft} y={yOffSet + 2} width={bar.value ? x(bar.value) : 0} height={barHeight - 2} fill={themeVariables.blueShades[index]} />
           <text x={0} y={yOffSet + barHeight / 2 + 5} fill={themeVariables.colorDarkGrey}>{bar.label}</text>
         </g>
       )
@@ -63,7 +64,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
       {
         xTicks.map(tick => {
           return (
-            <text x={spacingLeft + x(tick)} y={yOffSet + 20} fill={themeVariables.colorDarkGrey} textAnchor='middle'>{tick}</text>
+            <text key={tick} x={spacingLeft + x(tick)} y={yOffSet + 20} fill={themeVariables.colorDarkGrey} textAnchor='middle'>{tick}</text>
           )
         })
       }
