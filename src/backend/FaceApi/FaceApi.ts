@@ -45,8 +45,6 @@ export class FaceApi {
       .withFaceExpressions()
       .withAgeAndGender()
 
-    console.log(faceapi.tf.engine().memory().numTensors)
-
     return results
   }
 }
