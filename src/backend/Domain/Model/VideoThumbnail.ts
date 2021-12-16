@@ -1,5 +1,5 @@
 import { VideoThumbnailInterface } from '../../../shared/Domain/Model/VideoThumbnailInterface'
-import { detectFaces } from '../../FaceApi/FaceApi'
+import { FaceApi } from '../../FaceApi/FaceApi'
 import { Face } from './Face'
 import { connection } from '../../Helper/DatabaseHelper'
 
@@ -92,7 +92,8 @@ export class VideoThumbnail implements VideoThumbnailInterface {
 
   public detectFaces = async () => {
     if (this.faces.length === 0) {
-      const results = await detectFaces(this.thumbnail)
+      const api = await FaceApi.Instance()
+      const results = await api.detectFaces(this.thumbnail)
       results.forEach(result => {
         const face = new Face(0)
         face.video_thumbnail_id = this.video_thumbnail_id
