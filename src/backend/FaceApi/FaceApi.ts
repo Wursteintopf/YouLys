@@ -7,30 +7,44 @@ const { Canvas, Image, ImageData } = canvas
 // @ts-ignore
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
 
-export const faceDetectionNet = faceapi.nets.tinyFaceDetector
-
 const inputSize = 480
 const scoreThreshold = 0.5
+const faceDetectionNet = faceapi.nets.tinyFaceDetector
 
-function getFaceDetectorOptions (net: faceapi.NeuralNetwork<any>) {
-  return new faceapi.TinyFaceDetectorOptions({ inputSize, scoreThreshold })
-}
+export class FaceApi {
+  private static instance: FaceApi
+  private faceDetectorOptions: faceapi.TinyFaceDetectorOptions
 
-export const detectFaces = async (url: string) => {
-  faceapi.tf.engine().startScope()
-  await faceDetectionNet.loadFromDisk(path.join(__dirname, 'weights'))
-  await faceapi.nets.faceLandmark68Net.loadFromDisk(path.join(__dirname, 'weights'))
-  await faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))
-  await faceapi.nets.ageGenderNet.loadFromDisk(path.join(__dirname, 'weights'))
+  private constructor () {
+    this.faceDetectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize, scoreThreshold })
+  }
 
-  const img = await canvas.loadImage(url)
+  public static get Instance () {
+    return async (): Promise<FaceApi> => {
+      if (!this.instance) {
+        this.instance = new this()
+        await faceDetectionNet.loadFromDisk(path.join(__dirname, 'weights'))
+        await faceapi.nets.faceLandmark68Net.loadFromDisk(path.join(__dirname, 'weights'))
+        await faceapi.nets.faceExpressionNet.loadFromDisk(path.join(__dirname, 'weights'))
+        await faceapi.nets.ageGenderNet.loadFromDisk(path.join(__dirname, 'weights'))
+      }
+      return this.instance
+    }
+  }
 
-  // @ts-ignore
-  const results = await faceapi.detectAllFaces(img, getFaceDetectorOptions(faceDetectionNet))
-    .withFaceLandmarks()
-    .withFaceExpressions()
-    .withAgeAndGender()
+  public getFaceDetectorOptions (net: faceapi.NeuralNetwork<any>): faceapi.TinyFaceDetectorOptions {
+    return this.faceDetectorOptions
+  }
 
-  faceapi.tf.engine().endScope()
-  return results
+  public detectFaces = async (url: string) => {
+    const img = await canvas.loadImage(url)
+
+    // @ts-ignore
+    const results = await faceapi.detectAllFaces(img, this.getFaceDetectorOptions(faceDetectionNet))
+      .withFaceLandmarks()
+      .withFaceExpressions()
+      .withAgeAndGender()
+
+    return results
+  }
 }

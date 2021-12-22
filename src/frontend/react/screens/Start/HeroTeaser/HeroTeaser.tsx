@@ -6,11 +6,10 @@ import {
 } from './HeroTeaserStyling'
 import { ContentContainer } from '../../../../styles/GlobalStyling'
 import image from '../../../../images/camera.jpg'
-import { Title } from '../../../components/Title/Title'
-import Button from '../../../components/Button/Button'
+import { Title } from '../../../components/0__Atoms/Title/Title'
+import Button from '../../../components/0__Atoms/Button/Button'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useHistory } from 'react-router'
-import themeVariables from '../../../../styles/themeVariables'
 
 const HeroTeaser: React.FC = () => {
   const history = useHistory()

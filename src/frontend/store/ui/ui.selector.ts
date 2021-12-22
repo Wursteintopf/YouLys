@@ -23,6 +23,11 @@ export const getFetching = createSelector(
   state => state.fetching,
 )
 
+export const getFetchingChannelStats = createSelector(
+  selectUi,
+  state => state.isFetchingChannelStats,
+)
+
 export const getChannelsFetched = createSelector(
   selectUi,
   state => state.channelsFetched,
@@ -41,4 +46,9 @@ export const getChannelStatsFetched = createSelector(
 export const getVideoStatsFetched = createSelector(
   selectUi,
   state => state.videoStatsFetched,
+)
+
+export const getError = createSelector(
+  selectUi,
+  state => state.error,
 )

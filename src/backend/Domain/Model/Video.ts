@@ -110,6 +110,7 @@ export class Video implements VideoInterface {
             stat.video_thumbnail = new VideoThumbnail(rows[0].video_thumbnail_id)
             stat.video_thumbnail.setAll(rows[0])
             await stat.video_thumbnail.loadFaces()
+            await stat.video_thumbnail.loadClickbaitObjects()
 
             this.statistics = [stat]
             resolve(true)
@@ -140,6 +141,7 @@ export class Video implements VideoInterface {
               stat.video_thumbnail = new VideoThumbnail(row.video_thumbnail_id)
               stat.video_thumbnail.setAll(row)
               await stat.video_thumbnail.loadFaces()
+              await stat.video_thumbnail.loadClickbaitObjects()
 
               return stat
             }))
@@ -222,6 +224,7 @@ export class Video implements VideoInterface {
       } else {
         thumb.video_thumbnail_id = await thumb.save()
         await thumb.detectFaces()
+        await thumb.detectClickbaitObjects()
       }
 
       const stat = new VideoStatistic(0)

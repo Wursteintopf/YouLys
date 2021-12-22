@@ -42,9 +42,15 @@ youLysRouter.post('/getVideos', (req, res) => {
       })
       .catch(err => {
         console.log(err)
-        res.send({
-          status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
-        })
+        if (err.message === ApiStatusCodes.TRY_AGAIN) {
+          res.send({
+            status: ApiStatusCodes.TRY_AGAIN,
+          })
+        } else {
+          res.send({
+            status: ApiStatusCodes.UNKNOWN_SERVER_ERROR,
+          })
+        }
       })
   }
 })

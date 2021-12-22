@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
-import { ContentContainer } from '../../../styles/GlobalStyling'
-import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
-import SubHeader from '../../components/SubHeader/SubHeader'
-import { Headline } from '../../components/Headline/Headline'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setFetching } from '../../../store/ui/ui.actions'
 import { fetchVideos } from '../../../store/channel/channel.actions'
-import GlobalFacesOnThumbnails from './GlobalFacesOnThumbnails'
-import GlobalTitleAnalysis from './GlobalTitleAnalysis'
+import { Route } from 'react-router-dom'
+import Erfolgsübersicht from './Unterseiten/Erfolgsübersicht'
+import Titelanalyse from './Unterseiten/Titelanalyse'
+import Gesichteranalyse from './Unterseiten/Gesichteranalyse'
+import Objektanalyse from './Unterseiten/Objektanalyse'
 
 const Erfolgsfaktoren: React.FC = () => {
   const dispatch = useDispatch()
@@ -19,15 +18,10 @@ const Erfolgsfaktoren: React.FC = () => {
 
   return (
     <>
-      <ContentContainer>
-        <ContentBoxWrapper amountOfChildren={1}>
-          <GlobalTitleAnalysis />
-        </ContentBoxWrapper>
-
-        <ContentBoxWrapper amountOfChildren={1}>
-          <GlobalFacesOnThumbnails />
-        </ContentBoxWrapper>
-      </ContentContainer>
+      <Route exact path='/success' component={Erfolgsübersicht} />
+      <Route path='/success/titles' component={Titelanalyse} />
+      <Route path='/success/faces' component={Gesichteranalyse} />
+      <Route path='/success/objects' component={Objektanalyse} />
     </>
 
   )

@@ -15,17 +15,14 @@ function initializeConnection () {
     })
   }
 
-  const connection = mysql.createConnection(config.databaseConfig)
+  const connection = mysql.createPool(config.databaseConfig)
   addDisconnectHandler(connection)
-
-  connection.connect((err) => {
-    if (err) {
-      console.log('Error when connection to Database: ' + err)
-      setTimeout(initializeConnection, 2000)
-    }
-  })
 
   return connection
 }
 
-export const connection = initializeConnection()
+export let connection = initializeConnection()
+
+export const reInitConnection = () => {
+  connection = initializeConnection()
+}

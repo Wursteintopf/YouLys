@@ -1,22 +1,22 @@
 import React, { useEffect } from 'react'
 import { ContentContainer } from '../../../styles/GlobalStyling'
-import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
-import ContentBox from '../../components/ContentBox/ContentBox'
+import { ContentBoxWrapper } from '../../components/1__Molecules/ContentBox/ContentBoxWrapper'
+import ContentBox from '../../components/1__Molecules/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { getCurrentChannel } from '../../../store/channel/channel.selector'
 import { setFetching } from '../../../store/ui/ui.actions'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
-import Progress from '../../components/Progress/Progress'
+import Progress from '../../components/0__Atoms/Progress/Progress'
 import {
   ChannelDetailsLink,
   ChannelDetailsName,
   ChannelDetailsProfilePicture,
   ChannelHeader,
 } from '../Kanaldetailseite/KanaldetailseiteStyling'
-import { Headline } from '../../components/Headline/Headline'
-import SubHeader from '../../components/SubHeader/SubHeader'
-import VideoList from '../../components/VideoList/VideoList'
+import { Headline } from '../../components/0__Atoms/Headline/Headline'
+import SubHeader from '../../components/2__Compounds/SubHeader/SubHeader'
+import VideoList from '../../components/2__Compounds/VideoList/VideoList'
 
 const Videoliste: React.FC = () => {
   const from = useSelector(getFrom)

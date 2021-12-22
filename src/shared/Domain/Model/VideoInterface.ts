@@ -1,4 +1,4 @@
-import { VideoStatisticInterface } from './VideoStatisticInterface'
+import { EMPTY_VIDEO_STATISTIC, VideoStatisticInterface } from './VideoStatisticInterface'
 
 export interface VideoInterface {
   video_id: string
@@ -11,7 +11,7 @@ export interface VideoInterface {
 export const EMPTY_VIDEO: VideoInterface = {
   channel_id: '',
   duration: 0,
-  statistics: [],
+  statistics: [EMPTY_VIDEO_STATISTIC],
   upload_time: new Date(),
   video_id: '',
 }
