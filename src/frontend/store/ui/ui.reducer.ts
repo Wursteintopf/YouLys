@@ -3,9 +3,9 @@ import { uiState } from './ui.interfaces'
 import { TimeRange } from '../../../shared/Enums/TimeRange'
 import {
   addChannelStatsFetched,
-  addVideoStatsFetched,
-  setChannelsFetched,
-  setFetching,
+  addVideoStatsFetched, resetError,
+  setChannelsFetched, setError,
+  setFetching, setFetchingChannelStats,
   setFrom,
   setRange,
   setTo,
@@ -18,10 +18,12 @@ const INITIAL_STATE: uiState = {
   from: moment().subtract(90, 'days').startOf('day').toDate(),
   to: moment().startOf('day').toDate(),
   fetching: false,
+  isFetchingChannelStats: false,
   channelsFetched: false,
   videosFetched: false,
   channelStatsFetched: [],
   videoStatsFetched: [],
+  error: undefined
 }
 
 export const uiReducer = reducerWithInitialState(INITIAL_STATE)
@@ -74,5 +76,23 @@ export const uiReducer = reducerWithInitialState(INITIAL_STATE)
     return {
       ...state,
       videoStatsFetched: [...state.videoStatsFetched, payload],
+    }
+  })
+  .case(setFetchingChannelStats, (state, payload) => {
+    return {
+      ...state,
+      isFetchingChannelStats: payload,
+    }
+  })
+  .case(setError, (state, payload) => {
+    return {
+      ...state,
+      error: payload,
+    }
+  })
+  .case(resetError, (state, payload) => {
+    return {
+      ...state,
+      error: undefined,
     }
   })

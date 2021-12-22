@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 import { ChannelApiResult } from '../Domain/Model/ChannelApiResult'
 import { VideoApiPlaylistResult, VideoApiResult } from '../Domain/Model/VideoApiResult'
 
-const MAX_RESULTS = 50
+const MAX_RESULTS = 20
 
 export const callChannelStatistics = async (channelId: string): Promise<ChannelApiResult> => {
   const part = 'part=snippet,statistics,brandingSettings'

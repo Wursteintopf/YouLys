@@ -2,11 +2,14 @@ import { VideoThumbnailInterface } from '../../../shared/Domain/Model/VideoThumb
 import { FaceApi } from '../../FaceApi/FaceApi'
 import { Face } from './Face'
 import { connection } from '../../Helper/DatabaseHelper'
+import { ClickbaitObject } from './ClickbaitObject'
+import { detectObjects } from '../../ObjectAnalysis/ObjectAnalysis'
 
 export class VideoThumbnail implements VideoThumbnailInterface {
   video_thumbnail_id: number
   thumbnail = ''
   faces: Face[] = []
+  clickbait_objects: ClickbaitObject[] = []
 
   constructor (video_thumbnail_id: number) {
     this.video_thumbnail_id = video_thumbnail_id
@@ -32,10 +35,6 @@ export class VideoThumbnail implements VideoThumbnailInterface {
 
   public setAll = (props): VideoThumbnail => {
     this.thumbnail = props.thumbnail
-
-    if (props.faces) this.faces = props.faces.map(face => new Face(face))
-    else this.faces = []
-
     return this
   }
 
@@ -86,6 +85,29 @@ export class VideoThumbnail implements VideoThumbnailInterface {
     })
   }
 
+  public loadClickbaitObjects = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      connection.query(
+        'SELECT * FROM clickbait_object WHERE video_thumbnail_id = ? AND confidence > 0.3',
+        [this.video_thumbnail_id],
+
+        (err, rows) => {
+          if (err) reject(err)
+          if (rows && rows.length > 0) {
+            rows.forEach(row => {
+              const clickbaitObject = new ClickbaitObject(row.clickbait_object_id)
+              clickbaitObject.setAll(row)
+              this.clickbait_objects = [...this.clickbait_objects, clickbaitObject]
+            })
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        },
+      )
+    })
+  }
+
   /**
    * Calculate stuff
    */
@@ -109,5 +131,23 @@ export class VideoThumbnail implements VideoThumbnailInterface {
       })
     }
     console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Faces')
+  }
+
+  public detectClickbaitObjects = async () => {
+    if (this.clickbait_objects.length === 0) {
+      const results = await detectObjects(this.thumbnail)
+      results.forEach(result => {
+        const clickbaitObject = new ClickbaitObject(0)
+        clickbaitObject.video_thumbnail_id = this.video_thumbnail_id
+        clickbaitObject.type = result.type
+        clickbaitObject.confidence = result.confidence
+        clickbaitObject.cx = result.x
+        clickbaitObject.cy = result.y
+        clickbaitObject.cwidth = result.width
+        clickbaitObject.cheight = result.height
+        clickbaitObject.create()
+      })
+    }
+    console.log('SUCCESS: Analysed thumbnail ' + this.thumbnail + ' for Clickbait Objects')
   }
 }

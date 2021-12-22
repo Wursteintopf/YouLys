@@ -1,6 +1,6 @@
 import React from 'react'
-import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
-import ContentBox from '../../components/ContentBox/ContentBox'
+import { ContentBoxWrapper } from '../../components/1__Molecules/ContentBox/ContentBoxWrapper'
+import ContentBox from '../../components/1__Molecules/ContentBox/ContentBox'
 import { ContentContainer } from '../../../styles/GlobalStyling'
 
 const Datenschutz: React.FC = () => {

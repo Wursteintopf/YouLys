@@ -4,6 +4,7 @@ import { VideoStatistic } from '../Model/VideoStatistic'
 import { VideoMeta } from '../Model/VideoMeta'
 import { VideoThumbnail } from '../Model/VideoThumbnail'
 import { Face } from '../Model/Face'
+import { ClickbaitObject } from '../Model/ClickbaitObject'
 
 export class VideoRepository {
   private static instance: VideoRepository
@@ -32,9 +33,15 @@ export class VideoRepository {
       videos = videos.filter(v => v.video_id !== row.video_id)
 
       if (row.face_id) {
-        const face = new Face(row.face_id)
-        face.setAll(row)
+        const face = video.statistics[0].video_thumbnail.faces.find(f => f.face_id === row.face_id) || new Face(row.face_id).setAll(row)
+        video.statistics[0].video_thumbnail.faces = video.statistics[0].video_thumbnail.faces.filter(f => f.face_id !== row.face_id)
         video.statistics[0].video_thumbnail.faces.push(face)
+      }
+
+      if (row.clickbait_object_id) {
+        const clickbaitObject = video.statistics[0].video_thumbnail.clickbait_objects.find(c => c.clickbait_object_id === row.clickbait_object_id) || new ClickbaitObject(row.clickbait_object_id).setAll(row)
+        video.statistics[0].video_thumbnail.clickbait_objects = video.statistics[0].video_thumbnail.clickbait_objects.filter(c => c.clickbait_object_id !== row.clickbait_object_id)
+        video.statistics[0].video_thumbnail.clickbait_objects.push(clickbaitObject)
       }
 
       videos.push(video)
@@ -49,6 +56,7 @@ export class VideoRepository {
     VideoThumbnail.setUpVideoThumbnailTable()
     VideoStatistic.setUpVideoStatisticTable()
     Face.setUpFaceTable()
+    ClickbaitObject.setUpClickbaitObjectTable()
   }
 
   public static get Instance (): VideoRepository {
@@ -59,7 +67,7 @@ export class VideoRepository {
    * Methods to get Videos
    */
 
-  protected BASE_GET_QUERY = 'SELECT v.channel_id, v.upload_time, v.duration, vm.title, vm.description, vm.tags, vt.thumbnail, vs.*, f.face_id, f.height, f.width, f.x, f.y, f.expression, f.age, f.gender, f.gender_probability FROM video v LEFT JOIN video_statistic vs on v.video_id = vs.video_id LEFT JOIN video_meta vm ON vs.video_meta_id = vm.video_meta_id LEFT JOIN video_thumbnail vt ON vs.video_thumbnail_id = vt.video_thumbnail_id LEFT JOIN face f on vt.video_thumbnail_id = f.video_thumbnail_id '
+  protected BASE_GET_QUERY = 'SELECT v.*, vm.*, vt.*, vs.*, f.*, co.* FROM video v LEFT JOIN video_statistic vs on v.video_id = vs.video_id LEFT JOIN video_meta vm ON vs.video_meta_id = vm.video_meta_id LEFT JOIN video_thumbnail vt ON vs.video_thumbnail_id = vt.video_thumbnail_id LEFT JOIN face f on vt.video_thumbnail_id = f.video_thumbnail_id LEFT JOIN clickbait_object co on vt.video_thumbnail_id = co.video_thumbnail_id '
 
   public getById = async (video_id: string): Promise<Video> => {
     return new Promise<Video>((resolve, reject) => {
@@ -73,24 +81,6 @@ export class VideoRepository {
             resolve(await this.convertQueryRowToVideoModel(rows[0]))
           } else {
             reject(new Error('There is no Video with this ID'))
-          }
-        },
-      )
-    })
-  }
-
-  public getByUploadTime = async (from: Date, to: Date): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
-      connection.query(
-        this.BASE_GET_QUERY + 'WHERE (upload_time BETWEEN ? AND ?) AND (DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic WHERE video_id = v.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC',
-        [from, to],
-
-        async (err, rows) => {
-          if (err) reject(err)
-          if (rows && rows.length > 0) {
-            resolve(await this.convertMultipleRows(rows))
-          } else {
-            reject(new Error('No Videos in that timespan found'))
           }
         },
       )

@@ -1,30 +1,29 @@
 import React, { useEffect } from 'react'
 import { ContentContainer } from '../../../styles/GlobalStyling'
-import SubHeader from '../../components/SubHeader/SubHeader'
-import { Headline } from '../../components/Headline/Headline'
-import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
-import ContentBox from '../../components/ContentBox/ContentBox'
+import SubHeader from '../../components/2__Compounds/SubHeader/SubHeader'
+import { Headline } from '../../components/0__Atoms/Headline/Headline'
+import { ContentBoxWrapper } from '../../components/1__Molecules/ContentBox/ContentBoxWrapper'
+import ContentBox from '../../components/1__Molecules/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import { setFetching } from '../../../store/ui/ui.actions'
-import { fetchCurrentChannel, fetchCurrentVideo } from '../../../store/channel/channel.actions'
+import { fetchCurrentVideo } from '../../../store/channel/channel.actions'
 import { getCurrentVideo, getNewestVideoStatistic } from '../../../store/channel/channel.selector'
-import Progress from '../../components/Progress/Progress'
-import {
-  ChannelListSmallText,
-} from '../Kanalliste/KanallisteStyling'
+import Progress from '../../components/0__Atoms/Progress/Progress'
 import numberFormatter from '../../../util/numberFormatter'
-import ToolTip from '../../components/ToolTip/ToolTip'
+import ToolTip from '../../components/0__Atoms/ToolTip/ToolTip'
 import {
   ChannelDetailsLink,
   ChannelDetailsName, ChannelHeader, VideoDetailsProfilePicture,
 } from '../Kanaldetailseite/KanaldetailseiteStyling'
 import moment from 'moment'
-import LineChart from '../../components/LineChart/LineChart'
+import LineChart from '../../components/0__Atoms/LineChart/LineChart'
 import themeVariables from '../../../styles/themeVariables'
-import Performance from '../../components/Performance/Performance'
+import VideoPerformance from '../../components/2__Compounds/VideoPerformance/VideoPerformance'
 import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteStyling'
-import SingleTitleAnalysis from '../../components/SingleTitleAnalysis/SingleTitleAnalysis'
+import SingleTitleAnalysis from '../../components/1__Molecules/SingleTitleAnalysis/SingleTitleAnalysis'
+import { ChannelListSmallText } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
+import { isBigFace } from '../../../util/CalculateFaceSuccess'
 
 const Videodetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -37,11 +36,10 @@ const Videodetailseite: React.FC = () => {
 
   useEffect(() => {
     dispatch(setFetching(true))
-    dispatch(fetchCurrentChannel(window.location.pathname.split('/')[2]))
-    dispatch(fetchCurrentVideo(window.location.pathname.split('/')[3]))
+    dispatch(fetchCurrentVideo({ channelId: window.location.pathname.split('/')[2], videoId: window.location.pathname.split('/')[3] }))
   }, [from, to])
 
-  if (video.video_id === '' || !stat) return <Progress />
+  if (video.video_id === '') return <Progress />
 
   return (
     <>
@@ -98,7 +96,7 @@ const Videodetailseite: React.FC = () => {
 
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Performance im Vergleich zum Kanaldurchschnitt'>
-            <Performance />
+            <VideoPerformance />
           </ContentBox>
         </ContentBoxWrapper>
 
@@ -146,7 +144,6 @@ const Videodetailseite: React.FC = () => {
               <image href={stat.video_thumbnail.thumbnail} />
               {
                 stat.video_thumbnail.faces.map((face, index) => {
-                  const size = face.width * face.height
                   return (
                     <g key={index}>
                       <rect x={face.x} y={face.y} width={face.width} height={face.height} fill='none' strokeWidth={5} stroke={themeVariables.colorBlue} />
@@ -159,7 +156,31 @@ const Videodetailseite: React.FC = () => {
                         <text x={7} y={60} fill={themeVariables.colorWhite} fontWeight={600}>Stimmung:</text>
                         <text x={95} y={60} fill={themeVariables.colorWhite}>{face.expression}</text>
                         <text x={7} y={80} fill={themeVariables.colorWhite} fontWeight={600}>Größe:</text>
-                        <text x={95} y={80} fill={themeVariables.colorWhite}>{size > 100000 ? 'groß' : 'klein'}</text>
+                        <text x={95} y={80} fill={themeVariables.colorWhite}>{isBigFace(face) ? 'groß' : 'klein'}</text>
+                      </g>
+                    </g>
+                  )
+                })
+              }
+            </svg>
+          </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Clickbait Objekte auf dem Thumbnail'>
+            <svg viewBox='0 0 1280 720'>
+              <image href={stat.video_thumbnail.thumbnail} />
+              {
+                stat.video_thumbnail.clickbait_objects.map((co, index) => {
+                  return (
+                    <g key={index}>
+                      <rect x={co.cx} y={co.cy} width={co.cwidth} height={co.cheight} fill='none' strokeWidth={5} stroke={themeVariables.colorBlue} />
+                      <g transform={`translate(${co.cx},${co.cy + co.cheight})`}>
+                        <rect x={-2.5} y={0} width={170} height={50} fill={themeVariables.colorBlue} />
+                        <text x={7} y={20} fill={themeVariables.colorWhite} fontWeight={600}>Objekt:</text>
+                        <text x={95} y={20} fill={themeVariables.colorWhite}>{co.type === 'circle' ? 'Kreis' : (co.type === 'arrow' ? 'Pfeil' : 'Emoji')}</text>
+                        <text x={7} y={40} fill={themeVariables.colorWhite} fontWeight={600}>Sicherheit:</text>
+                        <text x={95} y={40} fill={themeVariables.colorWhite}>{(co.confidence * 100).toFixed(2)} %</text>
                       </g>
                     </g>
                   )

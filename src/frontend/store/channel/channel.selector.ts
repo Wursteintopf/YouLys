@@ -1,12 +1,14 @@
 import { createSelector } from 'reselect'
 import { RootState } from '../root.reducer'
 import { EMPTY_CHANNEL_STATISTIC } from '../../../shared/Domain/Model/ChannelStatisticInterface'
-import { max, merge } from 'd3-array'
+import { merge } from 'd3-array'
 import { calculateFaceSuccess } from '../../util/CalculateFaceSuccess'
 import { calculateTitleSuccess } from '../../util/CalculateTitleSuccess'
 import { EMPTY_CHANNEL } from '../../../shared/Domain/Model/ChannelInterface'
 import { EMPTY_VIDEO } from '../../../shared/Domain/Model/VideoInterface'
 import { calculateAveragePerformance } from '../../util/CalculateAveragePerformance'
+import { calculateObjectSuccess } from '../../util/CalculateObjectSuccess'
+import { calculateWordWeights } from '../../util/CalculateWordWeights'
 
 const selectChannel = (state: RootState) => state.channel
 
@@ -44,6 +46,16 @@ export const getCurrentChannelTitleSuccess = createSelector(
   state => calculateTitleSuccess(state.videos),
 )
 
+export const getCurrentChannelTitleWordWeights = createSelector(
+  getCurrentChannel,
+  state => calculateWordWeights(state.videos),
+)
+
+export const getCurrentChannelClickbaitObjectSuccess = createSelector(
+  getCurrentChannel,
+  state => calculateObjectSuccess(state.videos),
+)
+
 export const getAllVideos = createSelector(
   selectChannel,
   state => merge(Object.keys(state.channels).map(key => state.channels[key].videos)),
@@ -62,6 +74,16 @@ export const getFaceSuccess = createSelector(
 export const getTitleSuccess = createSelector(
   getAllVideos,
   state => calculateTitleSuccess(state),
+)
+
+export const getTitleWordWeights = createSelector(
+  selectChannel,
+  state => state.wordWeights,
+)
+
+export const getClickbaitObjectSuccess = createSelector(
+  getAllVideos,
+  state => calculateObjectSuccess(state),
 )
 
 export const getCurrentVideo = createSelector(

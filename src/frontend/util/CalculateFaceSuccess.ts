@@ -1,7 +1,16 @@
-import { calculateResultFromVideoArray, EMPTY_RESULT, Result } from './CalculateHelpers'
+import {
+  calculateMeanAndMax,
+  calculateResultFromVideoArray,
+  EMPTY_RESULT,
+  EMPTY_SUCCESS_RESULT,
+  Result,
+  SuccessResults,
+} from './CalculateHelpers'
 import { VideoInterface } from '../../shared/Domain/Model/VideoInterface'
+import { FaceInterface } from '../../shared/Domain/Model/FaceInterface'
+import { min, max } from 'd3-array'
 
-export interface FaceSuccessResultsInterface {
+export interface FaceSuccessResultsInterface extends SuccessResults {
   existence: {
     yes: Result
     no: Result
@@ -17,6 +26,8 @@ export interface FaceSuccessResultsInterface {
     surprised: Result
     happy: Result
     neutral: Result
+    fearful: Result
+    disgusted: Result
   }
   gender: {
     male: Result
@@ -29,6 +40,7 @@ export interface FaceSuccessResultsInterface {
 }
 
 export const EMPTY_FACE_SUCCESS_RESULT: FaceSuccessResultsInterface = {
+  ...EMPTY_SUCCESS_RESULT,
   existence: {
     no: EMPTY_RESULT,
     yes: EMPTY_RESULT,
@@ -44,6 +56,8 @@ export const EMPTY_FACE_SUCCESS_RESULT: FaceSuccessResultsInterface = {
     neutral: EMPTY_RESULT,
     sad: EMPTY_RESULT,
     surprised: EMPTY_RESULT,
+    fearful: EMPTY_RESULT,
+    disgusted: EMPTY_RESULT,
   },
   gender: {
     female: EMPTY_RESULT,
@@ -55,10 +69,17 @@ export const EMPTY_FACE_SUCCESS_RESULT: FaceSuccessResultsInterface = {
   },
 }
 
+export const isBigFace = (face: FaceInterface) => {
+  return face.width * face.height > 120000
+}
+
 export const calculateFaceSuccess = (videos: VideoInterface[]): FaceSuccessResultsInterface => {
   if (videos.length === 0) return EMPTY_FACE_SUCCESS_RESULT
 
-  return {
+  const result = {
+    count: videos.length,
+    minSuccess: min(videos.filter(v => v.statistics[0].success_factor).map(v => v.statistics[0].success_factor)),
+    maxSuccess: max(videos.filter(v => v.statistics[0].success_factor).map(v => v.statistics[0].success_factor)),
     existence: {
       yes: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.length > 0)),
       no: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.length === 0)),
@@ -74,14 +95,18 @@ export const calculateFaceSuccess = (videos: VideoInterface[]): FaceSuccessResul
       neutral: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('surprised'))),
       sad: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('happy'))),
       surprised: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('neutral'))),
+      fearful: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('fearful'))),
+      disgusted: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.expression).includes('disgusted'))),
     },
     gender: {
       female: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('female'))),
       male: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.gender).includes('male'))),
     },
     size: {
-      big: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height > 100000).includes(true))),
-      small: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => f.width * f.height < 100000).includes(true))),
+      big: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => isBigFace(f)).includes(true))),
+      small: calculateResultFromVideoArray(videos.filter(v => v.statistics[0].video_thumbnail.faces.map(f => !isBigFace(f)).includes(true))),
     },
   }
+
+  return calculateMeanAndMax(result)
 }

@@ -1,36 +1,32 @@
 import React, { useEffect } from 'react'
 import { ContentContainer } from '../../../styles/GlobalStyling'
-import SubHeader from '../../components/SubHeader/SubHeader'
-import { Headline } from '../../components/Headline/Headline'
-import { ContentBoxWrapper } from '../../components/ContentBox/ContentBoxWrapper'
-import ContentBox from '../../components/ContentBox/ContentBox'
+import SubHeader from '../../components/2__Compounds/SubHeader/SubHeader'
+import { Headline } from '../../components/0__Atoms/Headline/Headline'
+import { ContentBoxWrapper } from '../../components/1__Molecules/ContentBox/ContentBoxWrapper'
+import ContentBox from '../../components/1__Molecules/ContentBox/ContentBox'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFetching, getFrom, getTo } from '../../../store/ui/ui.selector'
 import {
   getCurrentChannel,
   getNewestChannelStatistic,
 } from '../../../store/channel/channel.selector'
-import Progress from '../../components/Progress/Progress'
+import Progress from '../../components/0__Atoms/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
 import {
   ChannelDetailOverview, ChannelDetailsLink, ChannelDetailsName,
   ChannelDetailsProfilePicture,
   ChannelHeader,
 } from './KanaldetailseiteStyling'
-import {
-  ChannelListClicks,
-  ChannelListSmallText,
-  ChannelListSubs,
-  ChannelListSuccess,
-} from '../Kanalliste/KanallisteStyling'
 import numberFormatter from '../../../util/numberFormatter'
-import ToolTip from '../../components/ToolTip/ToolTip'
-import LineChart from '../../components/LineChart/LineChart'
+import ToolTip from '../../components/0__Atoms/ToolTip/ToolTip'
+import LineChart from '../../components/0__Atoms/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
-import VideoList from '../../components/VideoList/VideoList'
-import KanalTitleSuccess from './KanalTitleSuccess'
-import KanalFaceSuccess from './KanalFaceSuccess'
+import VideoList from '../../components/2__Compounds/VideoList/VideoList'
+import { ChannelListClicks, ChannelListSmallText, ChannelListSubs, ChannelListSuccess } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
+import FacesBarChart from '../../components/2__Compounds/FacesBarChart/FacesBarChart'
+import TitleBarChart from '../../components/2__Compounds/TitleBarChart/TitleBarChart'
+import FacesBoxPlot from '../../components/2__Compounds/FacesBoxPlot/FacesBoxPlot'
 
 const Kanaldetailseite: React.FC = () => {
   const from = useSelector(getFrom)
@@ -101,11 +97,21 @@ const Kanaldetailseite: React.FC = () => {
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <KanalTitleSuccess />
+          <ContentBox title='Titel Analyse' subtitle={channel.videos.length + ' Titel analysiert'}>
+            <TitleBarChart />
+          </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <KanalFaceSuccess />
+          <ContentBox title='Gesichter auf den Thumbnails' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+            <FacesBarChart />
+          </ContentBox>
+        </ContentBoxWrapper>
+
+        <ContentBoxWrapper amountOfChildren={1}>
+          <ContentBox title='Gesichter - Boxplot Darstellung' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+            <FacesBoxPlot />
+          </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={2}>
