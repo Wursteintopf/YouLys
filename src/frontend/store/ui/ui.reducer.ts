@@ -23,7 +23,7 @@ const INITIAL_STATE: uiState = {
   videosFetched: false,
   channelStatsFetched: [],
   videoStatsFetched: [],
-  error: undefined
+  error: undefined,
 }
 
 export const uiReducer = reducerWithInitialState(INITIAL_STATE)
