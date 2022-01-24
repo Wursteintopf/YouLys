@@ -18,7 +18,7 @@ interface ScatterplotProps {
 
 const LABELS = {
   amount: 'Anzahl der Gesichter',
-  expression: 'Emotion',
+  emotion: 'Emotion',
   sex: 'Geschlecht',
   size: 'Größe des Gesichts',
   uppercase: 'Capslock im Titel',
