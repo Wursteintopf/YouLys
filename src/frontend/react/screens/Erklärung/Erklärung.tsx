@@ -3,6 +3,7 @@ import { ContentBoxWrapper } from '../../components/1__Molecules/ContentBox/Cont
 import ContentBox from '../../components/1__Molecules/ContentBox/ContentBox'
 import { ContentContainer } from '../../../styles/GlobalStyling'
 import image from '../../../images/formel.png'
+import { StyledImage } from './ErklärungStyling'
 
 const Erklärung: React.FC = () => {
   return (
@@ -19,7 +20,7 @@ const Erklärung: React.FC = () => {
 
           Konkret berechnet sich der Erfolgswert dabei nach folgender Formel:<br />
 
-          <img src={image} style={{ marginTop: 15, marginBottom: 15 }} /><br />
+          <StyledImage src={image} style={{ marginTop: 15, marginBottom: 15 }} /><br />
 
           Die drei Summanden der Formel vergleichen jeweils die durchschnittliche Anzahl der Aufrufe, der Kommentare und
           der Likes mit den aktuellen Werten des Videos. Der Medianwert berechnet sich hier jeweils aus den Werten des

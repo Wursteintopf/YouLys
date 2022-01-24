@@ -13,7 +13,11 @@ import {
 import Progress from '../../components/0__Atoms/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
 import {
-  ChannelDetailOverview, ChannelDetailsLink, ChannelDetailsName,
+  ChannelDetailOverview,
+  ChannelDetailOverviewContent,
+  ChannelDetailOverviewSuccess,
+  ChannelDetailsLink,
+  ChannelDetailsName,
   ChannelDetailsProfilePicture,
   ChannelHeader,
 } from './KanaldetailseiteStyling'
@@ -23,7 +27,7 @@ import LineChart from '../../components/0__Atoms/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
 import VideoList from '../../components/2__Compounds/VideoList/VideoList'
-import { ChannelListClicks, ChannelListSmallText, ChannelListSubs, ChannelListSuccess } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
+import { ChannelListSmallText } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
 import FacesBarChart from '../../components/2__Compounds/FacesBarChart/FacesBarChart'
 import TitleBarChart from '../../components/2__Compounds/TitleBarChart/TitleBarChart'
 import FacesBoxPlot from '../../components/2__Compounds/FacesBoxPlot/FacesBoxPlot'
@@ -62,20 +66,18 @@ const Kanaldetailseite: React.FC = () => {
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Übersicht'>
             <ChannelDetailOverview>
-              <ChannelListSubs>
+              <ChannelDetailOverviewContent>
                 {numberFormatter(stat.subscriber_count, 1)}
                 <ChannelListSmallText>Abonennten</ChannelListSmallText>
-              </ChannelListSubs>
-              <ChannelListClicks>
+              </ChannelDetailOverviewContent>
+              <ChannelDetailOverviewContent>
                 {numberFormatter(stat.view_count, 1)}
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
-              </ChannelListClicks>
-              <ChannelListSuccess>
+              </ChannelDetailOverviewContent>
+              <ChannelDetailOverviewSuccess>
                 {stat.channel_success_factor ? stat.channel_success_factor.toFixed(2) : 4}
                 <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
-                <ToolTip
-                  offSetX={65}
-                >
+                <ToolTip>
                   <Headline>Erfolgswert</Headline>
                   <p>
                     Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
@@ -85,7 +87,7 @@ const Kanaldetailseite: React.FC = () => {
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                   </p>
                 </ToolTip>
-              </ChannelListSuccess>
+              </ChannelDetailOverviewSuccess>
             </ChannelDetailOverview>
           </ContentBox>
         </ContentBoxWrapper>

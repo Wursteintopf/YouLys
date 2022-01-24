@@ -15,6 +15,13 @@ export const globalStyles = css`
     overflow: hidden;
   }
 
+  .hamburger-menu-open {
+    #root {
+      height: 100vh;
+      overflow: hidden;
+    }
+  }
+
   html {
     height: 100%;
     margin: 0;
@@ -48,7 +55,11 @@ export const ContentWrapper = styled.div`
   min-height: 100vh;
 `
 
-export const ContentContainer = styled.div`
+export const ContentContainer = styled.div<{ fullWidth?: boolean }>`
   margin: 0 auto;
   width: ${themeVariables.pageWidth}px;
+  
+  ${themeVariables.breakXL} {
+    width: ${props => props.fullWidth ? '100' : '92'}vw;
+  }
 `

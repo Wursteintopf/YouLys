@@ -7,7 +7,7 @@ export const ToolTipStyled = styled.div<{ offSetX?: number, offSetY?: number }>`
   
   ${props => css`
     top: ${props.offSetY ? (props.offSetY + 'px') : 0};
-    left: ${props.offSetX ? (props.offSetX + 'px') : 0};
+    right: ${props.offSetX ? ((-props.offSetX - 14) + 'px') : '-14px'};
   `}
 `
 

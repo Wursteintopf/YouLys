@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { getFrom, getTo } from '../../../../store/ui/ui.selector'
 import numberFormatter from '../../../../util/NumberFormatter'
 import moment from 'moment'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface LineChartProps {
   values: {
@@ -21,19 +22,20 @@ const LineChart: React.FC<LineChartProps> = (props) => {
 
   const sorted = props.values.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
-  const height = 300
-  const width = 548
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 600 : (windowWidth > 800 ? (window.innerWidth / 2) : windowWidth)
+  const height = width * 0.6
 
-  const spacingLeft = 65
+  const spacingLeft = 70
   const spacingBottom = 20
 
   const y = useMemo(() => {
     return scaleLinear().domain([min(props.values.map(v => v.value)), max(props.values.map(v => v.value))]).range([height - spacingBottom - 30, 30])
-  }, [props])
+  }, [props, height])
 
   const x = useMemo(() => {
-    return scaleTime().domain([from, to]).range([0 + spacingLeft, width])
-  }, [props])
+    return scaleTime().domain([from, to]).range([spacingLeft, width])
+  }, [props, width])
 
   const yTicks = y.ticks(3)
   const xTicks = x.ticks(5)
@@ -81,7 +83,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   }
 
   return (
-    <svg width={width} height={height}>
+    <svg viewBox={'0 0 ' + width + ' ' + height}>
       <path d={grid(path())} stroke={themeVariables.colorLightGrey} fill='none' />
       {
         props.values.length > 3
@@ -94,7 +96,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       {
         yTicks.map((tick) => {
           return (
-            <text key={tick} transform={`translate(55,${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey} fontSize={themeVariables.fontSizeSmall}>{numberFormatter(tick, 1)}</text>
+            <text key={tick} transform={`translate(60,${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey}>{numberFormatter(tick, 1)}</text>
           )
         })
       }
@@ -102,7 +104,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       {
         xTicks.map((tick) => {
           return (
-            <text key={tick.toString()} transform={`translate(${x(tick)},${height - spacingBottom + 20})`} textAnchor='middle' fill={themeVariables.colorDarkGrey} fontSize={themeVariables.fontSizeSmall}>{moment(tick).format('DD.MM')}</text>
+            <text key={tick.toString()} transform={`translate(${x(tick)},${height - spacingBottom + 20})`} textAnchor='middle' fill={themeVariables.colorDarkGrey}>{moment(tick).format('DD.MM')}</text>
           )
         })
       }

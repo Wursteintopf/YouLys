@@ -4,6 +4,7 @@ import themeVariables from '../../../../styles/themeVariables'
 import { path } from 'd3-path'
 import { HoverGroup } from './BarChartStyling'
 import { isFloat } from '../../../../util/IsFloat'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface SingleBar {
   value: number
@@ -16,17 +17,18 @@ interface BarChartProps {
 }
 
 const BarChart: React.FC<BarChartProps> = (props) => {
-  const width = 600
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 600 : (windowWidth > 800 ? (window.innerWidth / 2) : windowWidth)
   const barHeight = 40
 
   const spacingBottom = 50
-  const spacingLeft = 110
+  const spacingLeft = 115
 
   let yOffSet = 0
 
   const x = useMemo(() => {
     return scaleLinear().domain([0, props.maxValue]).range([0, width - spacingLeft])
-  }, [props.bars])
+  }, [props.bars, width])
 
   const xTicks = x.ticks(3)
 

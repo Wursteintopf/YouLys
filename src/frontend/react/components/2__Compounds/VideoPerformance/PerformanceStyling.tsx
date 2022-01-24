@@ -4,6 +4,10 @@ import themeVariables from '../../../../styles/themeVariables'
 export const PerformanceStyled = styled.div`
   display: flex;
   justify-content: space-between;
+  
+  ${themeVariables.breakMobile} {
+    flex-direction: column;
+  }
 `
 
 export const PerformanceBox = styled.div`
@@ -14,5 +18,15 @@ export const PerformanceBox = styled.div`
   &:last-of-type {
     border-right: none;
     padding-right: 0;
+  }
+
+  ${themeVariables.breakMobile} {
+    border-right: none;
+    padding-right: 0;
+    padding-bottom: ${themeVariables.spacingM}px;
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
   }
 `

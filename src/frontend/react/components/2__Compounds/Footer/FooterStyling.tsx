@@ -9,20 +9,32 @@ export const FooterStyled = styled.div`
 `
 
 export const FooterWrapper = styled.div`
-  height: ${themeVariables.headerHeight}px;
   background-color: ${themeVariables.colorBlue};
 `
 
 export const FooterContainer = styled.div`
   display: flex;
-  align-items: center;
-  height: ${themeVariables.headerHeight}px;
+  height: 100%;
+  padding: 25px 0;
+  
+  ${themeVariables.breakMobile} {
+    flex-direction: column;
+  }
 `
 
 export const FooterMenuItem = styled.a`
   margin-right: ${themeVariables.spacingXL}px;
   cursor: pointer;
   position: relative;
+  width: fit-content;
+
+  ${themeVariables.breakMobile} {
+    margin-bottom: ${themeVariables.spacingS}px;
+    
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
 
   &:before {
     content: "";

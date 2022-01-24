@@ -15,6 +15,10 @@ const StyledButton = styled(Button)`
     color: ${props.variant === 'contained' ? themeVariables.colorDarkGrey : themeVariables.colorWhite};
     border: ${props.variant === 'contained' ? 'none' : ('1px solid' + themeVariables.colorWhite)};
   `}
+  
+  ${themeVariables.breakMobile} {
+    padding: ${themeVariables.spacingXS}px ${themeVariables.spacingL}px;
+  }
 `
 
 export default StyledButton

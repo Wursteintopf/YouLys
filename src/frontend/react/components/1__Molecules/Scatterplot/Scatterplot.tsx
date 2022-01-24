@@ -10,6 +10,7 @@ import { ScatterPlotSvg } from '../../2__Compounds/ScatterPlot/VideoScatterplotS
 import { path } from 'd3-path'
 import { VideoBox } from './Styling'
 import moment from 'moment'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface ScatterplotProps {
   videos: VideoInterface[]
@@ -29,8 +30,9 @@ const Scatterplot: React.FC<ScatterplotProps> = ({
   const from = useSelector(getFrom)
   const to = useSelector(getTo)
 
-  const width = 800
-  const height = 600
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 800 : (windowWidth > 1000 ? 650 : (windowWidth > 600 ? 500 : (windowWidth > 500 ? 400 : 300)))
+  const height = width * 0.75
 
   const spacingLeft = 30
   const spacingBottom = 20
@@ -44,15 +46,15 @@ const Scatterplot: React.FC<ScatterplotProps> = ({
     } else {
       return scalePow().exponent(0.0005).domain(zoom).range([height - spacingBottom, 0])
     }
-  }, [videos, zoom, scale])
+  }, [videos, zoom, scale, height])
 
   const yTicks = y.ticks()
 
   const x = useMemo(() => {
     return scaleTime().domain([from, to]).range([spacingLeft, width])
-  }, [from, to])
+  }, [from, to, width])
 
-  const xTicks = x.ticks()
+  const xTicks = x.ticks(6)
 
   const axes = (context) => {
     context.moveTo(spacingLeft, 0)

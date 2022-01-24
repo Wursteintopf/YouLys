@@ -4,6 +4,7 @@ import themeVariables from '../../../../styles/themeVariables'
 import { path } from 'd3-path'
 import { HoverGroup } from '../BarChart/BarChartStyling'
 import { isFloat } from '../../../../util/IsFloat'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface SingleBox {
   label: string
@@ -21,7 +22,8 @@ interface StackedBoxPlotProps {
 }
 
 const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
-  const width = 600
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 600 : (windowWidth > 800 ? (window.innerWidth / 2) : windowWidth)
   const barHeight = 40
 
   const spacingBottom = 50
@@ -31,7 +33,7 @@ const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
 
   const x = useMemo(() => {
     return scalePow().exponent(0.0000000000005).domain([props.minValue * 0.97, props.maxValue * 1.03]).range([spacingLeft, width])
-  }, [props.bars])
+  }, [props.bars, width])
 
   const xTicks = [0.1, 0.5, 4, 10, 100]
 
