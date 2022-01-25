@@ -120,7 +120,9 @@ export class Channel implements ChannelInterface {
 
         async (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length === 0) {
+            resolve(true)
+          } else if (rows && rows.length > 0) {
             this.statistics = rows.map(row => {
               const stat = new ChannelStatistic(row.channel_statistic_id)
               stat.setAll(row)

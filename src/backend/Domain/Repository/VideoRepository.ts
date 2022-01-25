@@ -77,7 +77,9 @@ export class VideoRepository {
         async (err, rows) => {
           if (err) reject(err)
           if (rows && rows.length > 0) {
-            resolve(await this.convertQueryRowToVideoModel(rows[0]))
+            const video = new Video(rows[0].video_id)
+            video.setAll(rows[0])
+            resolve(video)
           } else {
             reject(new Error('There is no Video with this ID'))
           }
@@ -94,7 +96,9 @@ export class VideoRepository {
 
         async (err, rows) => {
           if (err) reject(err)
-          if (rows && rows.length > 0) {
+          if (rows && rows.length === 0) {
+            resolve({})
+          } else if (rows && rows.length > 0) {
             resolve(await this.convertMultipleRows(rows))
           } else {
             reject(new Error('No Videos for the Channel with ChannelId ' + channelId + ' found'))

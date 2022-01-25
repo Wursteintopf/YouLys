@@ -50,7 +50,7 @@ const Videoliste: React.FC = () => {
       <ContentContainer>
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Hochgeladene Videos im ausgewählten Zeitraum'>
-            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all videos={Object.keys(channel.videos).map(key => channel.videos[key])} /> : (fetching ? <Progress /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.')}
+            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all videos={Object.keys(channel.videos).map(key => channel.videos[key])} /> : (fetching ? <Progress /> : 'Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.')}
           </ContentBox>
         </ContentBoxWrapper>
       </ContentContainer>

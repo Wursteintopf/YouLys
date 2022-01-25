@@ -94,7 +94,7 @@ const Kanaldetailseite: React.FC = () => {
 
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Neue Videos'>
-            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all={false} videos={Object.keys(channel.videos).map(key => channel.videos[key]).slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all={false} videos={Object.keys(channel.videos).map(key => channel.videos[key]).slice(0, 3)} /> : 'Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.'}
           </ContentBox>
         </ContentBoxWrapper>
 

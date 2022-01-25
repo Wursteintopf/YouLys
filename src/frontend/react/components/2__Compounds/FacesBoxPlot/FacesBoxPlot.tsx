@@ -17,6 +17,8 @@ const FacesBoxPlot: React.FC<FacesBoxPlotProps> = ({ global }) => {
 
   if (fetching) return <Progress />
 
+  if (faceSuccess.count === 0) return <>Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.</>
+
   return (
     <>
       <ContentBoxDividerWrapper>

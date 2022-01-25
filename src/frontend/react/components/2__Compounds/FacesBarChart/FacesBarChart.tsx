@@ -17,6 +17,8 @@ const FacesBarChart: React.FC<FacesOnThumbnailsProps> = ({ global }) => {
 
   if (fetching) return <Progress />
 
+  if (faceSuccess.count === 0) return <>Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.</>
+
   return (
     <>
       <ContentBoxDividerWrapper>
