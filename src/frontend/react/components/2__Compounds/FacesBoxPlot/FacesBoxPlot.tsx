@@ -37,11 +37,45 @@ const FacesBoxPlot: React.FC<FacesBoxPlotProps> = ({ global }) => {
           />
         </ContentBoxDivider>
         <ContentBoxDivider>
+          <Headline>Anzahl der Gesichter ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={faceSuccess.minQuantileSuccess}
+            maxValue={faceSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Keine', ...faceSuccess.existence.no },
+              { label: '1 Gesicht', ...faceSuccess.amount.one },
+              { label: '2 Gesichter', ...faceSuccess.amount.two },
+              { label: 'Mehr als 2', ...faceSuccess.amount.more },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
           <Headline>Emotion</Headline>
 
           <StackedBoxPlot
             minValue={faceSuccess.minSuccess}
             maxValue={faceSuccess.maxSuccess}
+            bars={[
+              { label: 'Wütend', ...faceSuccess.expression.angry },
+              { label: 'Ängstlich', ...faceSuccess.expression.fearful },
+              { label: 'Traurig', ...faceSuccess.expression.sad },
+              { label: 'Erstaunt', ...faceSuccess.expression.surprised },
+              { label: 'Glücklich', ...faceSuccess.expression.happy },
+              { label: 'Angeekelt', ...faceSuccess.expression.disgusted },
+              { label: 'Neutral', ...faceSuccess.expression.neutral },
+            ]}
+          />
+        </ContentBoxDivider>
+        <ContentBoxDivider>
+          <Headline>Emotion ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={faceSuccess.minQuantileSuccess}
+            maxValue={faceSuccess.maxQuantileSuccess}
             bars={[
               { label: 'Wütend', ...faceSuccess.expression.angry },
               { label: 'Ängstlich', ...faceSuccess.expression.fearful },
@@ -69,11 +103,38 @@ const FacesBoxPlot: React.FC<FacesBoxPlotProps> = ({ global }) => {
           />
         </ContentBoxDivider>
         <ContentBoxDivider>
+          <Headline>Geschlecht ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={faceSuccess.minQuantileSuccess}
+            maxValue={faceSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Männlich', ...faceSuccess.gender.male },
+              { label: 'Weiblich', ...faceSuccess.gender.female },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
           <Headline>Größe des Gesichts</Headline>
 
           <StackedBoxPlot
             minValue={faceSuccess.minSuccess}
             maxValue={faceSuccess.maxSuccess}
+            bars={[
+              { label: 'Groß', ...faceSuccess.size.big },
+              { label: 'Klein', ...faceSuccess.size.small },
+            ]}
+          />
+        </ContentBoxDivider>
+        <ContentBoxDivider>
+          <Headline>Größe des Gesichts ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={faceSuccess.minQuantileSuccess}
+            maxValue={faceSuccess.maxQuantileSuccess}
             bars={[
               { label: 'Groß', ...faceSuccess.size.big },
               { label: 'Klein', ...faceSuccess.size.small },

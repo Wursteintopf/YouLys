@@ -2,8 +2,6 @@ import React, { useMemo } from 'react'
 import { scalePow } from 'd3-scale'
 import themeVariables from '../../../../styles/themeVariables'
 import { path } from 'd3-path'
-import { HoverGroup } from '../BarChart/BarChartStyling'
-import { isFloat } from '../../../../util/IsFloat'
 import { useWindowWidth } from '../../../../util/Hooks'
 
 interface SingleBox {
@@ -16,7 +14,7 @@ interface SingleBox {
 }
 
 interface StackedBoxPlotProps {
-  minValue
+  minValue: number
   maxValue: number
   bars: SingleBox[]
 }
@@ -38,10 +36,15 @@ const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
   const xTicks = [0.1, 0.5, 4, 10, 100]
 
   const renderBar = (context, box: SingleBox) => {
-    context.moveTo(x(box.minimum), yOffSet)
-    context.lineTo(x(box.minimum), yOffSet + barHeight)
+    if (x(box.minimum) > 0) {
+      context.moveTo(x(box.minimum), yOffSet)
+      context.lineTo(x(box.minimum), yOffSet + barHeight)
 
-    context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+      context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+    } else {
+      context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+    }
+
     context.lineTo(x(box.lowerQuantile), yOffSet + (barHeight / 2))
 
     context.moveTo(x(box.lowerQuantile), yOffSet)
@@ -92,6 +95,7 @@ const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
           const returnVal = (
             <g key={index}>
               <path d={renderBar(path(), bar)} fill='none' stroke={themeVariables.colorDarkGrey} strokeWidth={2} />
+              <rect x={0} y={yOffSet} width={spacingLeft} height={barHeight * 2} fill={themeVariables.colorWhite} />
               <text x={0} y={yOffSet + barHeight / 2} fill={themeVariables.colorDarkGrey}>{bar.label}</text>
             </g>
           )

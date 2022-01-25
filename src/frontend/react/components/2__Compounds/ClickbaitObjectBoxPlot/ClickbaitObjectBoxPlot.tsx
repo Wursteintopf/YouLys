@@ -37,6 +37,22 @@ const ClickbaitObjectBoxPlot: React.FC<ClickbaitObjectBoxPlotProps> = ({ global 
           />
         </ContentBoxDivider>
         <ContentBoxDivider>
+          <Headline>Objekte im Vergleich ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={clickBaitObjectSuccess.minQuantileSuccess}
+            maxValue={clickBaitObjectSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Kreis', ...clickBaitObjectSuccess.circle.yes },
+              { label: 'Pfeil', ...clickBaitObjectSuccess.arrow.yes },
+              { label: 'Emoji', ...clickBaitObjectSuccess.emojiThumb.yes },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
           <Headline>Kreis auf dem Thumbnail</Headline>
 
           <StackedBoxPlot
@@ -48,7 +64,18 @@ const ClickbaitObjectBoxPlot: React.FC<ClickbaitObjectBoxPlotProps> = ({ global 
             ]}
           />
         </ContentBoxDivider>
+        <ContentBoxDivider>
+          <Headline>Kreis auf dem Thumbnail ohne Ausreißer</Headline>
 
+          <StackedBoxPlot
+            minValue={clickBaitObjectSuccess.minQuantileSuccess}
+            maxValue={clickBaitObjectSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Mit Kreis', ...clickBaitObjectSuccess.circle.yes },
+              { label: 'Ohne Kreis', ...clickBaitObjectSuccess.circle.no },
+            ]}
+          />
+        </ContentBoxDivider>
       </ContentBoxDividerWrapper>
 
       <ContentBoxDividerWrapper>
@@ -65,11 +92,38 @@ const ClickbaitObjectBoxPlot: React.FC<ClickbaitObjectBoxPlotProps> = ({ global 
           />
         </ContentBoxDivider>
         <ContentBoxDivider>
+          <Headline>Pfeil auf dem Thumbnail ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={clickBaitObjectSuccess.minQuantileSuccess}
+            maxValue={clickBaitObjectSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Mit Pfeil', ...clickBaitObjectSuccess.arrow.yes },
+              { label: 'Ohne Pfeil', ...clickBaitObjectSuccess.arrow.no },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
           <Headline>Emojis auf dem Thumbnail</Headline>
 
           <StackedBoxPlot
             minValue={clickBaitObjectSuccess.minSuccess}
             maxValue={clickBaitObjectSuccess.maxSuccess}
+            bars={[
+              { label: 'Mit Emoji', ...clickBaitObjectSuccess.emojiThumb.yes },
+              { label: 'Ohne Emoji', ...clickBaitObjectSuccess.emojiThumb.no },
+            ]}
+          />
+        </ContentBoxDivider>
+        <ContentBoxDivider>
+          <Headline>Emojis auf dem Thumbnail ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={clickBaitObjectSuccess.minQuantileSuccess}
+            maxValue={clickBaitObjectSuccess.maxQuantileSuccess}
             bars={[
               { label: 'Mit Emoji', ...clickBaitObjectSuccess.emojiThumb.yes },
               { label: 'Ohne Emoji', ...clickBaitObjectSuccess.emojiThumb.no },

@@ -8,6 +8,8 @@ export interface SuccessResults {
   maxMeanSuccess: number
   minSuccess: number
   maxSuccess: number
+  minQuantileSuccess: number
+  maxQuantileSuccess: number
 }
 
 export const EMPTY_SUCCESS_RESULT: SuccessResults = {
@@ -16,6 +18,8 @@ export const EMPTY_SUCCESS_RESULT: SuccessResults = {
   maxMeanSuccess: 0,
   minSuccess: 0,
   maxSuccess: 0,
+  minQuantileSuccess: 0,
+  maxQuantileSuccess: 0,
 }
 
 export interface Result {
@@ -67,6 +71,8 @@ export const calculateMeanAndMax = (result) => {
   return {
     maxAmount: max(merge(Object.keys(result).map(key => Object.keys(result[key]).map(key2 => result[key][key2].amount)))),
     maxMeanSuccess: max(merge(Object.keys(result).map(key => Object.keys(result[key]).map(key2 => result[key][key2].meanSuccessFactor)))),
+    minQuantileSuccess: min(merge(Object.keys(result).map(key => Object.keys(result[key]).map(key2 => result[key][key2].lowerQuantile)))),
+    maxQuantileSuccess: max(merge(Object.keys(result).map(key => Object.keys(result[key]).map(key2 => result[key][key2].upperQuantile)))),
     ...result,
   }
 }
