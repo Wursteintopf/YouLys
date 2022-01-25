@@ -16,11 +16,13 @@ export const ChannelListEntry = styled.li`
   &:last-of-type {
     border-bottom: none;
   }
+  
+  ${themeVariables.breakMobile} {
+    flex-wrap: wrap;
+  }
 `
 
 export const ChannelListProfilePicture = styled.div`
-  flex-basis: 10%;
-  
   img {
     width: 70px;
     height: 70px;
@@ -29,28 +31,60 @@ export const ChannelListProfilePicture = styled.div`
   }
 `
 
+export const ChannelListMeta = styled.div`
+  flex-basis: 60%;
+  margin-left: ${themeVariables.spacingM}px;
+  display: flex;
+  align-items: center;
+  
+  ${themeVariables.breakTablet} {
+    flex-basis: 35%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  ${themeVariables.breakMobile} {
+    flex-basis: 50%;
+  }
+`
+
 export const ChannelListUsername = styled.div`
-  flex-basis: 30%;
+  flex-basis: 50%;
   font-weight: ${themeVariables.fontWeightBold};
 `
 
-export const ChannelListSubs = styled.div`
-  flex-basis: 15%;
+export const ChannelListStat = styled.div`
+  ${themeVariables.breakTablet} {
+    display: flex;
+
+    span {
+      font-size: ${themeVariables.fontSizeSmall}px;
+      padding-right: 5px;
+    }
+  }
 `
 
-export const ChannelListClicks = styled.div`
+export const ChannelListSubs = styled(ChannelListStat)`
+  flex-basis: 25%;
+`
+
+export const ChannelListClicks = styled(ChannelListStat)`
+  flex-basis: 25%;
+`
+
+export const ChannelListSuccess = styled(ChannelListStat)`
   flex-basis: 15%;
+  position: relative;
 `
 
 export const ChannelListSmallText = styled.div`
   font-size: ${themeVariables.fontSizeSmall}px;
 `
 
-export const ChannelListSuccess = styled.div`
-  flex-basis: 15%;
-  position: relative;
-`
-
 export const ChannelListDetailsButton = styled.div`
   margin-left: auto;
+
+  ${themeVariables.breakMobile} {
+    margin-top: ${themeVariables.spacingS}px;
+  }
 `

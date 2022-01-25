@@ -37,6 +37,18 @@ export const ChannelDetailOverview = styled.div`
   align-items: center;
 `
 
-export const RecognizedFaces = styled.div`
+export const ChannelDetailOverviewContent = styled.div`
+  margin-right: 200px;
   
+  ${themeVariables.breakDesktop} {
+    margin-right: 100px;
+  }
+
+  ${themeVariables.breakMobile} {
+    margin-right: 30px;
+  }
+`
+
+export const ChannelDetailOverviewSuccess = styled(ChannelDetailOverviewContent)`
+  position: relative;
 `

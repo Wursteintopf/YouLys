@@ -2,7 +2,7 @@ import React from 'react'
 import { ChannelInterface } from '../../../../../shared/Domain/Model/ChannelInterface'
 import {
   ChannelListClicks, ChannelListDetailsButton,
-  ChannelListEntry,
+  ChannelListEntry, ChannelListMeta,
   ChannelListProfilePicture, ChannelListSmallText, ChannelListStyled, ChannelListSubs, ChannelListSuccess,
   ChannelListUsername,
 } from './ChannelListStyling'
@@ -40,33 +40,35 @@ const ChannelList: React.FC<KanallisteProps> = (props) => {
               <ChannelListProfilePicture>
                 <img src={channel.statistics[0].channel_meta.profile_picture} />
               </ChannelListProfilePicture>
-              <ChannelListUsername>
-                {clampByLength(channel.statistics[0].channel_meta.username, 40)}
-              </ChannelListUsername>
-              <ChannelListSubs>
-                {numberFormatter(channel.statistics[0].subscriber_count, 1)}
-                <ChannelListSmallText>Abonennten</ChannelListSmallText>
-              </ChannelListSubs>
-              <ChannelListClicks>
-                {numberFormatter(channel.statistics[0].view_count, 1)}
-                <ChannelListSmallText>Aufrufe</ChannelListSmallText>
-              </ChannelListClicks>
-              <ChannelListSuccess>
-                {channel.statistics[0].channel_success_factor.toFixed(2)}
-                <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
-                <ToolTip
-                  offSetX={65}
-                >
-                  <Headline>Erfolgsfaktor</Headline>
-                  <p>
-                    Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
-                    Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen. Der Erfolgsfaktor
-                    eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 50 Videos.
-                    <br /><br />
-                    Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
-                  </p>
-                </ToolTip>
-              </ChannelListSuccess>
+
+              <ChannelListMeta>
+                <ChannelListUsername>
+                  {clampByLength(channel.statistics[0].channel_meta.username, 40)}
+                </ChannelListUsername>
+                <ChannelListSubs>
+                  <span>{numberFormatter(channel.statistics[0].subscriber_count, 1)}</span>
+                  <ChannelListSmallText>Abonennten</ChannelListSmallText>
+                </ChannelListSubs>
+                <ChannelListClicks>
+                  <span>{numberFormatter(channel.statistics[0].view_count, 1)}</span>
+                  <ChannelListSmallText>Aufrufe</ChannelListSmallText>
+                </ChannelListClicks>
+                <ChannelListSuccess>
+                  <span>{channel.statistics[0].channel_success_factor.toFixed(2)}</span>
+                  <ChannelListSmallText>Erfolgsfaktor</ChannelListSmallText>
+                  <ToolTip>
+                    <Headline>Erfolgsfaktor</Headline>
+                    <p>
+                      Der YouLys Erfolgsfaktor berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
+                      Dabei werden immer das neuste Video mit den 50 vorhergehenden Videos verglichen. Der Erfolgsfaktor
+                      eines ganzen Kanals ist dann wiederum der durchschnittliche Erfolgsfaktor der letzten 50 Videos.
+                      <br /><br />
+                      Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
+                    </p>
+                  </ToolTip>
+                </ChannelListSuccess>
+              </ChannelListMeta>
+
               <ChannelListDetailsButton>
                 <Button
                   endIcon={<ArrowForwardIcon />}

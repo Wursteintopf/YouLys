@@ -5,8 +5,12 @@ import themeVariables from '../../../../styles/themeVariables'
 export const StyledSelect = styled(Select)`
   border-radius: 20px;
   background-color: ${themeVariables.colorLightGrey};
-  padding-left: ${themeVariables.spacingM}px; 
-  padding-right: ${themeVariables.spacingM}px; 
+  padding: 0 ${themeVariables.spacingM}px;
+  
+  ${themeVariables.breakMobile} {
+    padding: 0 ${themeVariables.spacingS}px;
+    font-size: 12px;
+  }
 `
 
 export const DatePickerWrapper = styled.div`

@@ -16,7 +16,7 @@ const HeroTeaser: React.FC = () => {
 
   return (
     <HeroTeaserStyled>
-      <ContentContainer>
+      <ContentContainer fullWidth>
         <HeroTeaserContent
           image={image}
         >

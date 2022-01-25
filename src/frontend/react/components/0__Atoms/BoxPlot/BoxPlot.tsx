@@ -3,6 +3,7 @@ import { scaleLinear } from 'd3-scale'
 import { path } from 'd3-path'
 import themeVariables from '../../../../styles/themeVariables'
 import numberFormatter from '../../../../util/NumberFormatter'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface BoxPlotProps {
   range: [number, number]
@@ -12,15 +13,15 @@ interface BoxPlotProps {
   upperQuantile: number
   maximum: number
   value?: number
-  height?: number
   removeLabels?: boolean
   overSize?: boolean
   label: string
 }
 
 const BoxPlot: React.FC<BoxPlotProps> = (props) => {
-  const height = props.height ? props.height : 150
-  const width = 250
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 250 : (windowWidth > 1000 ? 200 : (windowWidth > 800 ? 170 : (windowWidth > 600 ? 130 : 200)))
+  const height = windowWidth > 1200 ? 150 : (windowWidth > 1000 ? 140 : (windowWidth > 800 ? 130 : (windowWidth > 600 ? 120 : 130)))
   const spacingTop = props.value ? 50 : 5
   const spacingBottom = 30
   const spacingHorizontal = 25
@@ -28,7 +29,7 @@ const BoxPlot: React.FC<BoxPlotProps> = (props) => {
 
   const x = useMemo(() => {
     return scaleLinear().domain(props.range).range([spacingHorizontal, width - spacingHorizontal])
-  }, [props])
+  }, [props, width])
 
   const drawBoxplot = (context) => {
     context.moveTo(x(props.minimum), spacingTop)

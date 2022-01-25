@@ -10,4 +10,5 @@ export const RoundedIcon = styled.div<{ color: string }>`
   align-items: center;
   justify-content: center;
   color: ${themeVariables.colorWhite};
+  flex-shrink: 0;
 `

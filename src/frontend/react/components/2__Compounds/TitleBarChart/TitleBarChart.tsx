@@ -17,6 +17,8 @@ const TitleBarChart: React.FC<TitleAnalysisProps> = ({ global }) => {
 
   if (fetching) return <Progress />
 
+  if (titleSuccess.count === 0) return <>Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.</>
+
   return (
     <>
       <ContentBoxDividerWrapper>

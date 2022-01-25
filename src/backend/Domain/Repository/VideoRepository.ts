@@ -27,10 +27,9 @@ export class VideoRepository {
     return video
   }
 
-  protected convertMultipleRows = (rows): Video[] => {
+  protected convertMultipleRows = (rows): { [key: string]: Video } => {
     return rows.reduce((videos, row) => {
-      const video: Video = videos.find(v => v.video_id === row.video_id) || this.convertQueryRowToVideoModel(row)
-      videos = videos.filter(v => v.video_id !== row.video_id)
+      const video: Video = videos[row.video_id] || this.convertQueryRowToVideoModel(row)
 
       if (row.face_id) {
         const face = video.statistics[0].video_thumbnail.faces.find(f => f.face_id === row.face_id) || new Face(row.face_id).setAll(row)
@@ -44,10 +43,10 @@ export class VideoRepository {
         video.statistics[0].video_thumbnail.clickbait_objects.push(clickbaitObject)
       }
 
-      videos.push(video)
+      videos[video.video_id] = video
 
       return videos
-    }, [])
+    }, {})
   }
 
   private constructor () {
@@ -78,7 +77,9 @@ export class VideoRepository {
         async (err, rows) => {
           if (err) reject(err)
           if (rows && rows.length > 0) {
-            resolve(await this.convertQueryRowToVideoModel(rows[0]))
+            const video = new Video(rows[0].video_id)
+            video.setAll(rows[0])
+            resolve(video)
           } else {
             reject(new Error('There is no Video with this ID'))
           }
@@ -87,15 +88,17 @@ export class VideoRepository {
     })
   }
 
-  public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
+  public getByChannelAndUploadTime = async (channelId: string, from: Date, to: Date): Promise<{ [key: string]: Video }> => {
+    return new Promise<{ [key: string]: Video }>((resolve, reject) => {
       connection.query(
         this.BASE_GET_QUERY + 'WHERE channel_id = ? AND (upload_time BETWEEN ? AND ?) AND (DATE(timestamp) = (SELECT DATE(timestamp) FROM video_statistic WHERE video_id = v.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC',
         [channelId, from, to],
 
         async (err, rows) => {
           if (err) reject(err)
-          if (rows && rows.length > 0) {
+          if (rows && rows.length === 0) {
+            resolve({})
+          } else if (rows && rows.length > 0) {
             resolve(await this.convertMultipleRows(rows))
           } else {
             reject(new Error('No Videos for the Channel with ChannelId ' + channelId + ' found'))
@@ -105,8 +108,8 @@ export class VideoRepository {
     })
   }
 
-  public getFiftyNewestByChannel = async (channelId: string): Promise<Video[]> => {
-    return new Promise<Video[]>((resolve, reject) => {
+  public getFiftyNewestByChannel = async (channelId: string): Promise<{ [key: string]: Video }> => {
+    return new Promise<{ [key: string]: Video }>((resolve, reject) => {
       connection.query(
         this.BASE_GET_QUERY + 'WHERE channel_id = ? AND (timestamp = (SELECT timestamp FROM video_statistic WHERE video_id = v.video_id ORDER BY timestamp DESC LIMIT 1)) ORDER BY upload_time DESC LIMIT 50',
         [channelId],

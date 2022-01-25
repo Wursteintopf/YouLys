@@ -23,7 +23,7 @@ const Gesichteranalyse: React.FC = () => {
           <ContentBox title='Scatterplot Darstellung' subtitle={videos.length + ' Thumbnails analysiert'}>
             <ScatterplotWithFilters
               videos={videos}
-              filters={['amount', 'expression', 'sex', 'size']}
+              filters={['amount', 'emotion', 'sex', 'size']}
             />
           </ContentBox>
         </ContentBoxWrapper>

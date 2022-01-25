@@ -18,7 +18,7 @@ interface ScatterplotProps {
 
 const LABELS = {
   amount: 'Anzahl der Gesichter',
-  expression: 'Emotion',
+  emotion: 'Emotion',
   sex: 'Geschlecht',
   size: 'Größe des Gesichts',
   uppercase: 'Capslock im Titel',
@@ -212,7 +212,7 @@ const ScatterplotWithFilters: React.FC<ScatterplotProps> = ({ videos, filters })
       />
       <ScatterPlotLegend>
         <FilterGroup>
-          <Bold>Darstellung der Y-Achse</Bold>
+          <Bold>Darstellung der Y-Achse</Bold><br />
           <StyledSelect
             style={{ marginTop: 5 }}
             value={scale}
@@ -226,7 +226,7 @@ const ScatterplotWithFilters: React.FC<ScatterplotProps> = ({ videos, filters })
         </FilterGroup>
 
         <FilterGroup>
-          <Bold>Y-Achse zoomen</Bold>
+          <Bold>Y-Achse zoomen</Bold><br />
           <Slider
             value={zoom}
             min={0.1}

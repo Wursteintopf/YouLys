@@ -36,11 +36,38 @@ const TitleBoxPlot: React.FC<TitleBoxPlotProps> = ({ global }) => {
           />
         </ContentBoxDivider>
         <ContentBoxDivider>
+          <Headline>Capslock im Titel ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={titleSuccess.minQuantileSuccess}
+            maxValue={titleSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Mit Capslock', ...titleSuccess.uppercase.yes },
+              { label: 'Ohne Capslock', ...titleSuccess.uppercase.no },
+            ]}
+          />
+        </ContentBoxDivider>
+      </ContentBoxDividerWrapper>
+
+      <ContentBoxDividerWrapper>
+        <ContentBoxDivider>
           <Headline>Übermäßige Satzzeichen (z.B. ?!?)</Headline>
 
           <StackedBoxPlot
             minValue={titleSuccess.minSuccess}
             maxValue={titleSuccess.maxSuccess}
+            bars={[
+              { label: 'Mit', ...titleSuccess.punctuation.yes },
+              { label: 'Ohne', ...titleSuccess.punctuation.no },
+            ]}
+          />
+        </ContentBoxDivider>
+        <ContentBoxDivider>
+          <Headline>Übermäßige Satzzeichen (z.B. ?!?) ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={titleSuccess.minQuantileSuccess}
+            maxValue={titleSuccess.maxQuantileSuccess}
             bars={[
               { label: 'Mit', ...titleSuccess.punctuation.yes },
               { label: 'Ohne', ...titleSuccess.punctuation.no },
@@ -62,7 +89,18 @@ const TitleBoxPlot: React.FC<TitleBoxPlotProps> = ({ global }) => {
             ]}
           />
         </ContentBoxDivider>
-        <ContentBoxDivider />
+        <ContentBoxDivider>
+          <Headline>Emojis im Titel ohne Ausreißer</Headline>
+
+          <StackedBoxPlot
+            minValue={titleSuccess.minQuantileSuccess}
+            maxValue={titleSuccess.maxQuantileSuccess}
+            bars={[
+              { label: 'Mit Emoji', ...titleSuccess.emoji.yes },
+              { label: 'Ohne Emoji', ...titleSuccess.emoji.no },
+            ]}
+          />
+        </ContentBoxDivider>
       </ContentBoxDividerWrapper>
     </>
   )

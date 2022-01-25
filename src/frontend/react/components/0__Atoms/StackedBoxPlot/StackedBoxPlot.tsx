@@ -2,8 +2,7 @@ import React, { useMemo } from 'react'
 import { scalePow } from 'd3-scale'
 import themeVariables from '../../../../styles/themeVariables'
 import { path } from 'd3-path'
-import { HoverGroup } from '../BarChart/BarChartStyling'
-import { isFloat } from '../../../../util/IsFloat'
+import { useWindowWidth } from '../../../../util/Hooks'
 
 interface SingleBox {
   label: string
@@ -15,13 +14,14 @@ interface SingleBox {
 }
 
 interface StackedBoxPlotProps {
-  minValue
+  minValue: number
   maxValue: number
   bars: SingleBox[]
 }
 
 const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
-  const width = 600
+  const windowWidth = useWindowWidth()
+  const width = windowWidth > 1200 ? 600 : (windowWidth > 800 ? (window.innerWidth / 2) : windowWidth)
   const barHeight = 40
 
   const spacingBottom = 50
@@ -31,15 +31,20 @@ const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
 
   const x = useMemo(() => {
     return scalePow().exponent(0.0000000000005).domain([props.minValue * 0.97, props.maxValue * 1.03]).range([spacingLeft, width])
-  }, [props.bars])
+  }, [props.bars, width])
 
   const xTicks = [0.1, 0.5, 4, 10, 100]
 
   const renderBar = (context, box: SingleBox) => {
-    context.moveTo(x(box.minimum), yOffSet)
-    context.lineTo(x(box.minimum), yOffSet + barHeight)
+    if (x(box.minimum) > 0) {
+      context.moveTo(x(box.minimum), yOffSet)
+      context.lineTo(x(box.minimum), yOffSet + barHeight)
 
-    context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+      context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+    } else {
+      context.moveTo(x(box.minimum), yOffSet + (barHeight / 2))
+    }
+
     context.lineTo(x(box.lowerQuantile), yOffSet + (barHeight / 2))
 
     context.moveTo(x(box.lowerQuantile), yOffSet)
@@ -90,6 +95,7 @@ const StackedBoxPlot: React.FC<StackedBoxPlotProps> = props => {
           const returnVal = (
             <g key={index}>
               <path d={renderBar(path(), bar)} fill='none' stroke={themeVariables.colorDarkGrey} strokeWidth={2} />
+              <rect x={0} y={yOffSet} width={spacingLeft} height={barHeight * 2} fill={themeVariables.colorWhite} />
               <text x={0} y={yOffSet + barHeight / 2} fill={themeVariables.colorDarkGrey}>{bar.label}</text>
             </g>
           )

@@ -96,13 +96,14 @@ youLysRouter.post('/getVideoStats', (req, res) => {
       .then(async video => {
         await video.loadStatsInRange(from, to)
 
+        if (video.statistics.length === 0) await video.loadNewestStats()
+
         res.send({
           status: ApiStatusCodes.SUCCESS,
           result: video,
         })
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         res.send({
           status: ApiStatusCodes.NOT_FOUND,
         })

@@ -7,14 +7,14 @@ import { ChannelMeta } from './ChannelMeta'
 import { ChannelRepository } from '../Repository/ChannelRepository'
 import { VideoRepository } from '../Repository/VideoRepository'
 import { callChannelStatistics, callFiftyNewestVideosOfChannel } from '../../YoutubeApiCaller/YoutubeApiCaller'
-import { quantileSeq, min, max, mean } from 'mathjs'
+import { mean } from 'mathjs'
 
 export class Channel implements ChannelInterface {
   channel_id: string
   created_at: Date = new Date()
   tracked = true
   statistics: ChannelStatistic[] = []
-  videos: Video[] = []
+  videos: { [key: string]: Video } = {}
 
   constructor (props: ChannelInterface) {
     this.channel_id = props.channel_id
@@ -120,7 +120,9 @@ export class Channel implements ChannelInterface {
 
         async (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length === 0) {
+            resolve(true)
+          } else if (rows && rows.length > 0) {
             this.statistics = rows.map(row => {
               const stat = new ChannelStatistic(row.channel_statistic_id)
               stat.setAll(row)
@@ -211,7 +213,7 @@ export class Channel implements ChannelInterface {
     try {
       const apiResults = await callFiftyNewestVideosOfChannel(this.channel_id)
 
-      this.videos = await Promise.all(apiResults.map(async result => {
+      for await (const result of apiResults) {
         const video = new Video(result.snippet.resourceId.videoId)
         video.setAll({
           channel_id: this.channel_id,
@@ -220,8 +222,8 @@ export class Channel implements ChannelInterface {
           statistics: [],
         })
         await video.save()
-        return video
-      }))
+        this.videos[video.video_id] = video
+      }
 
       return true
     } catch (error) {
@@ -245,6 +247,6 @@ export class Channel implements ChannelInterface {
   public calculateSuccessFactor = async (): Promise<number> => {
     await this.loadFiftyNewestVideos()
 
-    return this.calculateMeanSuccessFromVideoArray(this.videos)
+    return this.calculateMeanSuccessFromVideoArray(Object.keys(this.videos).map(key => this.videos[key]))
   }
 }

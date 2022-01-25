@@ -24,8 +24,13 @@ import { VideoDetailOverview, VideoOverviewElement } from './VideodetailseiteSty
 import SingleTitleAnalysis from '../../components/1__Molecules/SingleTitleAnalysis/SingleTitleAnalysis'
 import { ChannelListSmallText } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
 import { isBigFace } from '../../../util/CalculateFaceSuccess'
+import clampByLength from '../../../util/ClampByLength'
+import { useWindowWidth } from '../../../util/Hooks'
 
 const Videodetailseite: React.FC = () => {
+  const windowWith = useWindowWidth()
+  const titleLength = windowWith > 1200 ? 80 : (windowWith > 1000 ? 50 : (windowWith > 800 ? 40 : (windowWith > 600 ? 30 : (windowWith > 400 ? 20 : 15))))
+
   const from = useSelector(getFrom)
   const to = useSelector(getTo)
   const fetching = useSelector(getFetching)
@@ -49,8 +54,8 @@ const Videodetailseite: React.FC = () => {
             <img src={stat.video_thumbnail.thumbnail} />
           </VideoDetailsProfilePicture>
           <ChannelDetailsName>
-            <Headline>{stat.video_meta.title}</Headline>
-            <ChannelDetailsLink href={'https://www.youtube.com/watch?v=' + video.video_id}>Zum YouTube Video</ChannelDetailsLink>
+            <Headline>{clampByLength(stat.video_meta.title, titleLength)}</Headline>
+            <ChannelDetailsLink href={'https://www.youtube.com/watch?v=' + video.video_id}>Zum Video</ChannelDetailsLink>
           </ChannelDetailsName>
         </ChannelHeader>
       </SubHeader>
@@ -78,9 +83,7 @@ const Videodetailseite: React.FC = () => {
               <VideoOverviewElement>
                 {stat.success_factor.toFixed(2)}
                 <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
-                <ToolTip
-                  offSetX={65}
-                >
+                <ToolTip offSetX={-15}>
                   <Headline>Erfolgswert</Headline>
                   <p>
                     Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.

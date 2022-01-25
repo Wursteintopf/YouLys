@@ -130,7 +130,9 @@ export class Video implements VideoInterface {
 
         async (err, rows) => {
           if (err) reject(err)
-          if (rows.length > 0) {
+          if (rows && rows.length === 0) {
+            resolve(true)
+          } else if (rows && rows.length > 0) {
             this.statistics = await Promise.all(rows.map(async row => {
               const stat = new VideoStatistic(row.video_statistic_id)
               stat.setAll(row)
@@ -156,7 +158,7 @@ export class Video implements VideoInterface {
 
   public loadChannel = async (): Promise<Channel> => {
     const channel = await ChannelRepository.Instance.getById(this.channel_id)
-    channel.videos = [this]
+    channel.videos[this.video_id] = this
     return channel
   }
 

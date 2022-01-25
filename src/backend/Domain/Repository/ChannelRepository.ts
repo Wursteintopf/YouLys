@@ -33,8 +33,7 @@ export class ChannelRepository {
       const channel: Channel = channels.find(c => c.channel_id === row.channel_id) || this.convertQueryRowToChannelModel(row)
       channels = channels.filter(c => c.channel_id !== row.channel_id)
 
-      const video: Video = channel.videos.find(v => v.video_id === row.video_id) || VideoRepository.Instance.convertQueryRowToVideoModel(row)
-      channel.videos = channel.videos.filter(v => v.video_id !== row.video_id)
+      const video: Video = channel.videos[row.video_id] || VideoRepository.Instance.convertQueryRowToVideoModel(row)
 
       if (row.face_id) {
         const face = video.statistics[0].video_thumbnail.faces.find(f => f.face_id === row.face_id) || new Face(row.face_id).setAll(row)
@@ -48,7 +47,7 @@ export class ChannelRepository {
         video.statistics[0].video_thumbnail.clickbait_objects.push(clickbaitObject)
       }
 
-      channel.videos.push(video)
+      channel.videos[row.video_id] = video
       channels.push(channel)
 
       return channels

@@ -13,7 +13,11 @@ import {
 import Progress from '../../components/0__Atoms/Progress/Progress'
 import { fetchCurrentChannel } from '../../../store/channel/channel.actions'
 import {
-  ChannelDetailOverview, ChannelDetailsLink, ChannelDetailsName,
+  ChannelDetailOverview,
+  ChannelDetailOverviewContent,
+  ChannelDetailOverviewSuccess,
+  ChannelDetailsLink,
+  ChannelDetailsName,
   ChannelDetailsProfilePicture,
   ChannelHeader,
 } from './KanaldetailseiteStyling'
@@ -23,7 +27,7 @@ import LineChart from '../../components/0__Atoms/LineChart/LineChart'
 import moment from 'moment'
 import { setFetching } from '../../../store/ui/ui.actions'
 import VideoList from '../../components/2__Compounds/VideoList/VideoList'
-import { ChannelListClicks, ChannelListSmallText, ChannelListSubs, ChannelListSuccess } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
+import { ChannelListSmallText } from '../../components/2__Compounds/ChannelList/ChannelListStyling'
 import FacesBarChart from '../../components/2__Compounds/FacesBarChart/FacesBarChart'
 import TitleBarChart from '../../components/2__Compounds/TitleBarChart/TitleBarChart'
 import FacesBoxPlot from '../../components/2__Compounds/FacesBoxPlot/FacesBoxPlot'
@@ -62,20 +66,18 @@ const Kanaldetailseite: React.FC = () => {
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Übersicht'>
             <ChannelDetailOverview>
-              <ChannelListSubs>
+              <ChannelDetailOverviewContent>
                 {numberFormatter(stat.subscriber_count, 1)}
                 <ChannelListSmallText>Abonennten</ChannelListSmallText>
-              </ChannelListSubs>
-              <ChannelListClicks>
+              </ChannelDetailOverviewContent>
+              <ChannelDetailOverviewContent>
                 {numberFormatter(stat.view_count, 1)}
                 <ChannelListSmallText>Aufrufe</ChannelListSmallText>
-              </ChannelListClicks>
-              <ChannelListSuccess>
+              </ChannelDetailOverviewContent>
+              <ChannelDetailOverviewSuccess>
                 {stat.channel_success_factor ? stat.channel_success_factor.toFixed(2) : 4}
                 <ChannelListSmallText>Erfolgswert</ChannelListSmallText>
-                <ToolTip
-                  offSetX={65}
-                >
+                <ToolTip>
                   <Headline>Erfolgswert</Headline>
                   <p>
                     Der YouLys Erfolgswert berechnet sich aus dem Wachstum von Aufrufen, Kommentaren und Likes.
@@ -85,31 +87,31 @@ const Kanaldetailseite: React.FC = () => {
                     Für die genaue Berechnungsformel besuche gerne unsere Erklärseite.
                   </p>
                 </ToolTip>
-              </ChannelListSuccess>
+              </ChannelDetailOverviewSuccess>
             </ChannelDetailOverview>
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Neue Videos'>
-            {(channel.videos && channel.videos.length > 0) ? <VideoList all={false} videos={channel.videos.slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all={false} videos={Object.keys(channel.videos).map(key => channel.videos[key]).slice(0, 3)} /> : 'Im ausgewählten Zeitraum wurden keine Videos veröffentlicht.'}
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Titel Analyse' subtitle={channel.videos.length + ' Titel analysiert'}>
+          <ContentBox title='Titel Analyse' subtitle={Object.keys(channel.videos).length + ' Titel analysiert'}>
             <TitleBarChart />
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Gesichter auf den Thumbnails' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+          <ContentBox title='Gesichter auf den Thumbnails' subtitle={Object.keys(channel.videos).length + ' Thumbnails analysiert'}>
             <FacesBarChart />
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Gesichter - Boxplot Darstellung' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+          <ContentBox title='Gesichter - Boxplot Darstellung' subtitle={Object.keys(channel.videos).length + ' Thumbnails analysiert'}>
             <FacesBoxPlot />
           </ContentBox>
         </ContentBoxWrapper>
