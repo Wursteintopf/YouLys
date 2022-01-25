@@ -94,24 +94,24 @@ const Kanaldetailseite: React.FC = () => {
 
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Neue Videos'>
-            {(channel.videos && channel.videos.length > 0) ? <VideoList all={false} videos={channel.videos.slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
+            {(channel.videos && Object.keys(channel.videos).length > 0) ? <VideoList all={false} videos={Object.keys(channel.videos).map(key => channel.videos[key]).slice(0, 3)} /> : 'Der Kanal hat im gewählten Zeitraum keine Videos veröffentlicht.'}
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Titel Analyse' subtitle={channel.videos.length + ' Titel analysiert'}>
+          <ContentBox title='Titel Analyse' subtitle={Object.keys(channel.videos).length + ' Titel analysiert'}>
             <TitleBarChart />
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Gesichter auf den Thumbnails' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+          <ContentBox title='Gesichter auf den Thumbnails' subtitle={Object.keys(channel.videos).length + ' Thumbnails analysiert'}>
             <FacesBarChart />
           </ContentBox>
         </ContentBoxWrapper>
 
         <ContentBoxWrapper amountOfChildren={1}>
-          <ContentBox title='Gesichter - Boxplot Darstellung' subtitle={channel.videos.length + ' Thumbnails analysiert'}>
+          <ContentBox title='Gesichter - Boxplot Darstellung' subtitle={Object.keys(channel.videos).length + ' Thumbnails analysiert'}>
             <FacesBoxPlot />
           </ContentBox>
         </ContentBoxWrapper>

@@ -26,8 +26,8 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   const width = windowWidth > 1200 ? 600 : (windowWidth > 800 ? (window.innerWidth / 2) : windowWidth)
   const height = width * 0.6
 
-  const spacingLeft = 70
-  const spacingBottom = 20
+  const spacingLeft = 85
+  const spacingBottom = 25
 
   const y = useMemo(() => {
     return scaleLinear().domain([min(props.values.map(v => v.value)), max(props.values.map(v => v.value))]).range([height - spacingBottom - 30, 30])
@@ -96,7 +96,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       {
         yTicks.map((tick) => {
           return (
-            <text key={tick} transform={`translate(60,${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey}>{numberFormatter(tick, 1)}</text>
+            <text key={tick} transform={`translate(${spacingLeft - 10},${y(tick)})`} textAnchor='end' fill={themeVariables.colorDarkGrey}>{numberFormatter(tick, 1)}</text>
           )
         })
       }

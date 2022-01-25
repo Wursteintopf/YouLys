@@ -156,7 +156,7 @@ export class Video implements VideoInterface {
 
   public loadChannel = async (): Promise<Channel> => {
     const channel = await ChannelRepository.Instance.getById(this.channel_id)
-    channel.videos = [this]
+    channel.videos[this.video_id] = this
     return channel
   }
 

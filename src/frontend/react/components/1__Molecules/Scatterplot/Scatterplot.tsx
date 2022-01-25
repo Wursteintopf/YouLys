@@ -11,6 +11,7 @@ import { path } from 'd3-path'
 import { VideoBox } from './Styling'
 import moment from 'moment'
 import { useWindowWidth } from '../../../../util/Hooks'
+import clampByLength from '../../../../util/ClampByLength'
 
 interface ScatterplotProps {
   videos: VideoInterface[]
@@ -145,8 +146,9 @@ const Scatterplot: React.FC<ScatterplotProps> = ({
       <text x={width - 5} y={height - spacingBottom - 5} textAnchor='end' fontSize={12} fill={themeVariables.colorDarkGrey}>Uploaddatum</text>
       <path d={axes(path())} stroke={themeVariables.colorDarkGrey} fill='none' />
       <VideoBox hovered={hovered} transform={`translate(${x(new Date(currentVideo.upload_time)) < 600 ? x(new Date(currentVideo.upload_time)) : x(new Date(currentVideo.upload_time)) - 180},${y(currentVideo.statistics[0].success_factor) < 480 ? y(currentVideo.statistics[0].success_factor) : y(currentVideo.statistics[0].success_factor) - 110})`}>
-        <rect x={5} y={5} width={170} height={100} fill={themeVariables.colorWhite} filter='url(#shadow)' />
+        <rect x={5} y={5} width={170} height={112} fill={themeVariables.colorWhite} filter='url(#shadow)' />
         <image x={10} y={10} href={currentVideo.statistics[0].video_thumbnail.thumbnail} width={160} height={90} />
+        <text x={10} y={112} fontSize={12} fill={themeVariables.colorDarkGrey}>{clampByLength(currentVideo.statistics[0].video_meta.title, 20)}</text>
       </VideoBox>
     </ScatterPlotSvg>
   )

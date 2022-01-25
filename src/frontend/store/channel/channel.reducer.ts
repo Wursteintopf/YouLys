@@ -43,7 +43,7 @@ export const channelReducer = reducerWithInitialState(INITIAL_STATE)
     const newState = { ...state }
     newState.channels[payload.channel_id] = payload
     if (state.channels[payload.channel_id]) {
-      newState.channels[payload.channel_id].videos = [...state.channels[payload.channel_id].videos, ...payload.videos]
+      newState.channels[payload.channel_id].videos = { ...state.channels[payload.channel_id].videos, ...payload.videos }
     }
     newState.currentChannel = payload.channel_id
     return newState

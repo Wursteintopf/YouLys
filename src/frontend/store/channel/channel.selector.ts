@@ -9,6 +9,7 @@ import { EMPTY_VIDEO } from '../../../shared/Domain/Model/VideoInterface'
 import { calculateAveragePerformance } from '../../util/CalculateAveragePerformance'
 import { calculateObjectSuccess } from '../../util/CalculateObjectSuccess'
 import { calculateWordWeights } from '../../util/CalculateWordWeights'
+import { EMPTY_VIDEO_STATISTIC } from '../../../shared/Domain/Model/VideoStatisticInterface'
 
 const selectChannel = (state: RootState) => state.channel
 
@@ -17,14 +18,24 @@ export const getChannels = createSelector(
   state => Object.keys(state.channels).map(key => state.channels[key]),
 )
 
+export const getSuccessfulChannels = createSelector(
+  getChannels,
+  channels => channels.filter(c => Object.keys(c.videos).length > 0).sort((a, b) => b.statistics[0].channel_success_factor - a.statistics[0].channel_success_factor).slice(0, 3),
+)
+
 export const getCurrentChannel = createSelector(
   selectChannel,
   state => state.currentChannel ? state.channels[state.currentChannel] : EMPTY_CHANNEL,
 )
 
-export const getCurrentChannelAveragePerformance = createSelector(
+export const getCurrentChannelVideos = createSelector(
   getCurrentChannel,
-  state => calculateAveragePerformance(state.videos),
+  channel => Object.keys(channel.videos).map(key => channel.videos[key]),
+)
+
+export const getCurrentChannelAveragePerformance = createSelector(
+  getCurrentChannelVideos,
+  videos => calculateAveragePerformance(videos),
 )
 
 export const getNewestChannelStatistic = createSelector(
@@ -37,28 +48,28 @@ export const getNewestChannelStatistic = createSelector(
 )
 
 export const getCurrentChannelFaceSuccess = createSelector(
-  getCurrentChannel,
-  state => calculateFaceSuccess(state.videos),
+  getCurrentChannelVideos,
+  videos => calculateFaceSuccess(videos),
 )
 
 export const getCurrentChannelTitleSuccess = createSelector(
-  getCurrentChannel,
-  state => calculateTitleSuccess(state.videos),
+  getCurrentChannelVideos,
+  videos => calculateTitleSuccess(videos),
 )
 
 export const getCurrentChannelTitleWordWeights = createSelector(
-  getCurrentChannel,
-  state => calculateWordWeights(state.videos),
+  getCurrentChannelVideos,
+  videos => calculateWordWeights(videos),
 )
 
 export const getCurrentChannelClickbaitObjectSuccess = createSelector(
-  getCurrentChannel,
-  state => calculateObjectSuccess(state.videos),
+  getCurrentChannelVideos,
+  videos => calculateObjectSuccess(videos),
 )
 
 export const getAllVideos = createSelector(
   selectChannel,
-  state => merge(Object.keys(state.channels).map(key => state.channels[key].videos)),
+  state => merge(Object.keys(state.channels).map(key => Object.keys(state.channels[key].videos).map(key2 => state.channels[key].videos[key2]))),
 )
 
 export const getAmountOfVideos = createSelector(
@@ -99,6 +110,6 @@ export const getNewestVideoStatistic = createSelector(
   state => {
     if (state.statistics.length > 0) {
       return state.statistics.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())[0]
-    } else return EMPTY_CHANNEL_STATISTIC
+    } else return EMPTY_VIDEO_STATISTIC
   },
 )

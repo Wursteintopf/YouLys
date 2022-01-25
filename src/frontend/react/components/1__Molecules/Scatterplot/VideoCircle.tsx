@@ -138,7 +138,7 @@ const VideoCircle: React.FC<VideoCircleProps> = ({ video, filterGroup, highlight
 
   const renderVideoOrFaces = () => {
     const circles = [] as any
-    if (['amount', 'emotion', 'sex', 'size'].includes(filterGroup)) {
+    if (['emotion', 'sex', 'size'].includes(filterGroup)) {
       video.statistics[0].video_thumbnail.faces.forEach((face, index) => {
         if (getDisplayed(face)) circles.push(<circle key={index} cx={0} cy={0} r={5} fill={getColor(face)} fillOpacity={0.8} />)
       })

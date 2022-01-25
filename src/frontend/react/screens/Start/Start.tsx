@@ -12,7 +12,7 @@ import { BoxButtonBar } from '../Erfolgsfaktoren/Unterseiten/ErfolgsStying'
 import Button from '../../components/0__Atoms/Button/Button'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useHistory } from 'react-router'
-import { getAmountOfVideos, getChannels } from '../../../store/channel/channel.selector'
+import { getAmountOfVideos, getSuccessfulChannels } from '../../../store/channel/channel.selector'
 import ChannelList from '../../components/2__Compounds/ChannelList/ChannelList'
 
 const Start: React.FC = () => {
@@ -20,7 +20,7 @@ const Start: React.FC = () => {
   const fetching = useSelector(getFetching)
   const history = useHistory()
   const amount = useSelector(getAmountOfVideos)
-  const channels = useSelector(getChannels)
+  const channels = useSelector(getSuccessfulChannels)
 
   useEffect(() => {
     dispatch(setFetching(true))
@@ -47,7 +47,7 @@ const Start: React.FC = () => {
       <ContentContainer>
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Aktuell besonders erfolgreiche Kanäle'>
-            <ChannelList linkOverview channels={channels.filter(c => c.videos.length > 0).sort((a, b) => b.statistics[0].channel_success_factor - a.statistics[0].channel_success_factor).slice(0, 3)} />
+            <ChannelList linkOverview channels={channels} />
           </ContentBox>
         </ContentBoxWrapper>
 

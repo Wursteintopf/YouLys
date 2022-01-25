@@ -7,7 +7,7 @@ import ContentBox from '../../../components/1__Molecules/ContentBox/ContentBox'
 import ChannelList from '../../../components/2__Compounds/ChannelList/ChannelList'
 import VideoList from '../../../components/2__Compounds/VideoList/VideoList'
 import { useSelector } from 'react-redux'
-import { getAllVideos, getChannels } from '../../../../store/channel/channel.selector'
+import { getAllVideos, getSuccessfulChannels } from '../../../../store/channel/channel.selector'
 import FacesBarChart from '../../../components/2__Compounds/FacesBarChart/FacesBarChart'
 import TitleBarChart from '../../../components/2__Compounds/TitleBarChart/TitleBarChart'
 import Button from '../../../components/0__Atoms/Button/Button'
@@ -15,13 +15,11 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useHistory } from 'react-router'
 import { BoxButtonBar } from './ErfolgsStying'
 import { getFetching } from '../../../../store/ui/ui.selector'
-import ClickbaitObjectsBarChart
-  from '../../../components/2__Compounds/ClickbaitObjectsBarChart/ClickbaitObjectsBarChart'
 import ClickbaitObjectBoxPlot from '../../../components/2__Compounds/ClickbaitObjectBoxPlot/ClickbaitObjectBoxPlot'
 
 const Erfolgsübersicht: React.FC = () => {
   const history = useHistory()
-  const channels = useSelector(getChannels)
+  const channels = useSelector(getSuccessfulChannels)
   const videos = useSelector(getAllVideos)
   const fetching = useSelector(getFetching)
 
@@ -72,7 +70,7 @@ const Erfolgsübersicht: React.FC = () => {
       <ContentContainer>
         <ContentBoxWrapper amountOfChildren={1}>
           <ContentBox title='Aktuell besonders erfolgreiche Kanäle'>
-            <ChannelList linkOverview channels={channels.filter(c => c.videos.length > 0).sort((a, b) => b.statistics[0].channel_success_factor - a.statistics[0].channel_success_factor).slice(0, 3)} />
+            <ChannelList linkOverview channels={channels} />
           </ContentBox>
         </ContentBoxWrapper>
 
