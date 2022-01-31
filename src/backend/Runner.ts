@@ -20,9 +20,9 @@ const run = async (): Promise<boolean> => {
       .then(async () => {
         console.log('SUCCESS: Fetched 50 newest videos for channel with the id ' + channel.channel_id)
 
-        channel.videos.sort((a, b) => a.upload_time.getTime() - b.upload_time.getTime())
+        const sortedVideos = Object.keys(channel.videos).map(key => channel.videos[key]).sort((a, b) => a.upload_time.getTime() - b.upload_time.getTime())
 
-        for await (const video of channel.videos) {
+        for await (const video of sortedVideos) {
           await video.callStatistics()
             .then(promise => {
               console.log('SUCCESS: Fetched statistics for the video with the id ' + video.video_id)
