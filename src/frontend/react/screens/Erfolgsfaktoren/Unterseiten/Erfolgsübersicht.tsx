@@ -55,7 +55,7 @@ const Erfolgsübersicht: React.FC = () => {
         endIcon={<ArrowForwardIcon />}
         color='secondary'
         variant='contained'
-        onClick={() => history.push('/success/objacts')}
+        onClick={() => history.push('/success/objects')}
       >
         Clickbait-Objekt Analyse im Detail
       </Button>
