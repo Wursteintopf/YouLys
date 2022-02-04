@@ -47,7 +47,7 @@ const ChannelList: React.FC<KanallisteProps> = (props) => {
                 </ChannelListUsername>
                 <ChannelListSubs>
                   <span>{numberFormatter(channel.statistics[0].subscriber_count, 1)}</span>
-                  <ChannelListSmallText>Abonennten</ChannelListSmallText>
+                  <ChannelListSmallText>Abonnenten</ChannelListSmallText>
                 </ChannelListSubs>
                 <ChannelListClicks>
                   <span>{numberFormatter(channel.statistics[0].view_count, 1)}</span>
