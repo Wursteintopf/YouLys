@@ -68,7 +68,7 @@ const Kanaldetailseite: React.FC = () => {
             <ChannelDetailOverview>
               <ChannelDetailOverviewContent>
                 {numberFormatter(stat.subscriber_count, 1)}
-                <ChannelListSmallText>Abonennten</ChannelListSmallText>
+                <ChannelListSmallText>Abonnenten</ChannelListSmallText>
               </ChannelDetailOverviewContent>
               <ChannelDetailOverviewContent>
                 {numberFormatter(stat.view_count, 1)}
@@ -131,7 +131,7 @@ const Kanaldetailseite: React.FC = () => {
                   />
             }
           </ContentBox>
-          <ContentBox title='Abonennten'>
+          <ContentBox title='Abonnenten'>
             {
               fetching
                 ? <Progress />
@@ -165,7 +165,7 @@ const Kanaldetailseite: React.FC = () => {
                   />
             }
           </ContentBox>
-          <ContentBox title='Neue Abonennten'>
+          <ContentBox title='Neue Abonnenten'>
             {
               fetching
                 ? <Progress />
